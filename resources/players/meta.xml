@@ -1,0 +1,10 @@
+<meta>
+	<info author="mabako" name="Player Manager" version="1.0"/>
+	
+	<script src="main.lua"/>
+	<script src="main_c.lua" type="client"/>
+	
+	<file src="logo.png"/>
+	
+	<include resource="sql"/>
+</meta>
