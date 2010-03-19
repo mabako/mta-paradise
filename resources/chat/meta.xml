@@ -1,0 +1,4 @@
+<meta>
+	<script src="chat.lua"/>
+	<script src="binds.lua" type="client"/>
+</meta>
