@@ -17,6 +17,10 @@
    <group name="RPC">
       <acl name="RPC"/>
    </group>
+   <group name="sql">
+      <acl name="sql"/>
+      <object name="resource.sql"/>
+   </group>
    <acl name="Default">
       <right name="general.ModifyOtherObjects" access="false"/>
       <right name="general.http" access="false"/>
@@ -84,6 +88,30 @@
       <right name="function.aclGroupRemoveACL" access="false"/>
       <right name="function.aclGroupAddObject" access="false"/>
       <right name="function.aclGroupRemoveObject" access="false"/>
+      <right name="function.mysql_connect" access="false"/>
+      <right name="function.mysql_close" access="false"/>
+      <right name="function.mysql_errno" access="false"/>
+      <right name="function.mysql_error" access="false"/>
+      <right name="function.mysql_ping" access="false"/>
+      <right name="function.mysql_select_db" access="false"/>
+      <right name="function.mysql_escape_string" access="false"/>
+      <right name="function.mysql_affected_rows" access="false"/>
+      <right name="function.mysql_change_user" access="false"/>
+      <right name="function.mysql_get_character_set_info" access="false"/>
+      <right name="function.mysql_get_client_info" access="false"/>
+      <right name="function.mysql_get_client_version" access="false"/>
+      <right name="function.mysql_get_host_info" access="false"/>
+      <right name="function.mysql_get_proto_info" access="false"/>
+      <right name="function.mysql_get_server_info" access="false"/>
+      <right name="function.mysql_get_server_version" access="false"/>
+      <right name="function.mysql_hex_string" access="false"/>
+      <right name="function.mysql_info" access="false"/>
+      <right name="function.mysql_insert_id" access="false"/>
+      <right name="function.mysql_query" access="false"/>
+      <right name="function.mysql_unbuffered_query" access="false"/>
+      <right name="function.mysql_set_character_set" access="false"/>
+      <right name="function.mysql_stat" access="false"/>
+      <right name="function.mysql_warning_count" access="false"/>
    </acl>
    <acl name="Admin">
       <right name="general.ModifyOtherObjects" access="true"/>
@@ -155,5 +183,32 @@
    </acl>
    <acl name="RPC">
       <right name="function.callRemote" access="true"/>
+   </acl>
+   <acl name="sql">
+      <right name="function.mysql_connect" access="true"/>
+      <right name="function.mysql_close" access="true"/>
+      <right name="function.mysql_errno" access="true"/>
+      <right name="function.mysql_error" access="true"/>
+      <right name="function.mysql_ping" access="true"/>
+      <right name="function.mysql_select_db" access="true"/>
+      <right name="function.mysql_escape_string" access="true"/>
+      <right name="function.mysql_affected_rows" access="true"/>
+      <right name="function.mysql_change_user" access="true"/>
+      <right name="function.mysql_get_character_set_info" access="true"/>
+      <right name="function.mysql_get_client_info" access="true"/>
+      <right name="function.mysql_get_client_version" access="true"/>
+      <right name="function.mysql_get_host_info" access="true"/>
+      <right name="function.mysql_get_proto_info" access="true"/>
+      <right name="function.mysql_get_server_info" access="true"/>
+      <right name="function.mysql_get_server_version" access="true"/>
+      <right name="function.mysql_hex_string" access="true"/>
+      <right name="function.mysql_info" access="true"/>
+      <right name="function.mysql_insert_id" access="true"/>
+      <right name="function.mysql_query" access="true"/>
+      <right name="function.mysql_unbuffered_query" access="true"/>
+      <right name="function.mysql_set_character_set" access="true"/>
+      <right name="function.mysql_stat" access="true"/>
+      <right name="function.mysql_warning_count" access="true"/>
+      <right name="function.shutdown" access="true"/>
    </acl>
 </acl>

@@ -1,0 +1,9 @@
+<meta>
+	<script src="mysql.lua"/>
+	
+	<export function="query"/>
+	<export function="query_free"/>
+	<export function="free_result"/>
+	<export function="query_assoc"/>
+	<export function="query_assoc_single"/>
+</meta>
