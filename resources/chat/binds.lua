@@ -1,7 +1,7 @@
 -- Bind to toggle the cursor from showing
 addCommandHandler( "togglecursor",
 	function( )
-		showCursor( not isCursorShowing( ) ) end
+		showCursor( not isCursorShowing( ) )
 	end
 )
 bindKey( "m", "down", "togglecursor" )
