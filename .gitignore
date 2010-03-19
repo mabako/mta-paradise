@@ -1,0 +1,11 @@
+logs/
+accounts.xml
+banlist.xml
+deathmatch.dll
+lua5.1.dll
+pcre3.dll
+pthreadVC2.dll
+registry.db
+settings.xml
+sqlite3.dll
+resource-cache
