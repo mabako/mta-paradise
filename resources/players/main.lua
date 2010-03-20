@@ -112,6 +112,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					if otherPlayer and otherPlayer ~= source then
 						kickPlayer( otherPlayer )
 					end
+					p[ source ].charID = nil
 					setPlayerName( source, mtaCharName )
 					
 					-- spawn the player, as it's a valid char
@@ -129,6 +130,14 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
 				end
 			end
+		end
+	end
+)
+
+addEventHandler( "onPlayerChangeNick", root,
+	function( )
+		if p[ source ] and p[ source ].charID then
+			cancelEvent( )
 		end
 	end
 )
