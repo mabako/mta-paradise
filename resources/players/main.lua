@@ -58,8 +58,25 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 	end
 )
 
+local function savePlayer( player )
+	if not player then
+		for _, value in getElementsByType( "player" ) do
+			savePlayer( player )
+		end
+	else
+		if isLoggedIn( source ) then
+			-- save character since it's logged in
+			local x, y, z = getElementPosition( source )
+			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( source ) .. ", interior = " .. getElementInterior( source ) .. ", rotation = " .. getPedRotation( source ) .. " WHERE characterID = " .. tonumber( p[ source ].charID ) )
+		end
+	end
+end
+setTimer( savePlayer, 300000, 0 ) -- Auto-Save every five minutes
+addEventHandler( "onResourceStop", resourceRoot, function( ) savePlayer( ) end )
+
 addEventHandler( "onPlayerQuit", root,
 	function( )
+		savePlayer( source )
 		p[ source ] = nil
 	end
 )
@@ -70,7 +87,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 		if source == client then
 			local userID = p[ source ] and p[ source ].userID
 			if tonumber( userID ) and tonumber( charID ) then
-				local char = exports.sql:query_assoc_single( "SELECT characterName, x, y, z, dimension, interior, skin FROM characters WHERE userID = " .. tonumber( userID ) .. " AND characterID = " .. tonumber( charID ) )
+				local char = exports.sql:query_assoc_single( "SELECT characterName, x, y, z, dimension, interior, skin, rotation FROM characters WHERE userID = " .. tonumber( userID ) .. " AND characterID = " .. tonumber( charID ) )
 				if char then
 					local mtaCharName = char.characterName:gsub( " ", "_" )
 					local otherPlayer = getPlayerFromName( mtaCharName )
@@ -80,7 +97,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					setPlayerName( source, mtaCharName )
 					
 					-- spawn the player, as it's a valid char
-					spawnPlayer( source, char.x, char.y, char.z, 0, char.skin, char.interior, char.dimension )
+					spawnPlayer( source, char.x, char.y, char.z, char.rotation, char.skin, char.interior, char.dimension )
 					fadeCamera( source, true )
 					setCameraTarget( source, source )
 					setCameraInterior( source, char.interior )

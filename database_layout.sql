@@ -1,4 +1,5 @@
-CREATE TABLE  `characters` (
+DROP TABLE IF EXISTS `paradise`.`characters`;
+CREATE TABLE  `paradise`.`characters` (
   `characterID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterName` varchar(22) NOT NULL,
   `userID` int(10) NOT NULL,
@@ -8,6 +9,7 @@ CREATE TABLE  `characters` (
   `interior` int(10) unsigned NOT NULL,
   `dimension` int(10) unsigned NOT NULL,
   `skin` int(10) unsigned NOT NULL,
+  `rotation` int(10) unsigned NOT NULL,
   PRIMARY KEY (`characterID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
