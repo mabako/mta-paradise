@@ -285,7 +285,7 @@ function showCharacters( )
 		end
 		
 		dxDrawRectangle( screenX * 0.005, y, height, height, tocolor( 255 - t, 255, 255, charAlpha / 5 ) )
-		dxDrawImage( screenX * 0.005 + 2, y + 2, height - 4, height - 4, "images/skins/" .. characters[ key ].skin .. ".png" )
+		dxDrawImage( screenX * 0.005 + 2, y + 2, height - 4, height - 4, "images/skins/" .. characters[ key ].skin .. ".png", 0, 0, 0, tocolor( 255, 255, 255, charAlpha ) )
 		dxDrawText( value.characterName, screenX * 0.11, y, screenX, y + height, tocolor( 255, 255, 255, ( charAlpha / 255 ) * math.max( t, 50 ) ), 2, "default", "left", "center" )
 	end
 end
