@@ -238,14 +238,22 @@ function showCharacters( )
 			oldHoverChar = 0
 			gotoChar = nil
 			if not loggedIn then
-				if characters[ hoverChar ].skin then
+				if characters[ hoverChar ].skin >= 0 then
 					setElementModel( localPlayer, characters[ hoverChar ].skin )
-					setElementAlpha( localPlayer, 255 ) -- TODO: Make this fade
-				else
-					setElementAlpha( localPlayer, 0 ) -- TODO: Make this fade
+					setElementAlpha( localPlayer, 255 )
 				end
 			end
 		else
+			if not loggedIn then
+				if diff < fadeTime / 2 then
+					setElementAlpha( localPlayer, math.min( getElementAlpha( localPlayer ), 255 * ( 1 - diff / ( fadeTime / 2 ) ) ) )
+				else
+					if characters[ gotoChar ].skin >= 0 and getElementModel( localPlayer ) ~= characters[ gotoChar ].skin then
+						setElementModel( localPlayer, characters[ gotoChar ].skin )
+					end
+					setElementAlpha( localPlayer, math.min( 255, 255 * ( diff - ( fadeTime / 2 ) ) / ( fadeTime / 2 ) ) )
+				end
+			end
 			hoverChar = oldHoverChar + ( gotoChar - oldHoverChar ) * diff / fadeTime
 		end
 	elseif not isMTAWindowActive( ) and charEnd == 0 then
