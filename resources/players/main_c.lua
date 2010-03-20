@@ -277,6 +277,7 @@ function showCharacters( )
 		end
 		
 		dxDrawRectangle( screenX * 0.005, y, height, height, tocolor( 255 - t, 255, 255, charAlpha / 5 ) )
+		dxDrawImage( screenX * 0.005 + 2, y + 2, height - 4, height - 4, "images/skins/" .. characters[ key ].skin .. ".png" )
 		dxDrawText( value.characterName, screenX * 0.11, y, screenX, y + height, tocolor( 255, 255, 255, ( charAlpha / 255 ) * math.max( t, 50 ) ), 2, "default", "left", "center" )
 	end
 end
@@ -334,8 +335,8 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 			addEventHandler( "onClientRender", root, showCharacters )
 		end
 		
-		chars[ #chars + 1 ] = { characterName = "New Character", skin = false, characterID = -1 }
-		chars[ #chars + 1 ] = { characterName = "Logout", skin = false, characterID = -2 }
+		chars[ #chars + 1 ] = { characterName = "New Character", skin = -1, characterID = -1 }
+		chars[ #chars + 1 ] = { characterName = "Logout", skin = -2, characterID = -2 }
 		
 		characters = chars
 	end
