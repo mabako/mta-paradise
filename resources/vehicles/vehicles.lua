@@ -20,8 +20,9 @@ addEventHandler( "onResourceStart", resourceRoot,
 )
 
 addCommandHandler( "createvehicle", 
-	function( player, commandName, model )
-		model = tonumber( model )
+	function( player, commandName, ... )
+		model = table.concat( { ... }, " " )
+		model = getVehicleModelFromName( model ) or tonumber( model )
 		if model then
 			local x, y, z = getElementPosition( player )
 			x = x + 3
