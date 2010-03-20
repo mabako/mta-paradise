@@ -110,6 +110,11 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 		if source == client then
 			local userID = p[ source ] and p[ source ].userID
 			if tonumber( userID ) and tonumber( charID ) then
+				-- if the player is logged in, save him
+				savePlayer( source )
+				p[ source ].charID = nil
+				
+				--
 				local char = exports.sql:query_assoc_single( "SELECT characterName, x, y, z, dimension, interior, skin, rotation, health, armor FROM characters WHERE userID = " .. tonumber( userID ) .. " AND characterID = " .. tonumber( charID ) )
 				if char then
 					local mtaCharName = char.characterName:gsub( " ", "_" )
