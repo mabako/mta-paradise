@@ -1,5 +1,4 @@
-DROP TABLE IF EXISTS `paradise`.`characters`;
-CREATE TABLE  `paradise`.`characters` (
+CREATE TABLE  `characters` (
   `characterID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterName` varchar(22) NOT NULL,
   `userID` int(10) NOT NULL,
