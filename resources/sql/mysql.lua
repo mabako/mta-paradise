@@ -1,6 +1,6 @@
 local connection = nil
 local connection = nil
-local null = mysql_null( )
+local null = nil
 local results = { }
 
 -- connection functions
@@ -37,15 +37,27 @@ end
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		if not connect( ) then
+		if not mysql_connect then
+			if hasObjectPermissionTo( resource, "function.shutdown" ) then
+				shutdown( "MySQL module missing." )
+			end
+			cancelEvent( true, "MySQL module missing." )
+		elseif not hasObjectPermissionTo( resource, "function.mysql_connect" ) then
+			if hasObjectPermissionTo( resource, "function.shutdown" ) then
+				shutdown( "Insufficient ACL rights for mysql resource." )
+			end
+			cancelEvent( true, "Insufficient ACL rights for mysql resource." )
+		elseif not connect( ) then
 			if connection then
 				outputDebugString( mysql_error( connection ), 1 )
 			end
 			
 			if hasObjectPermissionTo( resource, "function.shutdown" ) then
-				-- shutdown( "MySQL failed to connect." )
+				shutdown( "MySQL failed to connect." )
 			end
 			cancelEvent( true, "MySQL failed to connect." )
+		else
+			null = mysql_null( )
 		end
 	end
 )
