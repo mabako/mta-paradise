@@ -61,7 +61,7 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 local function savePlayer( player )
 	if not player then
 		for key, value in ipairs( getElementsByType( "player" ) ) do
-			savePlayer( player )
+			savePlayer( value )
 		end
 	else
 		if isLoggedIn( source ) then
