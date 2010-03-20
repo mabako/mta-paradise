@@ -60,7 +60,7 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 
 local function savePlayer( player )
 	if not player then
-		for _, value in getElementsByType( "player" ) do
+		for key, value in ipairs( getElementsByType( "player" ) ) do
 			savePlayer( player )
 		end
 	else
