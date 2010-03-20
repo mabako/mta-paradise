@@ -46,6 +46,13 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 					elseif info.activationCode > 0 then
 						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 3 ) -- Requires activation
 					else
+						-- check if another user is logged in on that account
+						for player, data in pairs( p ) do
+							if data.userID == info.userID then
+								triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 5 ) -- another player with that account found
+								return
+							end
+						end
 						p[ source ] = { userID = info.userID, username = username }
 						
 						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID )

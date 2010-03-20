@@ -161,6 +161,13 @@ addEventHandler( getResourceName( resource ) .. ":loginResult", localPlayer,
 			
 			-- fade it out
 			setTimer( function( ) waitMenu = 0; waitStart = getTickCount( ) + 2000 end, 3000, 1 )
+		elseif code == 5 then
+			infotext = "Another player\nuses that account."
+			guiSetEnabled( username, true )
+			guiSetEnabled( password, true )
+			
+			-- fade it out
+			setTimer( function( ) waitMenu = 0; waitStart = getTickCount( ) + 2000 end, 3000, 1 )
 		end
 	end
 )
