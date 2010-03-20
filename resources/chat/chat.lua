@@ -115,9 +115,9 @@ addCommandHandler( "pm",
 )
 
 addEventHandler( "onPlayerPrivateMessage", root,
-	function( message, recipent )
-		if exports.players:isLoggedIn( thePlayer ) and exports.players:isLoggedIn( recipent ) then
-			pm( source, recipent, message )
+	function( message, recipient )
+		if exports.players:isLoggedIn( thePlayer ) and exports.players:isLoggedIn( recipient ) then
+			pm( source, recipient, message )
 		end
 		cancelEvent( )
 	end
