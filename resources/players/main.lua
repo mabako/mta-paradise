@@ -1,4 +1,9 @@
 local function showLoginScreen( player )
+	-- remove the player from his vehicle if any
+	if isPedInVehicle( player ) then
+		removePedFromVehicle( player )
+	end
+	
 	-- hide the current view (will be faded in client-side)
 	fadeCamera( player, false, 0 )
 	toggleAllControls( player, false, true, false )
