@@ -93,19 +93,32 @@ addCommandHandler( { "o", "GlobalOOC" },
 )
 
 -- /pm to message other players
-addCommandHandler( { "pm", "msg" },
+local function pm( player, target, message )
+	outputChatBox( "PM to " .. getPlayerName( target ) .. ": " .. message, player, 255, 255, 0 )
+	outputChatBox( "PM from " .. getPlayerName( player ) .. ": " .. message, target, 255, 255, 0 )
+end
+
+addCommandHandler( "pm",
 	function( thePlayer, commandName, otherPlayer, ... )
 		if exports.players:isLoggedIn( thePlayer ) then
 			if otherPlayer and ( ... ) then
 				local message = table.concat( { ... }, " " )
 				local player, name = exports.players:getFromName( thePlayer, otherPlayer )
 				if player then
-					outputChatBox( "PM to " .. name .. ": " .. message, thePlayer, 255, 255, 0 )
-					outputChatBox( "PM from " .. getPlayerName( thePlayer ) .. ": " .. message, player, 255, 255, 0 )
+					pm( thePlayer, player, message )
 				end
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [player] [ooc text]", thePlayer, 255, 255, 255 )
 			end
 		end
+	end
+)
+
+addEventHandler( "onPlayerPrivateMessage", root,
+	function( message, recipent )
+		if exports.players:isLoggedIn( thePlayer ) and exports.players:isLoggedIn( recipent ) then
+			pm( source, recipent, message )
+		end
+		cancelEvent( )
 	end
 )
