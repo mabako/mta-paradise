@@ -3,10 +3,12 @@
 	
 	<script src="main.lua"/>
 	<script src="main_c.lua" type="client"/>
+	<export function="isLoggedIn"/>
+	
+	<script src="ids.lua"/>
+	<export function="getFromName"/>
 	
 	<file src="logo.png"/>
 	
-	<include resource="sql"/>
-	
-	<export function="isLoggedIn"/>
+	<include resource="sql"/>	
 </meta>

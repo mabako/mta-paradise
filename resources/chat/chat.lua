@@ -98,12 +98,10 @@ addCommandHandler( { "pm", "msg" },
 		if exports.players:isLoggedIn( thePlayer ) then
 			if otherPlayer and ( ... ) then
 				local message = table.concat( { ... }, " " )
-				local player = getPlayerFromName( otherPlayer )
+				local player, name = exports.players:getFromName( thePlayer, otherPlayer )
 				if player then
-					outputChatBox( "PM to " .. getPlayerName( player ) .. ": " .. message, thePlayer, 255, 255, 0 )
+					outputChatBox( "PM to " .. name .. ": " .. message, thePlayer, 255, 255, 0 )
 					outputChatBox( "PM from " .. getPlayerName( thePlayer ) .. ": " .. message, player, 255, 255, 0 )
-				else
-					outputChatBox( "Player '" .. otherPlayer .. "' not found.", thePlayer, 255, 255, 0 )
 				end
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [player] [ooc text]", thePlayer, 255, 255, 255 )
