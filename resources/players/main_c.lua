@@ -3,6 +3,7 @@ local screenX, screenY = guiGetScreenSize( )
 
 local menuStart = 0
 local menuAlpha = 0
+local menuEnd = 0
 
 local activeMenu = 0
 local menu1Alpha = 0
@@ -14,7 +15,7 @@ local text = ""
 local infotext = "Just a moment..."
 
 local function showMenu( )
-	menuAlpha = math.min( ( getTickCount( ) - menuStart ) / 2000 * 255, 255 )
+	menuAlpha = math.min( ( menuEnd == 0 and ( getTickCount( ) - menuStart ) or ( menuEnd - getTickCount( ) ) ) / 2000 * 255, 255 )
 	
 	dxDrawRectangle( screenX * 0.35, 0, screenX * 0.3, screenY, tocolor( 0, 0, 0, menuAlpha / 2 ) )
 	
@@ -28,7 +29,7 @@ local function showMenu( )
 			
 			if getKeyState( "mouse1" ) then
 				waitAlpha = 0
-				waitMenu = 3
+				waitMenu = 1
 				waitStart = getTickCount( )
 				infotext = "Create an account at\nforum.paradisegaming.net"
 			end
@@ -55,7 +56,7 @@ local function showMenu( )
 		activeMenu = 0
 	end
 	
-	if waitMenu == 3 and waitStart > 0 and getTickCount( ) - waitStart > 10000 then
+	if waitMenu == 1 and waitStart > 0 and getTickCount( ) - waitStart > 10000 then
 		waitStart = getTickCount( ) + 2000
 		waitMenu = 0
 		activeMenu = 0
@@ -105,7 +106,7 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 		guiSetAlpha( password, 0 )
 		guiEditSetMasked( password, true )
 		
-		addEventHandler( "onClientRender", getRootElement( ), showMenu )
+		addEventHandler( "onClientRender", root, showMenu )
 	end
 )
 
@@ -124,7 +125,7 @@ addEventHandler( getResourceName( resource ) .. ":loginResult", localPlayer,
 			guiSetEnabled( password, true )
 			
 			-- fade it out
-			setTimer( function( ) waitMenu = activeMenu; waitStart = getTickCount( ) end, 3000, 1 )
+			setTimer( function( ) waitMenu = 0; waitStart = getTickCount( ) + 2000 end, 3000, 1 )
 		elseif code == 2 then
 			infotext = "You are banned."
 			guiSetVisible( username, false )
@@ -139,7 +140,150 @@ addEventHandler( getResourceName( resource ) .. ":loginResult", localPlayer,
 			guiSetEnabled( password, true )
 			
 			-- fade it out
-			setTimer( function( ) waitMenu = activeMenu; waitStart = getTickCount( ) end, 3000, 1 )
+			setTimer( function( ) waitMenu = 0; waitStart = getTickCount( ) + 2000 end, 3000, 1 )
 		end
+	end
+)
+
+--
+
+local characters = nil
+local isSpawnScreen = true
+local hoverChar = 1
+local oldHoverChar = nil
+local gotoChar = nil
+local keyTime = nil
+local charStart = 0
+local charEnd = 0
+local fadeTime = 500
+
+local function selectChar( id )
+	if id == -1 then
+		-- new character
+	elseif id == -2 then
+		-- logout
+	else
+		triggerServerEvent( getResourceName( resource ) .. ":spawn", localPlayer, id )
+	end
+end
+
+local function showCharacters( )
+	charAlpha = math.min( ( charEnd == 0 and ( getTickCount( ) - charStart ) or ( charEnd - getTickCount( ) ) ) / 2000 * 255, 255 )
+	
+	dxDrawRectangle( 0, 0, screenX * 0.1, screenY, tocolor( 0, 0, 0, charAlpha / 2 ) )
+	if gotoChar then
+		local diff = getTickCount( ) - keyTime
+		if diff >= fadeTime then
+			hoverChar = gotoChar
+			oldHoverChar = 0
+			gotoChar = nil
+			if characters[ hoverChar ].skin then
+				setElementModel( localPlayer, characters[ hoverChar ].skin )
+				setElementAlpha( localPlayer, 255 ) -- TODO: Make this fade
+			else
+				setElementAlpha( localPlayer, 0 ) -- TODO: Make this fade
+			end
+		else
+			hoverChar = oldHoverChar + ( gotoChar - oldHoverChar ) * diff / fadeTime
+		end
+	elseif not isMTAWindowActive( ) and charEnd == 0 then
+		if getKeyState( 'arrow_u' ) and hoverChar > 1 then
+			keyTime = getTickCount( )
+			oldHoverChar = hoverChar
+			gotoChar = hoverChar - 1
+		elseif getKeyState( 'arrow_d' )and hoverChar < #characters then
+			keyTime = getTickCount( )
+			oldHoverChar = hoverChar
+			gotoChar = hoverChar + 1
+		elseif getKeyState( 'enter' ) or getKeyState( 'num_enter' ) then
+			selectChar( characters[ hoverChar ].characterID )
+		end
+	end
+	
+	local height = screenX * 0.09
+	for key, value in ipairs( characters ) do
+		local y = screenY / 2 + screenX * 0.095 * ( key - hoverChar )
+		
+		
+		local t = 0
+		if key == hoverChar then
+			t = 255
+		elseif key == gotoChar then
+			t = 255 * ( 1 - math.abs( hoverChar - gotoChar ) )
+		elseif key == oldHoverChar then
+			t = 255 * ( 1 - math.abs( hoverChar - oldHoverChar ) )
+		end
+		
+		dxDrawRectangle( screenX * 0.005, y, height, height, tocolor( 255 - t, 255, 255, charAlpha / 5 ) )
+		dxDrawText( value.characterName, screenX * 0.11, y, screenX, y + height, tocolor( 255, 255, 255, ( charAlpha / 255 ) * math.max( t, 50 ) ), 2, "default", "left", "center" )
+	end
+end
+
+addEvent( getResourceName( resource ) .. ":characters", true )
+addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
+	function( chars, spawn )
+		isSpawnScreen = spawn
+		if isSpawnScreen then
+			showChat( false )
+			showPlayerHudComponent( "radar", false )
+			showPlayerHudComponent( "area_name", false )
+			showCursor( true )
+			guiSetInputEnabled( true )
+			
+			menuAlpha = 0
+			menuStart = 0
+			menuEnd = getTickCount( ) + 2000
+			infotext = ""
+			
+			setTimer( 
+				function( )
+					if username then
+						destroyElement( username )
+					end
+					if password then
+						destroyElement( password )
+					end
+					
+					removeEventHandler( "onClientRender", root, showMenu )
+				end,
+				2000,
+				1
+			)
+			
+			if #chars >= 1 then
+				setElementModel( localPlayer, chars[ 1 ].skin )
+				local function fadeInChar( )
+					local alpha = math.min( ( getTickCount( ) - charStart ) / 2000 * 255, 255 )
+					setElementAlpha( localPlayer, alpha )
+					
+					if alpha == 255 then
+						removeEventHandler( "onClientRender", root, fadeInChar )
+					end
+				end
+				addEventHandler( "onClientRender", root, fadeInChar )
+			end
+			
+			charStart = getTickCount( )
+		end
+		
+		chars[ #chars + 1 ] = { characterName = "New Character", skin = false, characterID = -1 }
+		chars[ #chars + 1 ] = { characterName = "Logout", skin = false, characterID = -2 }
+		
+		characters = chars
+		addEventHandler( "onClientRender", root, showCharacters )
+	end
+)
+
+addEvent( getResourceName( resource ) .. ":onSpawn", true )
+addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
+	function( )
+		showChat( true )
+		showPlayerHudComponent( "radar", true )
+		showPlayerHudComponent( "area_name", true )
+		showCursor( false )
+		guiSetInputEnabled( false )
+		
+		charEnd = getTickCount( ) + 2000
+		setTimer( function( ) removeEventHandler( "onClientRender", root, showCharacters ) end, 2000, 1 )
 	end
 )

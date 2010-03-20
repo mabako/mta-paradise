@@ -14,7 +14,7 @@ local function showLoginScreen( player )
 	
 	setCameraMatrix( source, 1999.8, 1580.95, 17.6, 2000, 1580, 17.5 )
 	
-	triggerClientEvent( player, getResourceName( resource ) .. ":spawnscreen", player, get( 'registration_error' ) )
+	triggerClientEvent( player, getResourceName( resource ) .. ":spawnscreen", player )
 end
 
 addEvent( getResourceName( resource ) .. ":ready", true )
@@ -26,6 +26,10 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 	end
 )
 
+--
+
+local p = { }
+
 addEvent( getResourceName( resource ) .. ":login", true )
 addEventHandler( getResourceName( resource ) .. ":login", root,
 	function( username, password )
@@ -33,6 +37,7 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 			if username and password and #username > 0 and #password > 0 then
 				local info = exports.sql:query_assoc_single( "SELECT userID, banned, activationCode FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('%s'))))) LIMIT 1", username, password )
 				
+				p[ source ] = nil
 				if not info then
 					triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 1 ) -- Wrong username/password
 				else
@@ -41,7 +46,10 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 					elseif info.activationCode > 0 then
 						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 3 ) -- Requires activation
 					else
-						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 4 )
+						p[ source ] = { userID = info.userID, username = username }
+						
+						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID )
+						triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
 						-- login successful, do something!
 					end
 				end
@@ -49,3 +57,48 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 		end
 	end
 )
+
+addEventHandler( "onPlayerQuit", root,
+	function( )
+		p[ source ] = nil
+	end
+)
+
+addEvent( getResourceName( resource ) .. ":spawn", true )
+addEventHandler( getResourceName( resource ) .. ":spawn", root, 
+	function( charID )
+		if source == client then
+			local userID = p[ source ] and p[ source ].userID
+			if tonumber( userID ) and tonumber( charID ) then
+				local char = exports.sql:query_assoc_single( "SELECT characterName, x, y, z, dimension, interior, skin FROM characters WHERE userID = " .. tonumber( userID ) .. " AND characterID = " .. tonumber( charID ) )
+				if char then
+					local mtaCharName = char.characterName:gsub( " ", "_" )
+					local otherPlayer = getPlayerFromName( mtaCharName )
+					if otherPlayer and otherPlayer ~= source then
+						kickPlayer( otherPlayer )
+					end
+					setPlayerName( source, mtaCharName )
+					
+					-- spawn the player, as it's a valid char
+					spawnPlayer( source, char.x, char.y, char.z, 0, char.skin, char.interior, char.dimension )
+					fadeCamera( source, true )
+					setCameraTarget( source, source )
+					setCameraInterior( source, char.interior )
+					
+					toggleAllControls( source, true, true, false )
+					setPedFrozen( source, false )
+					setElementAlpha( source, 255 )
+					
+					p[ source ].charID = tonumber( charID )
+					
+					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
+				end
+			end
+		end
+	end
+)
+
+-- exports
+function isLoggedIn( player )
+	return player and p[ player ] and p[ player ].charID
+end

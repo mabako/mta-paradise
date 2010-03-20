@@ -7,4 +7,6 @@
 	<file src="logo.png"/>
 	
 	<include resource="sql"/>
+	
+	<export function="isLoggedIn"/>
 </meta>
