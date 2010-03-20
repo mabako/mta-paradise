@@ -40,10 +40,12 @@ end
 addEventHandler( "onPlayerChat", getRootElement( ),
 	function( message, type )
 		cancelEvent( )
-		if type == 0 then
-			localMessage( source, " " .. getPlayerName( source ) .. " says: " .. message, 230, 230, 230, false, 127, 127, 127 )
-		elseif type == 1 then
-			localMessage( source, " *" .. getPlayerName( source ) .. " " .. message, 255, 40, 80 )
+		if exports.players:isLoggedIn( source ) then
+			if type == 0 then
+				localMessage( source, " " .. getPlayerName( source ) .. " says: " .. message, 230, 230, 230, false, 127, 127, 127 )
+			elseif type == 1 then
+				localMessage( source, " *" .. getPlayerName( source ) .. " " .. message, 255, 40, 80 )
+			end
 		end
 	end
 )
@@ -51,11 +53,13 @@ addEventHandler( "onPlayerChat", getRootElement( ),
 -- /do
 addCommandHandler( "do", 
 	function( thePlayer, commandName, ... )
-		local message = table.concat( { ... }, " " )
-		if #message > 0 then
-			localMessage( thePlayer, " *" .. message .. " ((" .. getPlayerName( thePlayer ) .. "))", 255, 40, 80 )
-		else
-			outputChatBox( "Syntax: /" .. commandName .. " [in character text]", thePlayer, 255, 255, 255 )
+		if exports.players:isLoggedIn( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				localMessage( thePlayer, " *" .. message .. " ((" .. getPlayerName( thePlayer ) .. "))", 255, 40, 80 )
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [in character text]", thePlayer, 255, 255, 255 )
+			end
 		end
 	end
 )
@@ -63,11 +67,13 @@ addCommandHandler( "do",
 -- /b; bound to 'b' client-side
 addCommandHandler( { "b", "LocalOOC" },
 	function( thePlayer, commandName, ... )
-		local message = table.concat( { ... }, " " )
-		if #message > 0 then
-			localMessage( thePlayer, getPlayerName( thePlayer ) ..  ": (( " .. message .. " ))", 196, 255, 255 )
-		else
-			outputChatBox( "Syntax: /" .. commandName .. " [local ooc text]", thePlayer, 255, 255, 255 )
+		if exports.players:isLoggedIn( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				localMessage( thePlayer, getPlayerName( thePlayer ) ..  ": (( " .. message .. " ))", 196, 255, 255 )
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [local ooc text]", thePlayer, 255, 255, 255 )
+			end
 		end
 	end
 )
@@ -75,11 +81,13 @@ addCommandHandler( { "b", "LocalOOC" },
 -- /o; bound to 'o' client-side
 addCommandHandler( { "o", "GlobalOOC" },
 	function( thePlayer, commandName, ... )
-		local message = table.concat( { ... }, " " )
-		if #message > 0 then
-			outputChatBox( "(( " .. getPlayerName( thePlayer ) ..  ": " .. message .. " ))", root, 196, 255, 255 )
-		else
-			outputChatBox( "Syntax: /" .. commandName .. " [local ooc text]", thePlayer, 255, 255, 255 )
+		if exports.players:isLoggedIn( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				outputChatBox( "(( " .. getPlayerName( thePlayer ) ..  ": " .. message .. " ))", root, 196, 255, 255 )
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [local ooc text]", thePlayer, 255, 255, 255 )
+			end
 		end
 	end
 )
@@ -87,17 +95,19 @@ addCommandHandler( { "o", "GlobalOOC" },
 -- /pm to message other players
 addCommandHandler( { "pm", "msg" },
 	function( thePlayer, commandName, otherPlayer, ... )
-		if otherPlayer and ( ... ) then
-			local message = table.concat( { ... }, " " )
-			local player = getPlayerFromName( otherPlayer )
-			if player then
-				outputChatBox( "PM to " .. getPlayerName( player ) .. ": " .. message, thePlayer, 255, 255, 0 )
-				outputChatBox( "PM from " .. getPlayerName( thePlayer ) .. ": " .. message, player, 255, 255, 0 )
+		if exports.players:isLoggedIn( thePlayer ) then
+			if otherPlayer and ( ... ) then
+				local message = table.concat( { ... }, " " )
+				local player = getPlayerFromName( otherPlayer )
+				if player then
+					outputChatBox( "PM to " .. getPlayerName( player ) .. ": " .. message, thePlayer, 255, 255, 0 )
+					outputChatBox( "PM from " .. getPlayerName( thePlayer ) .. ": " .. message, player, 255, 255, 0 )
+				else
+					outputChatBox( "Player '" .. otherPlayer .. "' not found.", thePlayer, 255, 255, 0 )
+				end
 			else
-				outputChatBox( "Player '" .. otherPlayer .. "' not found.", thePlayer, 255, 255, 0 )
+				outputChatBox( "Syntax: /" .. commandName .. " [player] [ooc text]", thePlayer, 255, 255, 255 )
 			end
-		else
-			outputChatBox( "Syntax: /" .. commandName .. " [player] [ooc text]", thePlayer, 255, 255, 255 )
 		end
 	end
 )
