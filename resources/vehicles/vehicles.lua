@@ -53,6 +53,16 @@ addCommandHandler( "createvehicle",
 	true
 )
 
+addCommandHandler( "repairvehicles",
+	function( player, commandName )
+		for vehicle in pairs( vehicles ) do
+			fixVehicle( vehicle )
+		end
+		outputChatBox( "*** " .. getPlayerName( player ):gsub( "_", " " ) .. " repaired all vehicles. ***", root, 0, 255, 153 )
+	end,
+	true
+)
+
 function saveVehicle( vehicle )
 	if vehicle then
 		local data = vehicles[ vehicle ]
