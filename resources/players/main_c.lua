@@ -1,4 +1,5 @@
 local localPlayer = getLocalPlayer( )
+local loggedIn = false
 local screenX, screenY = guiGetScreenSize( )
 
 local menuStart = 0
@@ -99,12 +100,31 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 		
 		menuAlpha = 0
 		menuStart = getTickCount( )
+		menuEnd = 0
+		
+		waitStart = 0
+		waitAlpha = 0
+		waitMenu = 0
+		
+		if charSelectionActive then
+			charEnd = getTickCount( ) + 2000
+			charSelectionActive = false
+			setTimer(
+				function( )
+					removeEventHandler( "onClientRender", root, showCharacters )
+					charEnd = 0
+					hoverChar = 1 -- don't show the 'Logout' button again
+				end, 2000, 1
+			)
+		end
 		
 		username = guiCreateEdit( 0.45, 0.735, 0.1, 0.03, "", true )
 		password = guiCreateEdit( 0.45, 0.775, 0.1, 0.03, "", true )
 		guiSetAlpha( username, 0 )
 		guiSetAlpha( password, 0 )
 		guiEditSetMasked( password, true )
+		
+		loggedIn = false
 		
 		addEventHandler( "onClientRender", root, showMenu )
 	end
@@ -147,27 +167,60 @@ addEventHandler( getResourceName( resource ) .. ":loginResult", localPlayer,
 
 --
 
+charSelectionActive = false
 local characters = nil
-local isSpawnScreen = true
-local hoverChar = 1
+local isSpawnScreen = false
+hoverChar = 1
 local oldHoverChar = nil
 local gotoChar = nil
 local keyTime = nil
 local charStart = 0
-local charEnd = 0
+charEnd = 0
 local fadeTime = 500
 
-local function selectChar( id )
+addCommandHandler( "changechar",
+	function( )
+		if loggedIn and charEnd == 0 then
+			if charSelectionActive then
+				charEnd = getTickCount( ) + 2000
+				setTimer(
+					function( )
+						removeEventHandler( "onClientRender", root, showCharacters )
+						charEnd = 0
+						charSelectionActive = false
+					end, 2000, 1
+				)
+			else
+				charStart = getTickCount( )
+				charSelectionActive = true
+				addEventHandler( "onClientRender", root, showCharacters )
+			end
+		end
+	end
+)
+bindKey( "pause", "down", "changechar" )
+
+local function selectChar( id, name )
 	if id == -1 then
 		-- new character
 	elseif id == -2 then
 		-- logout
+		triggerServerEvent( getResourceName( resource ) .. ":logout", localPlayer )
+	elseif loggedIn and name == getPlayerName( localPlayer ):gsub( "_", " " ) then
+		charEnd = getTickCount( ) + 2000
+		setTimer(
+			function( )
+				removeEventHandler( "onClientRender", root, showCharacters )
+				charEnd = 0
+				charSelectionActive = false
+			end, 2000, 1
+		)
 	else
 		triggerServerEvent( getResourceName( resource ) .. ":spawn", localPlayer, id )
 	end
 end
 
-local function showCharacters( )
+function showCharacters( )
 	charAlpha = math.min( ( charEnd == 0 and ( getTickCount( ) - charStart ) or ( charEnd - getTickCount( ) ) ) / 2000 * 255, 255 )
 	
 	dxDrawRectangle( 0, 0, screenX * 0.1, screenY, tocolor( 0, 0, 0, charAlpha / 2 ) )
@@ -177,11 +230,13 @@ local function showCharacters( )
 			hoverChar = gotoChar
 			oldHoverChar = 0
 			gotoChar = nil
-			if characters[ hoverChar ].skin then
-				setElementModel( localPlayer, characters[ hoverChar ].skin )
-				setElementAlpha( localPlayer, 255 ) -- TODO: Make this fade
-			else
-				setElementAlpha( localPlayer, 0 ) -- TODO: Make this fade
+			if not loggedIn then
+				if characters[ hoverChar ].skin then
+					setElementModel( localPlayer, characters[ hoverChar ].skin )
+					setElementAlpha( localPlayer, 255 ) -- TODO: Make this fade
+				else
+					setElementAlpha( localPlayer, 0 ) -- TODO: Make this fade
+				end
 			end
 		else
 			hoverChar = oldHoverChar + ( gotoChar - oldHoverChar ) * diff / fadeTime
@@ -196,7 +251,7 @@ local function showCharacters( )
 			oldHoverChar = hoverChar
 			gotoChar = hoverChar + 1
 		elseif getKeyState( 'enter' ) or getKeyState( 'num_enter' ) then
-			selectChar( characters[ hoverChar ].characterID )
+			selectChar( characters[ hoverChar ].characterID, characters[ hoverChar ].characterName )
 		end
 	end
 	
@@ -264,13 +319,18 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 			end
 			
 			charStart = getTickCount( )
+			charEnd = 0
+			
+			loggedIn = false
+			
+			charSelectionActive = true
+			addEventHandler( "onClientRender", root, showCharacters )
 		end
 		
 		chars[ #chars + 1 ] = { characterName = "New Character", skin = false, characterID = -1 }
 		chars[ #chars + 1 ] = { characterName = "Logout", skin = false, characterID = -2 }
 		
 		characters = chars
-		addEventHandler( "onClientRender", root, showCharacters )
 	end
 )
 
@@ -284,6 +344,13 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 		guiSetInputEnabled( false )
 		
 		charEnd = getTickCount( ) + 2000
-		setTimer( function( ) removeEventHandler( "onClientRender", root, showCharacters ) end, 2000, 1 )
+		setTimer(
+			function( )
+				removeEventHandler( "onClientRender", root, showCharacters )
+				charEnd = 0
+				charSelectionActive = false
+				loggedIn = true
+			end, 2000, 1
+		)
 	end
 )
