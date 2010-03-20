@@ -85,7 +85,7 @@ function query( str, ... )
 		results[ num ] = result
 		return num
 	end
-	return false, mysql_error( con )
+	return false, mysql_error( connection )
 end
 
 function query_free( str, ... )
@@ -104,7 +104,7 @@ function query_free( str, ... )
 		mysql_free_result( result )
 		return true
 	end
-	return false, mysql_error( con )
+	return false, mysql_error( connection )
 end
 
 function free_result( result )
