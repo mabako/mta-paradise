@@ -151,3 +151,14 @@ function query_assoc_single( str, ... )
 	end
 	return false, error
 end
+
+function query_insertid( str, ... )
+	local id = false
+	local result, error = query( str, ... )
+	if result then
+		id = mysql_insert_id( connection )
+		free_result( result )
+		return id
+	end
+	return false, error
+end

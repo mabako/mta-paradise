@@ -48,6 +48,7 @@
       <right name="command.aexec" access="false"/>
       <right name="command.whois" access="false"/>
       <right name="command.whowas" access="false"/>
+      <right name="command.createvehicle" access="false"/>
       <right name="function.executeCommandHandler" access="false"/>
       <right name="function.setPlayerMuted" access="false"/>
       <right name="function.addAccount" access="false"/>
@@ -140,6 +141,7 @@
       <right name="command.aexec" access="true"/>
       <right name="command.whois" access="true"/>
       <right name="command.whowas" access="true"/>
+      <right name="command.createvehicle" access="true"/>
       <right name="function.executeCommandHandler" access="true"/>
       <right name="function.setPlayerMuted" access="true"/>
       <right name="function.addAccount" access="true"/>

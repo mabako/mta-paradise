@@ -6,4 +6,5 @@
 	<export function="free_result"/>
 	<export function="query_assoc"/>
 	<export function="query_assoc_single"/>
+	<export function="query_insertid"/>
 </meta>
