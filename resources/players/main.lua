@@ -58,16 +58,6 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 	end
 )
 
-addEvent( getResourceName( resource ) .. ":logout", true )
-addEventHandler( getResourceName( resource ) .. ":logout", root,
-	function( )
-		if source == client then
-			p[ source ] = nil
-			showLoginScreen( source )
-		end
-	end
-)
-
 local function savePlayer( player )
 	if not player then
 		for key, value in ipairs( getElementsByType( "player" ) ) do
@@ -83,6 +73,17 @@ local function savePlayer( player )
 end
 setTimer( savePlayer, 300000, 0 ) -- Auto-Save every five minutes
 addEventHandler( "onResourceStop", resourceRoot, function( ) savePlayer( ) end )
+
+addEvent( getResourceName( resource ) .. ":logout", true )
+addEventHandler( getResourceName( resource ) .. ":logout", root,
+	function( )
+		if source == client then
+			savePlayer( source )
+			p[ source ] = nil
+			showLoginScreen( source )
+		end
+	end
+)
 
 addEventHandler( "onPlayerQuit", root,
 	function( )
