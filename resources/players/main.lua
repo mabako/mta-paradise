@@ -134,6 +134,18 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 	end
 )
 
+addEventHandler( "onPlayerWasted", root,
+	function( )
+		if isLoggedIn( source ) then
+			local x, y, z = getElementPosition( source )
+			spawnPlayer( source, x, y, z, getPedRotation( source ), getElementModel( source ), getElementInterior( source ), getElementDimension( source ) )
+			fadeCamera( source, true )
+			setCameraTarget( source, source )
+			setCameraInterior( source, getElementInterior( source ) )
+		end
+	end
+)
+
 addEventHandler( "onPlayerChangeNick", root,
 	function( )
 		if isLoggedIn( source ) then
