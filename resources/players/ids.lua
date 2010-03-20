@@ -37,6 +37,8 @@ function getFromName( player, targetName )
 		targetName = tostring( targetName )
 		
 		local match = { }
+		if targetName == "*" then
+			match = { player }
 		if tonumber( targetName ) then
 			match = { ids[ tonumber( targetName ) ] }
 		elseif getPlayerFromName( targetName ) then
