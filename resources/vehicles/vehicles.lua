@@ -82,3 +82,20 @@ setTimer(
 	60000,
 	0
 )
+
+addEventHandler( "onResourceStop", resourceRoot,
+	function( )
+		-- save all occupied vehicles on resource start
+		local occupiedVehicles = { }
+		for _, value in ipairs( getElementsByType( "player" ) ) do
+			local vehicle = getPedOccupiedVehicle( value )
+			if vehicle then
+				occupiedVehicles[ vehicle ] = true
+			end
+		end
+		
+		for vehicle in pairs( occupiedVehicles ) do
+			saveVehicle( vehicle )
+		end
+	end
+)
