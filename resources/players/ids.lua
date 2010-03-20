@@ -32,6 +32,7 @@ addEventHandler( "onPlayerQuit", root,
 	end
 )
 
+local getElementsByType = function( ) return { getRandomPlayer( ), getRandomPlayer( ), getRandomPlayer( ) } end
 function getFromName( player, targetName )
 	if targetName then
 		targetName = tostring( targetName )
@@ -44,43 +45,42 @@ function getFromName( player, targetName )
 		elseif ( getPlayerFromName ( targetName ) ) then
 			match = { getPlayerFromName ( targetName ) }
 		else	
-			match = getNameMatch ( targetName ) -- returns a table.
+			for key, value in ipairs ( getElementsByType ( "player" ) ) do
+				if getPlayerName ( player ):lower():find( targetName:lower() ) then
+					match[ #match + 1 ] = player
+				end
+			end
 		end
-		
-		-- TODO: Search by partial name || Done - Jumba.
 		
 		if #match == 1 then
 			if isLoggedIn( match[ 1 ] ) then
-				outputChatBox ( getPlayerName ( match[1] ) ) 
 				return match[ 1 ], getPlayerName( match[ 1 ] ):gsub( "_", " " ), getElementData( match[ 1 ], "playerid" )
 			else
-				-- not logged in error
-				return nil
+				outputChatBox( getPlayerName( match[ 1 ] ):gsub( "_", " " ) .. " is not logged in.", player, 255, 0, 0 )
+				return nil -- not logged in error
 			end
 		elseif #match == 0 then
+			outputChatBox( "No player matches your search.", player, 255, 0, 0 )
 			return nil -- no player
+		elseif #match > 10 then
+			outputChatBox( #match .. " players match your search.", player, 255, 204, 0 )
 		else
-			outputChatBox ( "Players matching your search are: ", player, 255, 255, 0 )
-			for _, player in ipairs ( match ) do
-				outputChatBox ( getPlayerName ( player ):gsub ( "_", " " ) .. " (" .. getElementData ( player, "playerid" ) .. ")", player, 245, 200, 0 )
+			outputChatBox ( "Players matching your search are: ", player, 255, 204, 0 )
+			for key, value in ipairs( match ) do
+				outputChatBox( "  (" .. getElementData( value, "playerid" ) .. ") " .. getPlayerName( value ):gsub ( "_", " " ), player, 255, 255, 0 )
 			end	
 			return nil -- more than one player. We list the player names + id.
 		end
 	end
 end
 
-function getNameMatch( targetName )
-local matches = { }
-	if ( targetName ) then
-		for k, player in ipairs ( getElementsByType ( "player" ) ) do
-			local player_n = getPlayerName ( player ):lower()
-			local match = player_n:find( targetName:lower() )
-			if ( match ) then
-				if isLoggedIn ( player ) then
-					matches[ #matches + 1 ] = player
-				end
+addCommandHandler( "id",
+	function( player, commandName, target )
+		if isLoggedIn( player ) then
+			local target, targetName, id = getFromName( player, target )
+			if target then
+				outputChatBox( targetName .. "'s ID is " .. id .. ".", player, 255, 204, 0 )
 			end
 		end
-		return matches	
-	end	
-end
+	end
+)
