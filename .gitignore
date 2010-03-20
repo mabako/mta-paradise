@@ -1,6 +1,8 @@
+
 logs/
 accounts.xml
 banlist.xml
+deathmatch.so
 deathmatch.dll
 lua5.1.dll
 pcre3.dll
