@@ -74,7 +74,7 @@ local function savePlayer( player )
 		if isLoggedIn( source ) then
 			-- save character since it's logged in
 			local x, y, z = getElementPosition( source )
-			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( source ) .. ", interior = " .. getElementInterior( source ) .. ", rotation = " .. getPedRotation( source ) .. " WHERE characterID = " .. tonumber( p[ source ].charID ) )
+			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( source ) .. ", interior = " .. getElementInterior( source ) .. ", rotation = " .. getPedRotation( source ) .. ", health = " .. math.ceil( getElementHealth( source ) ) .. ", armor = " .. math.ceil( getPedArmor( source ) ) .. " WHERE characterID = " .. tonumber( p[ source ].charID ) )
 		end
 	end
 end
@@ -105,7 +105,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 		if source == client then
 			local userID = p[ source ] and p[ source ].userID
 			if tonumber( userID ) and tonumber( charID ) then
-				local char = exports.sql:query_assoc_single( "SELECT characterName, x, y, z, dimension, interior, skin, rotation FROM characters WHERE userID = " .. tonumber( userID ) .. " AND characterID = " .. tonumber( charID ) )
+				local char = exports.sql:query_assoc_single( "SELECT characterName, x, y, z, dimension, interior, skin, rotation, health, armor FROM characters WHERE userID = " .. tonumber( userID ) .. " AND characterID = " .. tonumber( charID ) )
 				if char then
 					local mtaCharName = char.characterName:gsub( " ", "_" )
 					local otherPlayer = getPlayerFromName( mtaCharName )
@@ -124,6 +124,9 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					toggleAllControls( source, true, true, false )
 					setPedFrozen( source, false )
 					setElementAlpha( source, 255 )
+					
+					setElementHealth( source, char.health )
+					setPedArmor( source, char.armor )
 					
 					p[ source ].charID = tonumber( charID )
 					

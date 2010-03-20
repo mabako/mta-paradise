@@ -9,6 +9,8 @@ CREATE TABLE  `characters` (
   `dimension` int(10) unsigned NOT NULL,
   `skin` int(10) unsigned NOT NULL,
   `rotation` int(10) unsigned NOT NULL,
+  `health` tinyint(3) unsigned NOT NULL DEFAULT '100',
+  `armor` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`characterID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
