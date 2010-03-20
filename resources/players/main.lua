@@ -136,7 +136,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 
 addEventHandler( "onPlayerChangeNick", root,
 	function( )
-		if p[ source ] and p[ source ].charID then
+		if isLoggedIn( source ) then
 			cancelEvent( )
 		end
 	end
