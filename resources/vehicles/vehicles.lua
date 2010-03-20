@@ -53,6 +53,29 @@ addCommandHandler( "createvehicle",
 	true
 )
 
+addCommandHandler( "repairvehicle",
+	function( player, commandName, otherPlayer )
+		if otherPlayer then
+			target, targetName = exports.players:getFromName( player, otherPlayer )
+		else
+			target = player
+			targetName = getPlayerName( player ):gsub( "_", " " )
+		end
+		
+		if target then
+			local vehicle = getPedOccupiedVehicle( target )
+			if vehicle then
+				fixVehicle( vehicle )
+			end
+			outputChatBox( "*** Your vehicle has been repaired by " .. getPlayerName( player ):gsub( "_", " " ) .. ". ***", target, 0, 255, 153 )
+			if player ~= target then
+				outputChatBox( "*** You repaired " .. targetName .. "'s vehicle. ***", target, 0, 255, 153 )
+			end
+		end
+	end,
+	true
+)
+
 addCommandHandler( "repairvehicles",
 	function( player, commandName )
 		for vehicle in pairs( vehicles ) do
