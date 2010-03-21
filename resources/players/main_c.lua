@@ -203,12 +203,14 @@ addCommandHandler( "changechar",
 						removeEventHandler( "onClientRender", root, showCharacters )
 						charEnd = 0
 						charSelectionActive = false
+						showChat( true )
 					end, 2000, 1
 				)
 			else
 				charStart = getTickCount( )
 				charSelectionActive = true
 				addEventHandler( "onClientRender", root, showCharacters )
+				showChat( false )
 			end
 		end
 	end
@@ -228,6 +230,7 @@ local function selectChar( id, name )
 				removeEventHandler( "onClientRender", root, showCharacters )
 				charEnd = 0
 				charSelectionActive = false
+				showChat( true )
 			end, 2000, 1
 		)
 	else
@@ -372,7 +375,6 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 addEvent( getResourceName( resource ) .. ":onSpawn", true )
 addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 	function( )
-		showChat( true )
 		showPlayerHudComponent( "radar", true )
 		showPlayerHudComponent( "area_name", true )
 		showCursor( false )
@@ -385,6 +387,7 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 				charEnd = 0
 				charSelectionActive = false
 				loggedIn = true
+				showChat( true )
 			end, 2000, 1
 		)
 	end
