@@ -14,6 +14,22 @@ local waitAlpha = 0
 local waitMenu = 0
 local text = ""
 local infotext = "Just a moment..."
+local keyStateEnter = false
+
+local function tryLogin( )
+	local u = guiGetText( username )
+	local p = guiGetText( password )
+	if u and p and #u > 0 and #p > 0 then
+		triggerServerEvent( getResourceName( resource ) .. ":login", localPlayer, u, p )
+		guiSetEnabled( username, false )
+		guiSetEnabled( password, false )
+		waitAlpha = 0
+		waitMenu = activeMenu
+		waitStart = getTickCount( )
+		infotext = "Logging in..."
+	end
+	keyStateEnter = getKeyState( 'enter' )
+end
 
 local function showMenu( )
 	menuAlpha = math.min( ( menuEnd == 0 and ( getTickCount( ) - menuStart ) or ( menuEnd - getTickCount( ) ) ) / 2000 * 255, 255 )
@@ -38,17 +54,7 @@ local function showMenu( )
 			activeMenu = 2
 			
 			if getKeyState( "mouse1" ) then
-				local u = guiGetText( username )
-				local p = guiGetText( password )
-				if u and p and #u > 0 and #p > 0 then
-					triggerServerEvent( getResourceName( resource ) .. ":login", localPlayer, u, p )
-					guiSetEnabled( username, false )
-					guiSetEnabled( password, false )
-					waitAlpha = 0
-					waitMenu = activeMenu
-					waitStart = getTickCount( )
-					infotext = "Logging in..."
-				end
+				tryLogin( )
 			end
 		else
 			activeMenu = 0
@@ -122,6 +128,8 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 		password = guiCreateEdit( 0.45, 0.775, 0.1, 0.03, "", true )
 		guiSetAlpha( username, 0 )
 		guiSetAlpha( password, 0 )
+		addEventHandler( "onClientGUIAccepted", username, tryLogin, false )
+		addEventHandler( "onClientGUIAccepted", password, tryLogin, false )
 		guiEditSetMasked( password, true )
 		
 		loggedIn = false
@@ -265,8 +273,12 @@ function showCharacters( )
 			keyTime = getTickCount( )
 			oldHoverChar = hoverChar
 			gotoChar = hoverChar + 1
-		elseif getKeyState( 'enter' ) or getKeyState( 'num_enter' ) then
-			selectChar( characters[ hoverChar ].characterID, characters[ hoverChar ].characterName )
+		elseif getKeyState( 'enter' ) then
+			if not keyStateEnter then
+				selectChar( characters[ hoverChar ].characterID, characters[ hoverChar ].characterName )
+			end
+		elseif keyStateEnter then
+			keyStateEnter = false
 		end
 	end
 	
@@ -305,6 +317,13 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 			menuStart = 0
 			menuEnd = getTickCount( ) + 2000
 			infotext = ""
+			
+			if username then
+				removeEventHandler( "onClientGUIAccepted", username, tryLogin )
+			end
+			if password then
+				removeEventHandler( "onClientGUIAccepted", password, tryLogin )
+			end
 			
 			setTimer( 
 				function( )
