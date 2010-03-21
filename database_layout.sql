@@ -14,6 +14,21 @@ CREATE TABLE  `characters` (
   PRIMARY KEY (`characterID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
+CREATE TABLE  `interiors` (
+  `interiorID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `outsideX` float NOT NULL,
+  `outsideY` float NOT NULL,
+  `outsideZ` float NOT NULL,
+  `outsideInterior` int(10) unsigned NOT NULL,
+  `outsideDimension` int(10) unsigned NOT NULL,
+  `insideX` float NOT NULL,
+  `insideY` float NOT NULL,
+  `insideZ` float NOT NULL,
+  `insideInterior` int(10) unsigned NOT NULL,
+  `interiorName` varchar(255) NOT NULL,
+  PRIMARY KEY (`interiorID`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
 CREATE TABLE  `wcf1_user` (
   `userID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
