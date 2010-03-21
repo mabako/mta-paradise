@@ -124,6 +124,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					end
 					p[ source ].charID = nil
 					setPlayerName( source, mtaCharName )
+					setPlayerNametagText( source, "[" .. getID( source ) .. "] " .. char.characterName )
 					
 					-- spawn the player, as it's a valid char
 					spawnPlayer( source, char.x, char.y, char.z, char.rotation, char.skin, char.interior, char.dimension )
