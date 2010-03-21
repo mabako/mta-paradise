@@ -1,0 +1,6 @@
+<meta>
+	<script src="interiorpositions.lua"/>
+	
+	<script src="interiors.lua"/>
+	<script src="interiors_c.lua" type="client"/>
+</meta>

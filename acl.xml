@@ -141,9 +141,16 @@
       <right name="command.aexec" access="true"/>
       <right name="command.whois" access="true"/>
       <right name="command.whowas" access="true"/>
+	  
+	  <!-- interiors -->
+      <right name="command.createinterior" access="true"/>
+	  
+	  <!-- vehicles -->
       <right name="command.createvehicle" access="true"/>
       <right name="command.repairvehicle" access="true"/>
       <right name="command.repairvehicles" access="true"/>
+	  
+	  <!-- -->
       <right name="function.executeCommandHandler" access="true"/>
       <right name="function.setPlayerMuted" access="true"/>
       <right name="function.addAccount" access="true"/>
