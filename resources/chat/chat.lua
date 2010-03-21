@@ -94,8 +94,8 @@ addCommandHandler( { "o", "GlobalOOC" },
 
 -- /pm to message other players
 local function pm( player, target, message )
-	outputChatBox( "PM to " .. getPlayerName( target ) .. ": " .. message, player, 255, 255, 0 )
-	outputChatBox( "PM from " .. getPlayerName( player ) .. ": " .. message, target, 255, 255, 0 )
+	outputChatBox( "PM to [" .. exports.players:getID( target ) .. "] " .. getPlayerName( target ) .. ": " .. message, player, 255, 255, 0 )
+	outputChatBox( "PM from [" .. exports.players:getID( player ) .. "] " .. getPlayerName( player ) .. ": " .. message, target, 255, 255, 0 )
 end
 
 addCommandHandler( "pm",
