@@ -10,5 +10,5 @@
 	
 	<file src="logo.png"/>
 	
-	<include resource="sql"/>	
+	<include resource="sql"/>
 </meta>
