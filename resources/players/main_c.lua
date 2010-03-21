@@ -192,6 +192,7 @@ local keyTime = nil
 local charStart = 0
 charEnd = 0
 local fadeTime = 500
+local charSelectionWaiting = false
 
 addCommandHandler( "changechar",
 	function( )
@@ -209,6 +210,7 @@ addCommandHandler( "changechar",
 			else
 				charStart = getTickCount( )
 				charSelectionActive = true
+				charSelectionWaiting = false
 				addEventHandler( "onClientRender", root, showCharacters )
 				showChat( false )
 			end
@@ -222,9 +224,11 @@ local function selectChar( id, name )
 		-- new character
 	elseif id == -2 then
 		-- logout
+		charSelectionWaiting = true
 		triggerServerEvent( getResourceName( resource ) .. ":logout", localPlayer )
 	elseif loggedIn and name == getPlayerName( localPlayer ):gsub( "_", " " ) then
 		charEnd = getTickCount( ) + 2000
+		charSelectionWaiting = true
 		setTimer(
 			function( )
 				removeEventHandler( "onClientRender", root, showCharacters )
@@ -267,7 +271,7 @@ function showCharacters( )
 			end
 			hoverChar = oldHoverChar + ( gotoChar - oldHoverChar ) * diff / fadeTime
 		end
-	elseif not isMTAWindowActive( ) and charEnd == 0 then
+	elseif not isMTAWindowActive( ) and charEnd == 0 and not charSelectionWaiting then
 		if getKeyState( 'arrow_u' ) and hoverChar > 1 then
 			keyTime = getTickCount( )
 			oldHoverChar = hoverChar
@@ -279,6 +283,7 @@ function showCharacters( )
 		elseif getKeyState( 'enter' ) then
 			if not keyStateEnter then
 				selectChar( characters[ hoverChar ].characterID, characters[ hoverChar ].characterName )
+				keyStateEnter = true
 			end
 		elseif keyStateEnter then
 			keyStateEnter = false
@@ -358,6 +363,7 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 			
 			charStart = getTickCount( )
 			charEnd = 0
+			charSelectionWaiting = false
 			
 			loggedIn = false
 			
@@ -381,6 +387,7 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 		guiSetInputEnabled( false )
 		
 		charEnd = getTickCount( ) + 2000
+		charSelectionWaiting = false
 		setTimer(
 			function( )
 				removeEventHandler( "onClientRender", root, showCharacters )
