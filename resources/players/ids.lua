@@ -84,3 +84,16 @@ addCommandHandler( "id",
 		end
 	end
 )
+
+function getID( player )
+	local id = getElementData( player, "playerid" )
+	if ids[ id ] == player then
+		return id
+	else
+		for i = 1, getMaxPlayers( ) do
+			if ids[ i ] == player then
+				return id
+			end
+		end
+	end
+end

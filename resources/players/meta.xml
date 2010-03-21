@@ -7,6 +7,7 @@
 	
 	<script src="ids.lua"/>
 	<export function="getFromName"/>
+	<export function="getID"/>
 	
 	<file src="logo.png"/>
 	
