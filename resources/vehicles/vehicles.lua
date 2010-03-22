@@ -20,7 +20,7 @@ local vehicles = { }
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		local result = exports.sql:query_assoc( "SELECT vehicleID, model, posX, posY, posZ, rotX, rotY, rotZ, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, numberplate, health, color1, color2 FROM vehicles ORDER BY vehicleID ASC" )
+		local result = exports.sql:query_assoc( "SELECT vehicleID, model, posX, posY, posZ, rotX, rotY, rotZ, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, numberplate, health, color1, color2, interior, dimension FROM vehicles ORDER BY vehicleID ASC" )
 		if result then
 			for key, data in ipairs( result ) do
 				local vehicle = createVehicle( data.model, data.posX, data.posY, data.posZ, data.rotX, data.rotY, data.rotZ, numberplate )
@@ -29,9 +29,12 @@ addEventHandler( "onResourceStart", resourceRoot,
 				vehicleIDs[ data.vehicleID ] = vehicle
 				vehicles[ vehicle ] = { vehicleID = data.vehicleID }
 				
+				-- some properties
 				setElementHealth( vehicle, data.health )
 				setVehicleColor( vehicle, data.color1, data.color2, data.color1, data.color2 ) -- most vehicles don't use second/third color anyway
 				setVehicleRespawnPosition( vehicle, data.respawnPosX, data.respawnPosY, data.respawnPosZ, data.respawnRotX, data.respawnRotY, data.respawnRotZ )
+				setElementInterior( vehicle, data.interior )
+				setElementDimension( vehicle, data.dimension )
 			end
 		end
 	end
@@ -49,11 +52,15 @@ addCommandHandler( "createvehicle",
 			local vehicle = createVehicle( model, x, y, z )
 			if vehicle then
 				local color1, color2 = getVehicleColor( vehicle )
-				local vehicleID, error = exports.sql:query_insertid( "INSERT INTO vehicles (model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, color1, color2, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ) VALUES (" .. table.concat( { model, x, y, z, 0, 0, 0, '"%s"', color1, color2, x, y, z, 0, 0, 0 }, ", " ) .. ")", getVehiclePlateText( vehicle ) )
+				local vehicleID, error = exports.sql:query_insertid( "INSERT INTO vehicles (model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, color1, color2, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, interior, dimension) VALUES (" .. table.concat( { model, x, y, z, 0, 0, 0, '"%s"', color1, color2, x, y, z, 0, 0, 0, getElementInterior( player ), getElementDimension( player ) }, ", " ) .. ")", getVehiclePlateText( vehicle ) )
 				if vehicleID then
 					-- tables for ID -> vehicle and vehicle -> data
 					vehicleIDs[ vehicleID ] = vehicle
 					vehicles[ vehicle ] = { vehicleID = vehicleID }
+					
+					-- some properties
+					setElementInterior( vehicle, getElementInterior( player ) )
+					setElementDimension( vehicle, getElementDimension( player ) )
 					
 					-- success message
 					outputChatBox( "Created " .. getVehicleName( vehicle ) .. " (ID " .. vehicleID .. ")", player, 0, 255, 0 )
@@ -137,7 +144,7 @@ function saveVehicle( vehicle )
 		if data then
 			local x, y, z = getElementPosition( vehicle )
 			local rx, ry, rz = getVehicleRotation( vehicle )
-			local success, error = exports.sql:query_free( "UPDATE vehicles SET posX = " .. x .. ", posY = " .. y .. ", posZ = " .. z .. ", rotX = " .. rx .. ", rotY = " .. ry .. ", rotZ = " .. rz .. ", health = " .. math.min( 1000, math.ceil( getElementHealth( vehicle ) ) ) .. " WHERE vehicleID = " .. data.vehicleID )			
+			local success, error = exports.sql:query_free( "UPDATE vehicles SET posX = " .. x .. ", posY = " .. y .. ", posZ = " .. z .. ", rotX = " .. rx .. ", rotY = " .. ry .. ", rotZ = " .. rz .. ", health = " .. math.min( 1000, math.ceil( getElementHealth( vehicle ) ) ) .. ", interior = " .. getElementInterior( vehicle ) .. ", dimension = " .. getElementDimension( vehicle ) .. " WHERE vehicleID = " .. data.vehicleID )			
 			if error then
 				outputDebugString( error )
 			end

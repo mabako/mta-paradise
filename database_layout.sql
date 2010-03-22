@@ -73,5 +73,7 @@ CREATE TABLE  `vehicles` (
   `health` int(10) unsigned NOT NULL DEFAULT '1000',
   `color1` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `color2` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `interior` int(10) unsigned NOT NULL DEFAULT '0',
+  `dimension` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`vehicleID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
