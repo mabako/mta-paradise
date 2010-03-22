@@ -152,6 +152,7 @@
       <right name="command.respawnvehicle" access="true"/>
       <right name="command.respawnvehicles" access="true"/>
       <right name="command.getvehicle" access="true"/>
+      <right name="command.gotovehicle" access="true"/>
 	  
 	  <!-- -->
       <right name="function.executeCommandHandler" access="true"/>
