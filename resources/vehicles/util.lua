@@ -21,4 +21,5 @@ function isVehicleEmpty( vehicle )
 			return false
 		end
 	end
+	return true
 end
