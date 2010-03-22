@@ -246,7 +246,7 @@ addCommandHandler( "gotovehicle",
 		if vehicleID then
 			local vehicle = vehicleIDs[ vehicleID ]
 			if vehicle then
-				setElementPosition( player, getPositionInFrontOf( vehicle ) )
+				setElementPosition( player, getPositionInFrontOf( vehicle, nil, 180 ) )
 				setElementDimension( player, getElementDimension( vehicle ) )
 				setElementInterior( player, getElementInterior( vehicle ) )
 				outputChatBox( "You teleported to vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
