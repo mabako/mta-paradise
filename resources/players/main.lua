@@ -26,13 +26,11 @@ local function showLoginScreen( player )
 	toggleAllControls( player, false, true, false )
 	
 	-- spawn the player etc.
-	spawnPlayer( source, 2000.6, 1577.6, 16.5 )
+	spawnPlayer( source, 2000.6, 1577.6, 16.5, 10, 0, 0, 1 )
 	setPedFrozen( source, true )
 	setElementAlpha( source, 0 )
 	
-	setElementInterior( source, 0 )
 	setCameraInterior( source, 0 )
-	setElementDimension( source, 1 )
 	
 	setCameraMatrix( source, 1999.8, 1580.95, 17.6, 2000, 1580, 17.5 )
 	
