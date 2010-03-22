@@ -33,15 +33,18 @@ local _bar_border = 1.2
 local _, screenY = guiGetScreenSize( )
 real_scale = screenY / ( _scale * 800 ) 
 local _alpha_distance_diff = _max_distance - _alpha_distance
+local localPlayer = getLocalPlayer( )
 
 addEventHandler( 'onClientRender', root, 
 	function( )
 		-- get the camera position of the local player
 		local cx, cy, cz = getCameraMatrix( )
+		local dimension = getElementDimension( localPlayer )
+		local interior = getElementInterior( localPlayer )
 		
 		-- loop through all players
 		for player in pairs( nametags ) do
-			if isElementOnScreen( player ) then
+			if getElementDimension( player ) == dimension and getElementInterior( player ) == interior and isElementOnScreen( player ) then
 				local px, py, pz = getElementPosition( player )
 				local distance = getDistanceBetweenPoints3D( px, py, pz, cx, cy, cz )
 				if distance <= _max_distance and isLineOfSightClear( cx, cy, cz, px, py, pz, true, true, false, true, false, false, true, getPedOccupiedVehicle( player ) ) then
@@ -112,7 +115,7 @@ addEventHandler( 'onClientRender', root,
 addEventHandler( 'onClientResourceStart', getResourceRootElement( ),
 	function( )
 		for _, player in pairs( getElementsByType( 'player' ) ) do
-			if player ~= getLocalPlayer( ) then
+			if player ~= localPlayer then
 				-- hide the default nametag
 				setPlayerNametagShowing( player, false )
 				
