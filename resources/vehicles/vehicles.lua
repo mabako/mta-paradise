@@ -141,6 +141,34 @@ addCommandHandler( "respawnvehicles",
 	true
 )
 
+addCommandHandler( "park",
+	function( player, commandName )
+		local vehicle = getPedOccupiedVehicle( player )
+		if vehicle then
+			local data = vehicles[ vehicle ]
+			if data then
+				if --[[ owner check or ]] hasObjectPermissionTo( player, "command.createvehicle", false ) then
+					local x, y, z = getElementPosition( vehicle )
+					local rx, ry, rz = getVehicleRotation( vehicle )
+					local success, error = exports.sql:query_free( "UPDATE vehicles SET respawnPosX = " .. x .. ", respawnPosY = " .. y .. ", respawnPosZ = " .. z .. ", respawnRotX = " .. rx .. ", respawnRotY = " .. ry .. ", respawnRotZ = " .. rz .. ", respawnInterior = " .. getElementInterior( vehicle ) .. ", respawnDimension = " .. getElementDimension( vehicle ) .. " WHERE vehicleID = " .. data.vehicleID )			
+					if success then
+						setVehicleRespawnPosition( vehicle, x, y, z, rx, ry, rz )
+						data.respawnInterior = getElementInterior( vehicle )
+						data.respawnDimension = getElementDimension( vehicle )
+						outputChatBox( "Vehicle " .. data.vehicleID .. " (" .. getVehicleName( vehicle ) .. ") has been parked.", player, 0, 255, 0 )
+					else
+						outputChatBox( "Parking Vehicle failed.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( "You cannot park this vehicle.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "You aren't driving a vehicle.", player, 255, 0, 0 )
+		end
+	end
+)
+
 function saveVehicle( vehicle )
 	if vehicle then
 		local data = vehicles[ vehicle ]
