@@ -142,11 +142,12 @@
       <right name="command.whois" access="true"/>
       <right name="command.whowas" access="true"/>
 	  
-	  <!-- interiors -->
+      <!-- interiors -->
       <right name="command.createinterior" access="true"/>
 	  
-	  <!-- vehicles -->
+      <!-- vehicles -->
       <right name="command.createvehicle" access="true"/>
+      <right name="command.deletevehicle" access="true"/>
       <right name="command.repairvehicle" access="true"/>
       <right name="command.repairvehicles" access="true"/>
       <right name="command.respawnvehicle" access="true"/>
@@ -154,7 +155,7 @@
       <right name="command.getvehicle" access="true"/>
       <right name="command.gotovehicle" access="true"/>
 	  
-	  <!-- -->
+      <!-- -->
       <right name="function.executeCommandHandler" access="true"/>
       <right name="function.setPlayerMuted" access="true"/>
       <right name="function.addAccount" access="true"/>

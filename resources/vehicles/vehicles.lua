@@ -76,6 +76,33 @@ addCommandHandler( "createvehicle",
 	true
 )
 
+addCommandHandler( "deletevehicle", 
+	function( player, commandName, vehicleID )
+		vehicleID = tonumber( vehicleID )
+		if vehicleID then
+			local vehicle = vehicleIDs[ vehicleID ]
+			if vehicle then
+				if exports.sql:query_free( "DELETE FROM vehicles WHERE vehicleID = " .. vehicleID ) then
+					outputChatBox( "You deleted vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
+					
+					-- remove from vehicles list
+					vehicleIDs[ vehicleID ] = nil
+					vehicles[ vehicle ] = nil
+					
+					destroyElement( vehicle )
+				else
+					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
 addCommandHandler( "repairvehicle",
 	function( player, commandName, otherPlayer )
 		if otherPlayer then
