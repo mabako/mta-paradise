@@ -27,7 +27,7 @@ CREATE TABLE  `characters` (
   `health` tinyint(3) unsigned NOT NULL DEFAULT '100',
   `armor` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`characterID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `interiors` (
   `interiorID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -42,7 +42,7 @@ CREATE TABLE  `interiors` (
   `insideInterior` int(10) unsigned NOT NULL,
   `interiorName` varchar(255) NOT NULL,
   PRIMARY KEY (`interiorID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `wcf1_user` (
   `userID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -52,7 +52,22 @@ CREATE TABLE  `wcf1_user` (
   `banned` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `activationCode` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`userID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `wcf1_group` (
+ `groupID` int(10) unsigned NOT NULL auto_increment,
+ `groupName` varchar(255) NOT NULL default '',
+ PRIMARY KEY  (`groupID`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+INSERT INTO `wcf1_group` (`groupID`, `groupName`) VALUES (1, 'MTA Administrators');
+
+CREATE TABLE `wcf1_user_to_groups` (
+ `userID` int(10) unsigned NOT NULL default '0',
+ `groupID` int(10) unsigned NOT NULL default '0',
+ PRIMARY KEY  (`userID`,`groupID`),
+ KEY `groupID` (`groupID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+INSERT INTO `wcf1_user_to_groups` (`userID`, `groupID`) VALUES (1, 1); -- first user is admin
 
 CREATE TABLE  `vehicles` (
   `vehicleID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -79,4 +94,4 @@ CREATE TABLE  `vehicles` (
   `color2` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `characterID` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`vehicleID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

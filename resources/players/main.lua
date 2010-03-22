@@ -15,6 +15,27 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+-- Import Groups
+local groups = {
+	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator" }
+}
+
+addEventHandler( "onResourceStart", resourceRoot,
+	function( )
+		local data = exports.sql:query_assoc( "SELECT groupID, groupName FROM wcf1_group" )
+		if data then
+			for key, value in ipairs( data ) do
+				for key2, value2 in ipairs( groups ) do
+					if value.groupName == value2.groupName then
+						value2.groupID = value.groupID
+					end
+				end
+			end
+		end
+	end
+)
+--
+
 local function showLoginScreen( player )
 	-- remove the player from his vehicle if any
 	if isPedInVehicle( player ) then
@@ -55,7 +76,7 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 	function( username, password )
 		if source == client then
 			if username and password and #username > 0 and #password > 0 then
-				local info = exports.sql:query_assoc_single( "SELECT userID, banned, activationCode FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('%s'))))) LIMIT 1", username, password )
+				local info = exports.sql:query_assoc_single( "SELECT userID, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salt FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('%s'))))) LIMIT 1", username, password )
 				
 				p[ source ] = nil
 				if not info then
@@ -75,9 +96,82 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 						end
 						p[ source ] = { userID = info.userID, username = username }
 						
+						-- check for admin rights
+						local shouldHaveAccount = false
+						local account = getAccount( username )
+						local groupinfo = exports.sql:query_assoc( "SELECT groupID FROM wcf1_user_to_groups WHERE userID = " .. info.userID )
+						if groupinfo then
+							local saveAcl = false
+							
+							-- loop through all retrieved groups
+							for key, group in ipairs( groupinfo ) do
+								for key2, group2 in ipairs( groups ) do
+									-- we have a acl group of interest
+									if group.groupID == group2.groupID then
+										-- mark as person to have an account
+										shouldHaveAccount = true
+										
+										-- add an account if it doesn't exist
+										if not account then
+											account = addAccount( username, info.salt ) -- due to MTA's limitations, the password can't be longer than 30 chars
+											if not account then
+												outputDebugString( "Account Error for " .. username .. " - addAccount failed.", 1 )
+											else
+												outputDebugString( "Added account " .. username, 3 )
+											end
+										end
+										
+										if account then
+											-- if the player has a different account password, change it
+											if not getAccount( username, info.salt ) then
+												setAccountPassword( account, info.salt )
+												getAccount( username, info.salt )
+											end
+											
+											if not logIn( source, account, info.salt ) then
+												-- something went wrong here
+												outputDebugString( "Account Error for " .. username .. " - login failed.", 1 )
+											else
+												-- show him a message
+												outputChatBox( "You are now logged in as " .. group2.displayName .. ".", source, 0, 255, 0 )
+												if aclGroupAddObject( aclGetGroup( group2.aclGroup ), "user." .. username ) then
+													saveAcl = true
+													outputDebugString( "Added account " .. username .. " to " .. group2.aclGroup .. " ACL", 3 )
+												end
+											end
+										end
+									end
+								end
+							end
+							
+							-- save the acl if it was changed
+							if saveAcl then
+								aclSave( )
+							end
+						end
+						if not shouldHaveAccount and account then
+							-- remove account from all ACL groups we use
+							local saveAcl = false
+							for key, value in ipairs( groups ) do
+								if aclGroupRemoveObject( aclGetGroup( value.aclGroup ), "user." .. username ) then
+									saveAcl = true
+									outputDebugString( "Removed account " .. username .. " from " .. value.aclGroup .. " ACL", 3 )
+								end
+							end
+							
+							-- save the acl if it was changed
+							if saveAcl then
+								aclSave( )
+							end
+							
+							-- remove the account
+							removeAccount( account )
+							outputDebugString( "Removed account " .. username, 3 )
+						end
+						
+						-- show characters
 						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID )
 						triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
-						-- login successful, do something!
 					end
 				end
 			end
@@ -99,7 +193,19 @@ local function savePlayer( player )
 	end
 end
 setTimer( savePlayer, 300000, 0 ) -- Auto-Save every five minutes
-addEventHandler( "onResourceStop", resourceRoot, function( ) savePlayer( ) end )
+
+addEventHandler( "onResourceStop", resourceRoot,
+	function( )
+		savePlayer( )
+		
+		-- logout all players
+		for key, value in ipairs( getElementsByType( "player" ) ) do
+			if not isGuestAccount( getPlayerAccount( value ) ) then
+				logOut( value )
+			end
+		end
+	end
+)
 
 addEvent( getResourceName( resource ) .. ":logout", true )
 addEventHandler( getResourceName( resource ) .. ":logout", root,
@@ -108,6 +214,10 @@ addEventHandler( getResourceName( resource ) .. ":logout", root,
 			savePlayer( source )
 			p[ source ] = nil
 			showLoginScreen( source )
+			
+			if not isGuestAccount( getPlayerAccount( source ) ) then
+				logOut( source )
+			end
 		end
 	end
 )
