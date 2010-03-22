@@ -22,6 +22,7 @@ local groups = {
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
+		-- import all groups
 		local data = exports.sql:query_assoc( "SELECT groupID, groupName FROM wcf1_group" )
 		if data then
 			for key, value in ipairs( data ) do
@@ -31,6 +32,69 @@ addEventHandler( "onResourceStart", resourceRoot,
 					end
 				end
 			end
+		end
+		
+		-- verify all accounts and remove invalid ones; new (valid) accounts will not be added until the player logs in
+		local saveAcl = false
+		local accounts = getAccounts( )
+		for key, account in ipairs( accounts ) do
+			local accountName = getAccountName( account )
+			if accountName ~= "Console" then -- console may exist untouched
+				local user = exports.sql:query_assoc_single( "SELECT userID FROM wcf1_user WHERE username = '%s'", accountName )
+				if user then
+					-- account should be deleted if no group is found
+					local shouldBeDeleted = true
+					
+					if user.userID then -- if this doesn't exist, the user does not exist in the db
+						-- fetch all of his groups
+						local groupinfo = exports.sql:query_assoc( "SELECT groupID FROM wcf1_user_to_groups WHERE userID = " .. user.userID )
+						if groupinfo then
+							-- look through all of our pre-defined groups
+							for key, group in ipairs( groups ) do
+								-- user does not have this group
+								local hasGroup = false
+								
+								-- check if he does have it
+								for key2, group2 in ipairs( groupinfo ) do
+									if group.groupID == group2.groupID then
+										-- has the group
+										hasGroup = true
+										
+										-- shouldn't delete his account
+										shouldBeDeleted = false
+										
+										-- make sure acl rights are set correctly
+										if aclGroupAddObject( aclGetGroup( group.aclGroup ), "user." .. accountName ) then
+											outputDebugString( "Cleanup: Added account " .. accountName .. " to ACL " .. group.aclGroup, 3 )
+											saveAcl = true
+										end
+									end
+								end
+								
+								-- doesn't have it
+								if not hasGroup then
+									-- make sure acl rights are removed
+									if aclGroupRemoveObject( aclGetGroup( group.aclGroup ), "user." .. accountName ) then
+										outputDebugString( "Cleanup: Removed account " .. accountName .. " from ACL " .. group.aclGroup, 3 )
+										saveAcl = true
+									end
+								end
+							end
+						end
+					end
+					
+					-- has no relevant group, thus we don't need the MTA account
+					if shouldBeDeleted then
+						outputDebugString( "Cleanup: Removed account " .. accountName, 3 )
+						removeAccount( account )
+					end
+				end
+			end
+		end
+		
+		-- if we should save the acl, do it (permissions changed)
+		if saveAcl then
+			aclSave( )
 		end
 	end
 )
