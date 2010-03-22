@@ -15,6 +15,30 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addCommandHandler_ = addCommandHandler
+      addCommandHandler  = function( commandName, fn, restricted, caseSensitive )
+	-- add the default command handler
+	addCommandHandler_( commandName, fn, restricted, caseSensitive )
+	
+	-- check for alternative handlers, such as gotovehicle = gotoveh, gotocar
+	if commandName:find( "vehicle" ) then
+		for key, value in pairs( { "veh", "car" } ) do
+			local newCommand = commandName:gsub( "vehicle", value )
+			if newCommand ~= commandName then
+				-- add a second (replaced) command handler
+				addCommandHandler_( newCommand,
+					function( player, ... )
+						-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
+						if hasObjectPermissionTo( player, "command." .. commandName, not restricted ) then
+							fn( player, ... )
+						end
+					end
+				)
+			end
+		end
+	end
+end
+
 local vehicleIDs = { }
 local vehicles = { }
 
