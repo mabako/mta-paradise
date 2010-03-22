@@ -40,7 +40,7 @@
         <right name="command.debugscript" access="false" />
         <right name="command.chgpass" access="false" />
         <right name="command.loadmodule" access="false" />
-        <right name="command.login" access="true" />
+        <right name="command.login" access="false" />
         <right name="command.logout" access="false" />
         <right name="command.upgrade" access="false" />
         <right name="command.mute" access="false" />
