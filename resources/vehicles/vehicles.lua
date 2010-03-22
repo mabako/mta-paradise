@@ -20,7 +20,7 @@ local vehicles = { }
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		local result = exports.sql:query_assoc( "SELECT vehicleID, model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, health, color1, color2 FROM vehicles ORDER BY vehicleID ASC" )
+		local result = exports.sql:query_assoc( "SELECT vehicleID, model, posX, posY, posZ, rotX, rotY, rotZ, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, numberplate, health, color1, color2 FROM vehicles ORDER BY vehicleID ASC" )
 		if result then
 			for key, data in ipairs( result ) do
 				local vehicle = createVehicle( data.model, data.posX, data.posY, data.posZ, data.rotX, data.rotY, data.rotZ, numberplate )
@@ -31,6 +31,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				
 				setElementHealth( vehicle, data.health )
 				setVehicleColor( vehicle, data.color1, data.color2, data.color1, data.color2 ) -- most vehicles don't use second/third color anyway
+				setVehicleRespawnPosition( vehicle, data.respawnPosX, data.respawnPosY, data.respawnPosZ, data.respawnRotX, data.respawnRotY, data.respawnRotZ )
 			end
 		end
 	end
@@ -48,7 +49,7 @@ addCommandHandler( "createvehicle",
 			local vehicle = createVehicle( model, x, y, z )
 			if vehicle then
 				local color1, color2 = getVehicleColor( vehicle )
-				local vehicleID, error = exports.sql:query_insertid( "INSERT INTO vehicles (model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, color1, color2) VALUES (" .. table.concat( { model, x, y, z, 0, 0, 0, '"%s"', color1, color2 }, ", " ) .. ")", getVehiclePlateText( vehicle ) )
+				local vehicleID, error = exports.sql:query_insertid( "INSERT INTO vehicles (model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, color1, color2, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ) VALUES (" .. table.concat( { model, x, y, z, 0, 0, 0, '"%s"', color1, color2, x, y, z, 0, 0, 0 }, ", " ) .. ")", getVehiclePlateText( vehicle ) )
 				if vehicleID then
 					-- tables for ID -> vehicle and vehicle -> data
 					vehicleIDs[ vehicleID ] = vehicle
