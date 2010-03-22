@@ -45,14 +45,12 @@ addCommandHandler( "createvehicle",
 		model = table.concat( { ... }, " " )
 		model = getVehicleModelFromName( model ) or tonumber( model )
 		if model then
-			local x, y, z = getElementPosition( player )
-			x = x + 3
-			z = z + 1
+			local x, y, z, rz = getPositionInFrontOf( player )
 			
-			local vehicle = createVehicle( model, x, y, z )
+			local vehicle = createVehicle( model, x, y, z, 0, 0, rz )
 			if vehicle then
 				local color1, color2 = getVehicleColor( vehicle )
-				local vehicleID, error = exports.sql:query_insertid( "INSERT INTO vehicles (model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, color1, color2, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, interior, dimension, respawnInterior, respawnDimension) VALUES (" .. table.concat( { model, x, y, z, 0, 0, 0, '"%s"', color1, color2, x, y, z, 0, 0, 0, getElementInterior( player ), getElementDimension( player ), getElementInterior( player ), getElementDimension( player ) }, ", " ) .. ")", getVehiclePlateText( vehicle ) )
+				local vehicleID, error = exports.sql:query_insertid( "INSERT INTO vehicles (model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, color1, color2, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, interior, dimension, respawnInterior, respawnDimension) VALUES (" .. table.concat( { model, x, y, z, 0, 0, rz, '"%s"', color1, color2, x, y, z, 0, 0, rz, getElementInterior( player ), getElementDimension( player ), getElementInterior( player ), getElementDimension( player ) }, ", " ) .. ")", getVehiclePlateText( vehicle ) )
 				if vehicleID then
 					-- tables for ID -> vehicle and vehicle -> data
 					vehicleIDs[ vehicleID ] = vehicle
@@ -175,10 +173,11 @@ addCommandHandler( "getvehicle",
 		if vehicleID then
 			local vehicle = vehicleIDs[ vehicleID ]
 			if vehicle then
-				local x, y, z = getElementPosition( player )
-				setElementPosition( vehicle, x + 3, y, z + 1 )
+				local x, y, z, rz = getPositionInFrontOf( player )
+				setElementPosition( vehicle, x, y, z )
 				setElementDimension( vehicle, getElementDimension( player ) )
 				setElementInterior( vehicle, getElementInterior( player ) )
+				setVehicleRotation( vehicle, 0, 0, rz )
 				outputChatBox( "You teleported vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ") to you.", player, 0, 255, 153 )
 			else
 				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
@@ -196,8 +195,7 @@ addCommandHandler( "gotovehicle",
 		if vehicleID then
 			local vehicle = vehicleIDs[ vehicleID ]
 			if vehicle then
-				local x, y, z = getElementPosition( vehicle )
-				setElementPosition( player, x - 3, y, z )
+				setElementPosition( player, getPositionInFrontOf( vehicle ) )
 				setElementDimension( player, getElementDimension( vehicle ) )
 				setElementInterior( player, getElementInterior( vehicle ) )
 				outputChatBox( "You teleported to vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )

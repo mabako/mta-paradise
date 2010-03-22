@@ -23,3 +23,15 @@ function isVehicleEmpty( vehicle )
 	end
 	return true
 end
+
+function getPositionInFrontOf( element, distance, rotation )
+	local x, y, z = getElementPosition( element )
+	rz = 0
+	if getElementType( element ) == "vehicle" then
+		_, _, rz = getVehicleRotation( element )
+	elseif getElementType( element ) == "player" then
+		rz = getPedRotation( element )
+	end
+	rz = rz + ( rotation or 90 )
+	return x + ( ( math.cos ( math.rad ( rz ) ) ) * ( distance or 3 ) ), y + ( ( math.sin ( math.rad ( rz ) ) ) * ( distance or 3 ) ), z, rz
+end
