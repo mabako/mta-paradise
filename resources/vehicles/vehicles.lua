@@ -169,6 +169,27 @@ addCommandHandler( "park",
 	end
 )
 
+addCommandHandler( "getvehicle",
+	function( player, commandName, vehicleID )
+		vehicleID = tonumber( vehicleID )
+		if vehicleID then
+			local vehicle = vehicleIDs[ vehicleID ]
+			if vehicle then
+				local x, y, z = getElementPosition( player )
+				setElementPosition( vehicle, x + 3, y, z + 1 )
+				setElementDimension( vehicle, getElementDimension( player ) )
+				setElementInterior( vehicle, getElementInterior( player ) )
+				outputChatBox( "You teleported vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ") to you.", player, 0, 255, 153 )
+			else
+				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
 function saveVehicle( vehicle )
 	if vehicle then
 		local data = vehicles[ vehicle ]
