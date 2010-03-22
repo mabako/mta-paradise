@@ -167,6 +167,7 @@ addCommandHandler( "respawnvehicle",
 			local vehicle = vehicleIDs[ vehicleID ]
 			if vehicle then
 				respawnVehicle( vehicle )
+				saveVehicle( vehicle )
 				outputChatBox( "You respawned vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
 			else
 				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
@@ -204,6 +205,7 @@ addCommandHandler( "park",
 						setVehicleRespawnPosition( vehicle, x, y, z, rx, ry, rz )
 						data.respawnInterior = getElementInterior( vehicle )
 						data.respawnDimension = getElementDimension( vehicle )
+						saveVehicle( vehicle )
 						outputChatBox( "Vehicle " .. data.vehicleID .. " (" .. getVehicleName( vehicle ) .. ") has been parked.", player, 0, 255, 0 )
 					else
 						outputChatBox( "Parking Vehicle failed.", player, 255, 0, 0 )
@@ -230,6 +232,9 @@ addCommandHandler( "getvehicle",
 				setElementInterior( vehicle, getElementInterior( player ) )
 				setVehicleRotation( vehicle, 0, 0, rz )
 				outputChatBox( "You teleported vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ") to you.", player, 0, 255, 153 )
+				
+				-- save the vehicle delayed since it might fall down/position might be adjusted to ground position
+				setTimer( saveVehicle, 2000, 1, vehicle )
 			else
 				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
 			end
@@ -250,6 +255,9 @@ addCommandHandler( "gotovehicle",
 				setElementDimension( player, getElementDimension( vehicle ) )
 				setElementInterior( player, getElementInterior( vehicle ) )
 				outputChatBox( "You teleported to vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
+				
+				-- save the vehicle delayed since it might fall down/position might be adjusted to ground position
+				setTimer( saveVehicle, 2000, 1, vehicle )
 			else
 				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
 			end
