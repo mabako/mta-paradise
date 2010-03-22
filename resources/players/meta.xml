@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<script src="main.lua"/>
 	<script src="main_c.lua" type="client"/>
+	<export function="getCharacterID"/>
 	<export function="isLoggedIn"/>
 	
 	<script src="ids.lua"/>

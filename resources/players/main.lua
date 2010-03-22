@@ -184,6 +184,10 @@ addEventHandler( "onPlayerChangeNick", root,
 )
 
 -- exports
-function isLoggedIn( player )
+function getCharacterID( player )
 	return player and p[ player ] and p[ player ].charID
+end
+
+function isLoggedIn( player )
+	return getCharacterID( player ) and true
 end
