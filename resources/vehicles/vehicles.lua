@@ -125,7 +125,8 @@ addCommandHandler( "respawnvehicle",
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
 		end
-	end
+	end,
+	true
 )
 
 addCommandHandler( "respawnvehicles",
