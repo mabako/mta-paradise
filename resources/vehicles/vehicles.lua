@@ -132,7 +132,9 @@ addCommandHandler( "respawnvehicle",
 addCommandHandler( "respawnvehicles",
 	function( player, commandName )
 		for vehicle in pairs( vehicles ) do
-			respawnVehicle( vehicle )
+			if isVehicleEmpty( vehicle ) then
+				respawnVehicle( vehicle )
+			end
 		end
 		outputChatBox( "*** " .. getPlayerName( player ):gsub( "_", " " ) .. " respawned all vehicles. ***", root, 0, 255, 153 )
 	end,

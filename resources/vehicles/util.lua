@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,10 +13,12 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<script src="vehicles.lua"/>
-	<script src="util.lua"/>
-	
-	<include resource="sql"/>
-</meta>
+]]
+
+function isVehicleEmpty( vehicle )
+	for seat = 0, getVehicleMaxPassengers( vehicle ) do
+		if getVehicleOccupant( vehicle, seat ) then
+			return false
+		end
+	end
+end
