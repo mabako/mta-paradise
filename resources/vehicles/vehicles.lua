@@ -121,6 +121,16 @@ addCommandHandler( "respawnvehicle",
 	end
 )
 
+addCommandHandler( "respawnvehicles",
+	function( player, commandName )
+		for vehicle in pairs( vehicles ) do
+			respawnVehicle( vehicle )
+		end
+		outputChatBox( "*** " .. getPlayerName( player ):gsub( "_", " " ) .. " respawned all vehicles. ***", root, 0, 255, 153 )
+	end,
+	true
+)
+
 function saveVehicle( vehicle )
 	if vehicle then
 		local data = vehicles[ vehicle ]
