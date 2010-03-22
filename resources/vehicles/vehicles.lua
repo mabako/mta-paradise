@@ -281,6 +281,10 @@ addEventHandler( "onResourceStop", resourceRoot,
 		for vehicle in pairs( occupiedVehicles ) do
 			saveVehicle( vehicle )
 		end
+		
+		-- we won't have any vehicles left, but show no message in onElementDestroy
+		vehicles = { }
+		vehicleIDs = { }
 	end
 )
 
@@ -291,6 +295,16 @@ addEventHandler( "onVehicleRespawn", resourceRoot,
 			setElementInterior( source, data.respawnInterior )
 			setElementDimension( source, data.respawnDimension )
 			saveVehicle( source )
+		end
+	end
+)
+
+addEventHandler( "onElementDestroy", resourceRoot,
+	function( )
+		if vehicles[ source ] then
+			outputDebugString( "Deleted vehicle ID " .. vehicles[ source ].vehicleID .. " (" .. getVehicleName( source ) .. ", even though it's still referenced. Removing references...", 2 )
+			vehicleIDs[ vehicles[ source ].vehicleID ] = nil
+			vehicles[ source ] = nil
 		end
 	end
 )
