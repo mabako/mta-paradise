@@ -191,3 +191,21 @@ end
 function isLoggedIn( player )
 	return getCharacterID( player ) and true
 end
+
+-- retrieves a character name from the database id
+function getCharacterName( characterID )
+	if type( characterID ) == "number" then
+		-- check if the player is online, if so we don't need to query
+		for player, data in pairs( p ) do
+			if data.charID == characterID then
+				local name = getPlayerName( player ):gsub( "_", " " )
+				return name
+			end
+		end
+		
+		local data = exports.sql:query_assoc_single( "SELECT characterName FROM characters WHERE characterID = " .. characterID )
+		if data then
+			return data.characterName
+		end
+	end
+end
