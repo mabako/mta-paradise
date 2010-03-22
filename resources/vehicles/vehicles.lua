@@ -44,14 +44,14 @@ local vehicles = { }
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		local result = exports.sql:query_assoc( "SELECT vehicleID, model, posX, posY, posZ, rotX, rotY, rotZ, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, numberplate, health, color1, color2, interior, dimension, respawnInterior, respawnDimension FROM vehicles ORDER BY vehicleID ASC" )
+		local result = exports.sql:query_assoc( "SELECT * FROM vehicles ORDER BY vehicleID ASC" )
 		if result then
 			for key, data in ipairs( result ) do
 				local vehicle = createVehicle( data.model, data.posX, data.posY, data.posZ, data.rotX, data.rotY, data.rotZ, numberplate )
 				
 				-- tables for ID -> vehicle and vehicle -> data
 				vehicleIDs[ data.vehicleID ] = vehicle
-				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension }
+				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension, characterID = data.characterID }
 				
 				-- some properties
 				setElementHealth( vehicle, data.health )
@@ -78,7 +78,7 @@ addCommandHandler( "createvehicle",
 				if vehicleID then
 					-- tables for ID -> vehicle and vehicle -> data
 					vehicleIDs[ vehicleID ] = vehicle
-					vehicles[ vehicle ] = { vehicleID = vehicleID, respawnInterior = getElementInterior( player ), respawnDimension = getElementDimension( player ) }
+					vehicles[ vehicle ] = { vehicleID = vehicleID, respawnInterior = getElementInterior( player ), respawnDimension = getElementDimension( player ), characterID = 0 }
 					
 					-- some properties
 					setElementInterior( vehicle, getElementInterior( player ) )
@@ -196,7 +196,7 @@ addCommandHandler( "park",
 		if vehicle then
 			local data = vehicles[ vehicle ]
 			if data then
-				if --[[ owner check or ]] hasObjectPermissionTo( player, "command.createvehicle", false ) then
+				if exports.players:getCharacterID( player ) == data.characterID or hasObjectPermissionTo( player, "command.createvehicle", false ) then
 					local x, y, z = getElementPosition( vehicle )
 					local rx, ry, rz = getVehicleRotation( vehicle )
 					local success, error = exports.sql:query_free( "UPDATE vehicles SET respawnPosX = " .. x .. ", respawnPosY = " .. y .. ", respawnPosZ = " .. z .. ", respawnRotX = " .. rx .. ", respawnRotY = " .. ry .. ", respawnRotZ = " .. rz .. ", respawnInterior = " .. getElementInterior( vehicle ) .. ", respawnDimension = " .. getElementDimension( vehicle ) .. " WHERE vehicleID = " .. data.vehicleID )			
@@ -329,6 +329,22 @@ addEventHandler( "onElementDestroy", resourceRoot,
 			outputDebugString( "Deleted vehicle ID " .. vehicles[ source ].vehicleID .. " (" .. getVehicleName( source ) .. ", even though it's still referenced. Removing references...", 2 )
 			vehicleIDs[ vehicles[ source ].vehicleID ] = nil
 			vehicles[ source ] = nil
+		end
+	end
+)
+
+addEventHandler( "onVehicleEnter", resourceRoot,
+	function( player )
+		local data = vehicles[ source ]
+		if data then
+			if data.characterID > 0 then
+				local name = exports.players:getCharacterName( data.characterID )
+				if name then
+					outputChatBox( "(( This " .. getVehicleName( source ) .. " belongs to " .. name .. ". ))", player, 255, 204, 0 )
+				else
+					outputDebugString( "Vehicle " .. data.vehicleID .. " (" .. getVehicleName( source ) .. ") has an invalid owner.", 2 )
+				end
+			end
 		end
 	end
 )
