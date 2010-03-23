@@ -56,22 +56,25 @@ local function showMenu( )
 	dxDrawImage( screenX * 0.37, screenY * 0.2, screenX * 0.26, screenY * 0.5, "logo.png", 0, 0, 0, tocolor( 255, 255, 255, menuAlpha ) )
 	
 	local cursorX, cursorY = getCursorPosition( )
-	
-	if waitMenu == 0 and cursorY >= 0.82 and cursorY < 0.86 then
-		if cursorX >= 0.42 and cursorX < 0.5 then
-			activeMenu = 1
-			
-			if getKeyState( "mouse1" ) then
-				waitAlpha = 0
-				waitMenu = 1
-				waitStart = getTickCount( )
-				infotext = "Create an account at\nforum.paradisegaming.net"
-			end
-		elseif cursorX >= 0.5 and cursorX <= 0.58 then
-			activeMenu = 2
-			
-			if getKeyState( "mouse1" ) then
-				tryLogin( )
+	if cursorX then
+		if waitMenu == 0 and cursorY >= 0.82 and cursorY < 0.86 then
+			if cursorX >= 0.42 and cursorX < 0.5 then
+				activeMenu = 1
+				
+				if getKeyState( "mouse1" ) then
+					waitAlpha = 0
+					waitMenu = 1
+					waitStart = getTickCount( )
+					infotext = "Create an account at\nforum.paradisegaming.net"
+				end
+			elseif cursorX >= 0.5 and cursorX <= 0.58 then
+				activeMenu = 2
+				
+				if getKeyState( "mouse1" ) then
+					tryLogin( )
+				end
+			else
+				activeMenu = 0
 			end
 		else
 			activeMenu = 0
