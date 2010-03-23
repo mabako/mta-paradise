@@ -15,6 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+-- Events
+addEvent( "onCharacterLogin", false )
+addEvent( "onCharacterLogout", false )
+
 -- Import Groups
 local groups = {
 	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator" },
@@ -276,6 +280,9 @@ addEventHandler( getResourceName( resource ) .. ":logout", root,
 	function( )
 		if source == client then
 			savePlayer( source )
+			if p[ source ].charID then
+				triggerEvent( "onCharacterLogout", source )
+			end
 			p[ source ] = nil
 			showLoginScreen( source )
 			
@@ -289,6 +296,9 @@ addEventHandler( getResourceName( resource ) .. ":logout", root,
 addEventHandler( "onPlayerQuit", root,
 	function( )
 		savePlayer( source )
+		if p[ source ].charID then
+			triggerEvent( "onCharacterLogout", source )
+		end
 		p[ source ] = nil
 	end
 )
@@ -301,7 +311,10 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 			if tonumber( userID ) and tonumber( charID ) then
 				-- if the player is logged in, save him
 				savePlayer( source )
-				p[ source ].charID = nil
+				if p[ source ].charID then
+					triggerEvent( "onCharacterLogout", source )
+					p[ source ].charID = nil
+				end
 				
 				--
 				local char = exports.sql:query_assoc_single( "SELECT characterName, x, y, z, dimension, interior, skin, rotation, health, armor FROM characters WHERE userID = " .. tonumber( userID ) .. " AND characterID = " .. tonumber( charID ) )
@@ -331,6 +344,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					p[ source ].charID = tonumber( charID )
 					
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
+					triggerEvent( "onCharacterLogin", source )
 				end
 			end
 		end
