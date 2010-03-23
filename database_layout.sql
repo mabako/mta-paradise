@@ -23,7 +23,7 @@ CREATE TABLE  `characters` (
   `interior` int(10) unsigned NOT NULL,
   `dimension` int(10) unsigned NOT NULL,
   `skin` int(10) unsigned NOT NULL,
-  `rotation` int(10) unsigned NOT NULL,
+  `rotation` float NOT NULL,
   `health` tinyint(3) unsigned NOT NULL DEFAULT '100',
   `armor` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`characterID`)
