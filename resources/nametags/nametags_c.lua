@@ -74,7 +74,7 @@ addEventHandler( 'onClientRender', root,
 						local border = math.ceil( _bar_border * scale )
 						
 						-- draw the armor bar
-						local armor = getPedArmor( player )
+						local armor = math.min( 100, getPedArmor( player ) )
 						if armor > 0 then
 							
 							-- outer background
@@ -97,7 +97,7 @@ addEventHandler( 'onClientRender', root,
 						dxDrawRectangle( sx, sy, width, height, tocolor( 0, 0, 0, bar_alpha ) )
 						
 						-- get the colors
-						local health = getElementHealth( player )
+						local health = math.min( 100, getElementHealth( player ) )
 						local r, g, b = 255 - 255 * health / 100, 255 * health / 100, 0
 						
 						-- inner background, which fills the whole bar but is somewhat transparent
