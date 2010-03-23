@@ -349,6 +349,15 @@ addEventHandler( "onVehicleRespawn", resourceRoot,
 	end
 )
 
+addEventHandler( "onPlayerQuit", root,
+	function( )
+		local vehicle = getPedOccupiedVehicle( source )
+		if vehicle then
+			saveVehicle( vehicle )
+		end
+	end
+)
+
 addEventHandler( "onElementDestroy", resourceRoot,
 	function( )
 		if vehicles[ source ] then
