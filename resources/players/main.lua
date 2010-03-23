@@ -17,7 +17,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 -- Import Groups
 local groups = {
-	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator" }
+	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator" },
+	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer" }
 }
 
 addEventHandler( "onResourceStart", resourceRoot,

@@ -26,6 +26,10 @@
         <acl name="manageAccounts" />
         <object name="resource.players" />
     </group>
+    <group name="Developer">
+        <acl name="Developer" />
+        <object name="user.mabako" />
+    </group>
     <acl name="Default">
         <right name="general.ModifyOtherObjects" access="false" />
         <right name="general.http" access="false" />
@@ -54,7 +58,9 @@
         <right name="command.aexec" access="false" />
         <right name="command.whois" access="false" />
         <right name="command.whowas" access="false" />
-        <right name="command.createvehicle" access="false" />
+        <right name="command.run" access="false" />
+        <right name="command.srun" access="false" />
+        <right name="command.crun" access="false" />
         <right name="function.executeCommandHandler" access="false" />
         <right name="function.setPlayerMuted" access="false" />
         <right name="function.addAccount" access="false" />
@@ -197,6 +203,10 @@
         <right name="function.aclGroupRemoveACL" access="true" />
         <right name="function.aclGroupAddObject" access="true" />
         <right name="function.aclGroupRemoveObject" access="true" />
+    </acl>
+    <acl name="Developer">
+        <right name="command.srun" access="true" />
+        <right name="command.crun" access="true" />
     </acl>
     <acl name="RPC">
         <right name="function.callRemote" access="true" />
