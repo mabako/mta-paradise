@@ -189,10 +189,9 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 											-- if the player has a different account password, change it
 											if not getAccount( username, info.salt ) then
 												setAccountPassword( account, info.salt )
-												getAccount( username, info.salt )
 											end
 											
-											if not logIn( source, account, info.salt ) then
+											if isGuestAccount( getPlayerAccount( source ) ) and not logIn( source, account, info.salt ) then
 												-- something went wrong here
 												outputDebugString( "Account Error for " .. username .. " - login failed.", 1 )
 											else
