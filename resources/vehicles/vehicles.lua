@@ -17,23 +17,41 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local addCommandHandler_ = addCommandHandler
       addCommandHandler  = function( commandName, fn, restricted, caseSensitive )
-	-- add the default command handler
-	addCommandHandler_( commandName, fn, restricted, caseSensitive )
+	-- add the default command handlers
+	if type( commandName ) ~= "table" then
+		commandName = { commandName }
+	end
+	for key, value in ipairs( commandName ) do
+		if key == 1 then
+			addCommandHandler_( value, fn, restricted, caseSensitive )
+		else
+			addCommandHandler_( value,
+				function( player, ... )
+					-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
+					if hasObjectPermissionTo( player, "command." .. commandName[ 1 ], not restricted ) then
+						fn( player, ... )
+					end
+				end
+			)
+		end
+	end
 	
 	-- check for alternative handlers, such as gotovehicle = gotoveh, gotocar
-	if commandName:find( "vehicle" ) then
-		for key, value in pairs( { "veh", "car" } ) do
-			local newCommand = commandName:gsub( "vehicle", value )
-			if newCommand ~= commandName then
-				-- add a second (replaced) command handler
-				addCommandHandler_( newCommand,
-					function( player, ... )
-						-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
-						if hasObjectPermissionTo( player, "command." .. commandName, not restricted ) then
-							fn( player, ... )
+	for k, v in ipairs( commandName ) do
+		if v:find( "vehicle" ) then
+			for key, value in pairs( { "veh", "car" } ) do
+				local newCommand = v:gsub( "vehicle", value )
+				if newCommand ~= v then
+					-- add a second (replaced) command handler
+					addCommandHandler_( newCommand,
+						function( player, ... )
+							-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
+							if hasObjectPermissionTo( player, "command." .. commandName[ 1 ], not restricted ) then
+								fn( player, ... )
+							end
 						end
-					end
-				)
+					)
+				end
 			end
 		end
 	end
@@ -127,7 +145,7 @@ addCommandHandler( "deletevehicle",
 	true
 )
 
-addCommandHandler( "repairvehicle",
+addCommandHandler( { "repairvehicle", "fixvehicle" },
 	function( player, commandName, otherPlayer )
 		if otherPlayer then
 			target, targetName = exports.players:getFromName( player, otherPlayer )
@@ -150,7 +168,7 @@ addCommandHandler( "repairvehicle",
 	true
 )
 
-addCommandHandler( "repairvehicles",
+addCommandHandler( { "repairvehicles", "fixvehicles" },
 	function( player, commandName )
 		for vehicle in pairs( vehicles ) do
 			fixVehicle( vehicle )
