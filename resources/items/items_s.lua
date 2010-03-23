@@ -86,13 +86,38 @@ local function subscribe( element, to )
 		data[ to ].subscribers[ element ] = true
 		return true
 	end
-	return false, "Unable to load item"
+	return false, "Unable to load element"
 end
 
 function get( element )
 	if load( element ) then
 		return data[ element ].items
 	end
+end
+
+function give( element, item, value, name )
+	-- we need a base to work on
+	if load( element ) then
+		-- we need at least item and value
+		if type( item ) == 'number' and ( type( value ) == "number" or type( value ) == "string" ) then
+			name2 = "NULL"
+			if name then
+				name2 = "'" .. exports.sql:escape_string( tostring( name ) ) .. "'"
+			else
+				name = nil
+			end
+			
+			local index, error = exports.sql:query_insertid( "INSERT INTO items (owner, item, value, name) VALUES (" .. getID( element ) .. ", " .. item .. ", '%s', " .. name2 .. ")", value )
+			if index then
+				table.insert( data[ element ].items, { index = index, item = item, value = value, name = name } )
+				notify( element )
+				return true
+			end
+			return false, "MySQL Query failed"
+		end
+		return false, "Invalid Parameters"
+	end
+	return false, "Unable to load element"
 end
 
 local function unload( element )

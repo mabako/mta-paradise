@@ -17,6 +17,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 <meta>
 	<script src="mysql.lua"/>
 	
+	<export function="escape_string"/>
+	
 	<export function="query"/>
 	<export function="query_free"/>
 	<export function="free_result"/>
