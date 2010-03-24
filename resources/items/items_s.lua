@@ -128,7 +128,7 @@ end
 
 function take( element, slot )
 	-- we need a base to work on
-	if load( element )
+	if load( element ) then
 		-- check for existance of the slot
 		if data[ elements ].items[ key ] then
 			-- only continue if we could delete it

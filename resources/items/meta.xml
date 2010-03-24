@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="items_s.lua"/>
 	<export function="get"/>
 	<export function="give"/>
+	<export function="take"/>
 	
 	<script src="items_c.lua" type="client"/>
 	<export function="get" type="client"/>
