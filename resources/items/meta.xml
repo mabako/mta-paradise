@@ -19,9 +19,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="get"/>
 	<export function="give"/>
 	<export function="take"/>
+	<export function="has"/>
 	
 	<script src="items_c.lua" type="client"/>
 	<export function="get" type="client"/>
+	<export function="has" type="client"/>
 	
 	<include resource="sql"/>
 	<include resource="players"/>

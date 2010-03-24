@@ -35,3 +35,21 @@ addEventHandler( "onClientResourceStart", resourceRoot,
 function get( element )
 	return items[ element ]
 end
+
+function has( element, item, value, name )
+	-- we need a base to work on
+	if items[ element ] then
+		-- at least the item is needed
+		if type( item ) == 'number' then
+			-- check if he has it
+			for key, value in ipairs( items[ element ] ) do
+				if value.item == item and ( not value or item.value == value ) and ( not name or item.name == name ) then
+					return true, key, value
+				end
+			end
+			return false -- nope, no error either
+		end
+		return false, "Invalid Parameters"
+	end
+	return false, "Element not loaded"
+end

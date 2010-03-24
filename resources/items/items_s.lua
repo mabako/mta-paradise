@@ -150,6 +150,24 @@ function take( element, slot )
 	return false, "Unable to load element"
 end
 
+function has( element, item, value, name )
+	-- we need a base to work on
+	if load( element ) then
+		-- at least the item is needed
+		if type( item ) == 'number' then
+			-- check if he has it
+			for key, value in ipairs( data[ element ].items ) do
+				if value.item == item and ( not value or item.value == value ) and ( not name or item.name == name ) then
+					return true, key, value
+				end
+			end
+			return false -- nope, no error either
+		end
+		return false, "Invalid Parameters"
+	end
+	return false, "Unable to load element"
+end
+
 local function unload( element )
 	-- clear old references
 	if data[ element ] then
