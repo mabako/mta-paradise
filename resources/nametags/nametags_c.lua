@@ -61,50 +61,52 @@ addEventHandler( 'onClientRender', root,
 						
 						-- visibility
 						local alpha = ( ( distance - _alpha_distance ) / _alpha_distance_diff )
-						local bar_alpha = ( alpha < 0 ) and _bar_alpha or _bar_alpha - (alpha * _bar_alpha)
-						local nametag_alpha = bar_alpha / _bar_alpha * _nametag_alpha
-						
-						-- draw the player's name
-						local r, g, b = getPlayerNametagColor( player )
-						dxDrawText( getPlayerNametagText( player ), sx, sy, sx, sy, tocolor( r, g, b, nametag_alpha ), scale * _nametag_textsize, 'default', 'center', 'bottom' )
-						
-						-- draw the health bar
-						local width, height = math.ceil( _bar_width * scale ), math.ceil( _bar_height * scale )
-						local sx = sx - width / 2
-						local border = math.ceil( _bar_border * scale )
-						
-						-- draw the armor bar
-						local armor = math.min( 100, getPedArmor( player ) )
-						if armor > 0 then
+						local bar_alpha = ( ( alpha < 0 ) and _bar_alpha or _bar_alpha - (alpha * _bar_alpha) ) * getElementAlpha( player ) / 255
+						if bar_alpha > 0 then
+							local nametag_alpha = bar_alpha / _bar_alpha * _nametag_alpha
+							
+							-- draw the player's name
+							local r, g, b = getPlayerNametagColor( player )
+							dxDrawText( getPlayerNametagText( player ), sx, sy, sx, sy, tocolor( r, g, b, nametag_alpha ), scale * _nametag_textsize, 'default', 'center', 'bottom' )
+							
+							-- draw the health bar
+							local width, height = math.ceil( _bar_width * scale ), math.ceil( _bar_height * scale )
+							local sx = sx - width / 2
+							local border = math.ceil( _bar_border * scale )
+							
+							-- draw the armor bar
+							local armor = math.min( 100, getPedArmor( player ) )
+							if armor > 0 then
+								
+								-- outer background
+								dxDrawRectangle( sx, sy, width, height, tocolor( 0, 0, 0, bar_alpha ) )
+								
+								-- get the colors
+								local r, g, b = 255, 255, 255
+								
+								-- inner background, which fills the whole bar but is somewhat transparent
+								dxDrawRectangle( sx + border, sy + border, width - 2 * border, height - 2 * border, tocolor( r, g, b, 0.4 * bar_alpha ) )
+								
+								-- fill it with the actual armor
+								dxDrawRectangle( sx + border, sy + border, math.floor( ( width - 2 * border ) / 100 * getPedArmor( player ) ), height - 2 * border, tocolor( r, g, b, bar_alpha ) ) 
+								
+								-- set the nametag below
+								sy = sy + 1.2 * height
+							end
 							
 							-- outer background
 							dxDrawRectangle( sx, sy, width, height, tocolor( 0, 0, 0, bar_alpha ) )
 							
 							-- get the colors
-							local r, g, b = 255, 255, 255
+							local health = math.min( 100, getElementHealth( player ) )
+							local r, g, b = 255 - 255 * health / 100, 255 * health / 100, 0
 							
 							-- inner background, which fills the whole bar but is somewhat transparent
 							dxDrawRectangle( sx + border, sy + border, width - 2 * border, height - 2 * border, tocolor( r, g, b, 0.4 * bar_alpha ) )
 							
-							-- fill it with the actual armor
-							dxDrawRectangle( sx + border, sy + border, math.floor( ( width - 2 * border ) / 100 * getPedArmor( player ) ), height - 2 * border, tocolor( r, g, b, bar_alpha ) ) 
-							
-							-- set the nametag below
-							sy = sy + 1.2 * height
+							-- fill it with the actual health
+							dxDrawRectangle( sx + border, sy + border, math.floor( ( width - 2 * border ) / 100 * health ), height - 2 * border, tocolor( r, g, b, bar_alpha ) )
 						end
-						
-						-- outer background
-						dxDrawRectangle( sx, sy, width, height, tocolor( 0, 0, 0, bar_alpha ) )
-						
-						-- get the colors
-						local health = math.min( 100, getElementHealth( player ) )
-						local r, g, b = 255 - 255 * health / 100, 255 * health / 100, 0
-						
-						-- inner background, which fills the whole bar but is somewhat transparent
-						dxDrawRectangle( sx + border, sy + border, width - 2 * border, height - 2 * border, tocolor( r, g, b, 0.4 * bar_alpha ) )
-						
-						-- fill it with the actual health
-						dxDrawRectangle( sx + border, sy + border, math.floor( ( width - 2 * border ) / 100 * health ), height - 2 * border, tocolor( r, g, b, bar_alpha ) ) 
 					end
 				end
 			end
