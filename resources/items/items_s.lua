@@ -100,6 +100,7 @@ function give( element, item, value, name )
 	if load( element ) then
 		-- we need at least item and value
 		if type( item ) == 'number' and ( type( value ) == "number" or type( value ) == "string" ) then
+			-- name can be optional, though if it's not, we need to escape it
 			name2 = "NULL"
 			if name then
 				name2 = "'" .. exports.sql:escape_string( tostring( name ) ) .. "'"
@@ -107,10 +108,15 @@ function give( element, item, value, name )
 				name = nil
 			end
 			
+			-- we need to know our item index
 			local index, error = exports.sql:query_insertid( "INSERT INTO items (owner, item, value, name) VALUES (" .. getID( element ) .. ", " .. item .. ", '%s', " .. name2 .. ")", value )
 			if index then
+				-- add at the last position as a new item
 				table.insert( data[ element ].items, { index = index, item = item, value = value, name = name } )
+				
+				-- tell everyone who wants to know
 				notify( element )
+				
 				return true
 			end
 			return false, "MySQL Query failed"
