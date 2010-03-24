@@ -314,8 +314,8 @@ function showCharacters( )
 	for key, value in ipairs( characters ) do
 		local y = screenY / 2 + screenX * 0.095 * ( key - hoverChar )
 		
-		
-		local t = 0
+		-- color the background panel
+		local t, r, g, b = 0, 0, 0, 0
 		if key == hoverChar then
 			t = 255
 		elseif key == gotoChar then
@@ -323,9 +323,18 @@ function showCharacters( )
 		elseif key == oldHoverChar then
 			t = 255 * ( 1 - math.abs( hoverChar - oldHoverChar ) )
 		end
+		if characters[ key ].skin == -1 then
+			r, g, b = 255, 255, 255 - t
+		elseif characters[ key ].skin == -2 then
+			r, g, b = 255, 255 - t, 255 - t
+		else
+			r, g, b = 255 - t, 255, 255
+		end
 		
-		dxDrawRectangle( screenX * 0.005, y, height, height, tocolor( 255 - t, 255, 255, charAlpha / 5 ) )
-		dxDrawImage( screenX * 0.005 + 2, y + 2, height - 4, height - 4, "images/skins/" .. characters[ key ].skin .. ".png", 0, 0, 0, tocolor( 255, 255, 255, charAlpha ) )
+		dxDrawRectangle( screenX * 0.005, y, height, height, tocolor( r, g, b, charAlpha / 5 ) )
+		if characters[ key ].skin < 0 then -- TODO: remove when we have all skins images
+			dxDrawImage( screenX * 0.005 + 2, y + 2, height - 4, height - 4, "images/skins/" .. characters[ key ].skin .. ".png", 0, 0, 0, tocolor( 255, 255, 255, charAlpha ) )
+		end
 		dxDrawText( value.characterName, screenX * 0.11, y, screenX, y + height, tocolor( 255, 255, 255, ( charAlpha / 255 ) * math.max( t, 50 ) ), 2, "default", "left", "center" )
 	end
 end

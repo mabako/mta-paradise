@@ -30,4 +30,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<file src="logo.png"/>
 	
 	<include resource="sql"/>
+	
+	<!-- Skin Images -->
+	<file src="images/skins/-1.png"/>
+	<file src="images/skins/-2.png"/>
 </meta>
