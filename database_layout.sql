@@ -44,6 +44,15 @@ CREATE TABLE  `interiors` (
   PRIMARY KEY (`interiorID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+CREATE TABLE  `items` (
+  `index` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `owner` int(10) unsigned NOT NULL,
+  `item` int(10) unsigned NOT NULL,
+  `value` text NOT NULL,
+  `name` text,
+  PRIMARY KEY (`index`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 CREATE TABLE  `wcf1_user` (
   `userID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
