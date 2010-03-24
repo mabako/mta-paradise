@@ -15,14 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <meta>
-	<script src="mysql.lua"/>
+	<script src="items.lua"/>
+	<export function="get"/>
+	<export function="give"/>
+	<export function="take"/>
+	<export function="has"/>
 	
-	<export function="escape_string"/>
+	<script src="items_c.lua" type="client"/>
+	<export function="get" type="client"/>
+	<export function="has" type="client"/>
 	
-	<export function="query"/>
-	<export function="query_free"/>
-	<export function="free_result"/>
-	<export function="query_assoc"/>
-	<export function="query_assoc_single"/>
-	<export function="query_insertid"/>
+	<include resource="sql"/>
+	<include resource="players"/>
 </meta>

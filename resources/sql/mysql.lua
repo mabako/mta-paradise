@@ -94,6 +94,8 @@ addEventHandler( "onResourceStop", resourceRoot,
 function escape_string( str )
 	if type( str ) == "string" then
 		return mysql_escape_string( connection, str )
+	elseif type( str ) == "number" then
+		return tostring( str )
 	end
 end
 
