@@ -126,6 +126,30 @@ function give( element, item, value, name )
 	return false, "Unable to load element"
 end
 
+function take( element, slot )
+	-- we need a base to work on
+	if load( element )
+		-- check for existance of the slot
+		if data[ elements ].items[ key ] then
+			-- only continue if we could delete it
+			local success, error = exports.sql:query_free( "DELETE FROM items WHERE `index` = " .. data[ elements ].items[ key ].index )
+			if success then
+				-- remove it from the table, shift following items to pos=pos-1
+				table.remove( data[ elements ].items, key )
+				
+				-- tell everyone who wants to know
+				notify( element )
+				
+				-- we managed it
+				return true
+			end
+			return false, "MySQL Query failed"
+		end
+		return false, "No such slot exists"
+	end
+	return false, "Unable to load element"
+end
+
 local function unload( element )
 	-- clear old references
 	if data[ element ] then
