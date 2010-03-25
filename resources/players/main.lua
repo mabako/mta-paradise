@@ -256,7 +256,7 @@ local function savePlayer( player )
 		if isLoggedIn( source ) then
 			-- save character since it's logged in
 			local x, y, z = getElementPosition( source )
-			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( source ) .. ", interior = " .. getElementInterior( source ) .. ", rotation = " .. getPedRotation( source ) .. ", health = " .. math.ceil( getElementHealth( source ) ) .. ", armor = " .. math.ceil( getPedArmor( source ) ) .. " WHERE characterID = " .. tonumber( p[ source ].charID ) )
+			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( source ) .. ", interior = " .. getElementInterior( source ) .. ", rotation = " .. getPedRotation( source ) .. ", health = " .. math.ceil( getElementHealth( source ) ) .. ", armor = " .. math.ceil( getPedArmor( source ) ) .. ", lastLogin = NOW() WHERE characterID = " .. tonumber( p[ source ].charID ) )
 		end
 	end
 end
@@ -348,6 +348,9 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
 					triggerEvent( "onCharacterLogin", source )
+					
+					-- set last login to now
+					exports.sql:query_free( "UPDATE characters SET lastLogin = NOW() WHERE characterID = " .. tonumber( charID ) )
 				end
 			end
 		end
