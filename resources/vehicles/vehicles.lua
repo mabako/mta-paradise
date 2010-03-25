@@ -143,7 +143,7 @@ function create( player, vehicle )
 				setElementInterior( newVehicle, interior )
 				setElementDimension( newVehicle, dimension )
 				
-				return newVehicle
+				return newVehicle, vehicleID
 			end
 		end
 	end
