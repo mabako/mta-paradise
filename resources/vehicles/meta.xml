@@ -18,5 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="vehicles.lua"/>
 	<script src="util.lua"/>
 	
+	<export function="create"/>
+	
 	<include resource="sql"/>
 </meta>

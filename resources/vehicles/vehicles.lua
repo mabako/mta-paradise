@@ -118,6 +118,37 @@ addCommandHandler( "createvehicle",
 	true
 )
 
+function create( player, vehicle )
+	if isElement( player ) and isElement( vehicle ) then
+		local characterID = exports.players:getCharacterID( player )
+		if characterID then
+			local model = getElementModel( vehicle )
+			local x, y, z = getElementPosition( vehicle )
+			local rx, ry, rz = getVehicleRotation( vehicle )
+			local interior = getElementInterior( vehicle )
+			local dimension = getElementDimension( vehicle )
+			local color1, color2 = getVehicleColor( vehicle )
+			
+			local vehicleID, error = exports.sql:query_insertid( "INSERT INTO vehicles (model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, color1, color2, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, interior, dimension, respawnInterior, respawnDimension) VALUES (" .. table.concat( { model, x, y, z, rx, ry, rz, '"%s"', color1, color2, x, y, z, rx, ry, rz, interior, dimension, interior, dimension }, ", " ) .. ")", getVehiclePlateText( vehicle ) )
+			if vehicleID then
+				local newVehicle = createVehicle( model, x, y, z, rx, ry, rz, getVehiclePlateText( vehicle ) )
+				
+				-- tables for ID -> vehicle and vehicle -> data
+				vehicleIDs[ vehicleID ] = newVehicle
+				vehicles[ newVehicle ] = { vehicleID = vehicleID, respawnInterior = interior, respawnDimension = dimension, characterID = characterID }
+				
+				-- some properties
+				setVehicleColor( newVehicle, color1, color2, color1, color2 ) -- most vehicles don't use second/third color anyway
+				setVehicleRespawnPosition( newVehicle, x, y, z, rx, ry, rz )
+				setElementInterior( newVehicle, interior )
+				setElementDimension( newVehicle, dimension )
+				
+				return newVehicle
+			end
+		end
+	end
+end
+
 addCommandHandler( "deletevehicle", 
 	function( player, commandName, vehicleID )
 		vehicleID = tonumber( vehicleID )
