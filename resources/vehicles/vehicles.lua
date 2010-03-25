@@ -317,7 +317,7 @@ addCommandHandler( "gotovehicle",
 	true
 )
 
-addCommandHandler( "vehicleid",
+addCommandHandler( { "vehicleid", "thisvehicle" },
 	function( player, commandName )
 		local vehicle = getPedOccupiedVehicle( player )
 		if vehicle then
