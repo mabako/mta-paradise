@@ -295,11 +295,13 @@ addEventHandler( getResourceName( resource ) .. ":logout", root,
 
 addEventHandler( "onPlayerQuit", root,
 	function( )
-		savePlayer( source )
-		if p[ source ].charID then
-			triggerEvent( "onCharacterLogout", source )
+		if p[ source ] then
+			savePlayer( source )
+			if p[ source ].charID then
+				triggerEvent( "onCharacterLogout", source )
+			end
+			p[ source ] = nil
 		end
-		p[ source ] = nil
 	end
 )
 
