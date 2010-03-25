@@ -22,4 +22,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 	<script src="shop.lua"/>
 	<script src="shop_c.lua" type="client"/>
+	
+	<include resource="players"/>
+	<include resource="vehicles"/>
+	<include resource="items"/>
 </meta>
