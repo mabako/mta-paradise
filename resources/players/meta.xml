@@ -22,6 +22,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="getCharacterID"/>
 	<export function="getCharacterName"/>
 	<export function="isLoggedIn"/>
+	<export function="setMoney"/>
+	<export function="giveMoney"/>
+	<export function="takeMoney"/>
+	<export function="getMoney"/>
 	
 	<script src="ids.lua"/>
 	<export function="getFromName"/>

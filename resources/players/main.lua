@@ -314,17 +314,17 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 				if p[ source ].charID then
 					triggerEvent( "onCharacterLogout", source )
 					p[ source ].charID = nil
+					p[ source ].money = nil
 				end
 				
 				--
-				local char = exports.sql:query_assoc_single( "SELECT characterName, x, y, z, dimension, interior, skin, rotation, health, armor FROM characters WHERE userID = " .. tonumber( userID ) .. " AND characterID = " .. tonumber( charID ) )
+				local char = exports.sql:query_assoc_single( "SELECT * FROM characters WHERE userID = " .. tonumber( userID ) .. " AND characterID = " .. tonumber( charID ) )
 				if char then
 					local mtaCharName = char.characterName:gsub( " ", "_" )
 					local otherPlayer = getPlayerFromName( mtaCharName )
 					if otherPlayer and otherPlayer ~= source then
 						kickPlayer( otherPlayer )
 					end
-					p[ source ].charID = nil
 					setPlayerName( source, mtaCharName )
 					setPlayerNametagText( source, "[" .. getID( source ) .. "] " .. char.characterName )
 					
@@ -340,6 +340,9 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					
 					setElementHealth( source, char.health )
 					setPedArmor( source, char.armor )
+					
+					p[ source ].money = char.money
+					setPlayerMoney( source, char.money )
 					
 					p[ source ].charID = tonumber( charID )
 					
@@ -396,4 +399,29 @@ function getCharacterName( characterID )
 			return data.characterName
 		end
 	end
+end
+
+-- money functions
+function setMoney( player, amount )
+	amount = tonumber( amount )
+	if amount >= 0 and isLoggedIn( player ) then
+		if exports.sql:query_free( "UPDATE characters SET money = " .. amount .. " WHERE characterID = " .. p[ player ].charID ) then
+			p[ player ].money = amount
+			setPlayerMoney( player, amount )
+			return true
+		end
+	end
+	return false
+end
+
+function giveMoney( player, amount )
+	return isLoggedIn( player ) and setMoney( player, p[ player ].money + amount )
+end
+
+function takeMoney( player, amount )
+	return isLoggedIn( player ) and setMoney( player, p[ player ].money - amount )
+end
+
+function getMoney( player, amount )
+	return isLoggedIn( player ) and p[ player ].money
 end

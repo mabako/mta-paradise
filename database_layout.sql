@@ -26,6 +26,7 @@ CREATE TABLE  `characters` (
   `rotation` float NOT NULL,
   `health` tinyint(3) unsigned NOT NULL DEFAULT '100',
   `armor` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `money` BIGINT UNSIGNED NOT NULL DEFAULT 1000,
   PRIMARY KEY (`characterID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
