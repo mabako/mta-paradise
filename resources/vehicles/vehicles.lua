@@ -317,6 +317,22 @@ addCommandHandler( "gotovehicle",
 	true
 )
 
+addCommandHandler( "vehicleid",
+	function( player, commandName )
+		local vehicle = getPedOccupiedVehicle( player )
+		if vehicle then
+			local vehicleID = vehicles[ vehicle ] and vehicles[ vehicle ].vehicleID
+			if vehicleID then
+				outputChatBox( "The ID of this " .. getVehicleName( vehicle ) .. " is " .. vehicleID .. ".", player, 0, 255, 0 )
+			else
+				outputChatBox( "This " .. getVehicleName( vehicle ) .. " has no ID.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "You are not in any vehicle.", player, 255, 0, 0 )
+		end
+	end
+)
+
 function saveVehicle( vehicle )
 	if vehicle then
 		local data = vehicles[ vehicle ]
