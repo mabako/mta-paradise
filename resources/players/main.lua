@@ -238,7 +238,7 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 						end
 						
 						-- show characters
-						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID )
+						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID .. " ORDER BY lastLogin DESC" )
 						triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
 					end
 				end
