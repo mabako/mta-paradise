@@ -19,6 +19,7 @@ local connection = nil
 local connection = nil
 local null = nil
 local results = { }
+local max_results = 128
 
 -- connection functions
 local function connect( )
@@ -112,9 +113,14 @@ function query( str, ... )
 	
 	local result = mysql_query( connection, str )
 	if result then
-		local num = #results + 1
-		results[ num ] = result
-		return num
+		for num = 1, max_results do
+			if not results[ num ] then
+				results[ num ] = result
+				return num
+			end
+		end
+		mysql_free_result( result )
+		return false, "Unable to allocate result in pool"
 	end
 	return false, mysql_error( connection )
 end
