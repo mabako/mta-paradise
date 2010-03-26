@@ -44,6 +44,9 @@ CREATE TABLE  `interiors` (
   `insideZ` float NOT NULL,
   `insideInterior` int(10) unsigned NOT NULL,
   `interiorName` varchar(255) NOT NULL,
+  `interiorType` tinyint(3) unsigned NOT NULL,
+  `interiorPrice` int(10) unsigned NOT NULL,
+  `characterID` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`interiorID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
