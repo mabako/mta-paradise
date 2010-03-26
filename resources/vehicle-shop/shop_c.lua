@@ -57,12 +57,12 @@ local function messageBox( )
 		end
 		
 		-- get the width
-		local width = dxGetTextWidth( text, 2, "default" ) / 3
+		local width = dxGetTextWidth( text, 2, "default" )
 		local height = dxGetFontHeight( 2 )
 		
 		-- draw the box and text
-		dxDrawRectangle( screenX / 2 - width - 5, screenY / 2 - height - 5, 2 * width + 10, 2 * height + 10, tocolor( 0, 0, 0, 200 ), true )
-		dxDrawText( text, screenX / 2 - width, screenY / 2 - height, screenX / 2 + width, screenY / 2 + height, tocolor( 255, 255, 255, 255 ), 2, "default", "center", "center", true, false, true )
+		dxDrawRectangle( screenX / 2 - width / 2 - 5, screenY / 2 - height - 5, width + 10, 2 * height + 10, tocolor( 0, 0, 0, 200 ), true )
+		dxDrawText( text, screenX / 2 - width / 2, screenY / 2 - height, screenX / 2 + width / 2, screenY / 2 + height, tocolor( 255, 255, 255, 255 ), 2, "default", "center", "center", true, false, true )
 	end
 end
 
