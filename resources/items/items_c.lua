@@ -42,9 +42,9 @@ function has( element, item, value, name )
 		-- at least the item is needed
 		if type( item ) == 'number' then
 			-- check if he has it
-			for key, value in ipairs( items[ element ] ) do
-				if value.item == item and ( not value or item.value == value ) and ( not name or item.name == name ) then
-					return true, key, value
+			for key, v in ipairs( items[ element ] ) do
+				if v.item == item and ( not value or v.value == value ) and ( not name or v.name == name ) then
+					return true, key, v
 				end
 			end
 			return false -- nope, no error either
