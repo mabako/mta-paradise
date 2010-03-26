@@ -79,14 +79,46 @@ addCommandHandler( "createinterior",
 local p = { }
 
 function enterInterior( player, key, state, colShape )
-	local other = colspheres[ colShape ] and colspheres[ colShape ].other
-	if other then
-		-- teleport the player
-		setElementPosition( player, getElementPosition( other ) )
-		setElementDimension( player, getElementDimension( other ) )
-		setElementInterior( player, getElementInterior( other ) )
-		setCameraInterior( player, getElementInterior( other ) )
-		setCameraTarget( player, player )
+	local data = colspheres[ colShape ]
+	if data then
+		local interior = interiors[ data.id ]
+		if interior.type > 0 and interior.characterID == 0 then
+			-- buy the interior
+			if exports.players:takeMoney( player, interior.price ) then
+				local characterID = exports.players:getCharacterID( player )
+				if characterID then
+					-- update the owner if possible
+					if exports.sql:query_free( "UPDATE interiors SET characterID = " .. characterID .. " WHERE interiorID = " .. data.id ) then
+						interior.characterID = characterID
+						
+						-- remove our element data that claims this as buyable
+						removeElementData( interior.outside, "type" )
+						removeElementData( interior.outside, "price" )
+						
+						-- give him the house key
+						exports.items:give( player, 2, data.id )
+						
+						-- message to the player
+						outputChatBox( "Congratulations! You've bought " .. interior.name .. " for $" .. interior.price .. "!", player, 0, 255, 0 )
+					else
+						outputChatBox( "MySQL-Error.", player, 255, 0, 0 )
+						exports.players:giveMoney( player, interior.price )
+					end
+				end
+			else
+				outputChatBox( "You need $" .. ( interior.price - exports.players:getMoney( player ) ) .. " to buy this property.", player, 255, 0, 0 )
+			end
+		else
+			local other = data.other
+			if other then
+				-- teleport the player
+				setElementPosition( player, getElementPosition( other ) )
+				setElementDimension( player, getElementDimension( other ) )
+				setElementInterior( player, getElementInterior( other ) )
+				setCameraInterior( player, getElementInterior( other ) )
+				setCameraTarget( player, player )
+			end
+		end
 	end
 end
 
