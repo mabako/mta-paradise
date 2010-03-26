@@ -95,8 +95,6 @@ addEventHandler( "onColShapeHit", resourceRoot,
 		if matching and getElementType( element ) == "player" then
 			if p[ element ] then
 				unbindKey( element, "enter_exit", "down", enterInterior, p[ element ] )
-			else
-				addEventHandler( "onPlayerVehicleEnter", element, cancelEvent ) -- stop players from entering vehicles
 			end
 			
 			p[ element ] = source
@@ -109,7 +107,6 @@ addEventHandler( "onColShapeLeave", resourceRoot,
 	function( element, matching )
 		if getElementType( element ) == "player" and p[ element ] then
 			unbindKey( element, "enter_exit", "down", enterInterior, p[ element ] )
-			removeEventHandler( "onPlayerVehicleEnter", element, cancelEvent )
 			p[ element ] = nil
 		end
 	end
@@ -118,5 +115,14 @@ addEventHandler( "onColShapeLeave", resourceRoot,
 addEventHandler( "onPlayerQuit", root,
 	function( )
 		p[ source ] = nil
+	end
+)
+
+addEventHandler( "onVehicleStartEnter", root,
+	function( player )
+		if p[ player ] then
+			-- stop players from entering a vehicle while in an interior marker
+			cancelEvent( )
+		end
 	end
 )
