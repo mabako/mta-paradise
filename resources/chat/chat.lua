@@ -53,6 +53,11 @@ local function localMessage( from, message, r, g, b, range, r2, g2, b2 )
 	end
 end
 
+-- exported function to send fake-me's
+function me( source, message )
+	localMessage( source, " *" .. getPlayerName( source ) .. " " .. message, 255, 40, 80 )
+end
+
 -- overwrite MTA's default chat events
 addEventHandler( "onPlayerChat", getRootElement( ),
 	function( message, type )
@@ -61,7 +66,7 @@ addEventHandler( "onPlayerChat", getRootElement( ),
 			if type == 0 then
 				localMessage( source, " " .. getPlayerName( source ) .. " says: " .. message, 230, 230, 230, false, 127, 127, 127 )
 			elseif type == 1 then
-				localMessage( source, " *" .. getPlayerName( source ) .. " " .. message, 255, 40, 80 )
+				me( source, message )
 			end
 		end
 	end

@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 local interiors = { }
 local colspheres = { }
 
-local function loadInterior( id, outsideX, outsideY, outsideZ, outsideInterior, outsideDimension, insideX, insideY, insideZ, insideInterior, interiorName, interiorPrice, interiorType, characterID )
+local function loadInterior( id, outsideX, outsideY, outsideZ, outsideInterior, outsideDimension, insideX, insideY, insideZ, insideInterior, interiorName, interiorPrice, interiorType, characterID, locked )
 	local outside = createColSphere( outsideX, outsideY, outsideZ, 1 )
 	setElementInterior( outside, outsideInterior )
 	setElementDimension( outside, outsideDimension )
@@ -36,7 +36,7 @@ local function loadInterior( id, outsideX, outsideY, outsideZ, outsideInterior, 
 	
 	colspheres[ outside ] = { id = id, other = inside }
 	colspheres[ inside ] = { id = id, other = outside }
-	interiors[ id ] = { inside = inside, outside = outside, name = interiorName, type = interiorType, price = interiorPrice, characterID = characterID }
+	interiors[ id ] = { inside = inside, outside = outside, name = interiorName, type = interiorType, price = interiorPrice, characterID = characterID, locked = locked }
 end
 
 addEventHandler( "onResourceStart", resourceRoot,
@@ -44,7 +44,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		local result = exports.sql:query_assoc( "SELECT * FROM interiors ORDER BY interiorID ASC" )
 		if result then
 			for key, data in ipairs( result ) do
-				loadInterior( data.interiorID, data.outsideX, data.outsideY, data.outsideZ, data.outsideInterior, data.outsideDimension, data.insideX, data.insideY, data.insideZ, data.insideInterior, data.interiorName, data.interiorPrice, data.interiorType, data.characterID )
+				loadInterior( data.interiorID, data.outsideX, data.outsideY, data.outsideZ, data.outsideInterior, data.outsideDimension, data.insideX, data.insideY, data.insideZ, data.insideInterior, data.interiorName, data.interiorPrice, data.interiorType, data.characterID, data.locked == 1 )
 			end
 		end
 	end
@@ -59,7 +59,7 @@ addCommandHandler( "createinterior",
 				local x, y, z = getElementPosition( player )
 				local insertid = exports.sql:query_insertid( "INSERT INTO interiors (outsideX, outsideY, outsideZ, outsideInterior, outsideDimension, insideX, insideY, insideZ, insideInterior, interiorName, interiorType, interiorPrice) VALUES (" .. table.concat( { x, y, z, getElementInterior( player ), getElementDimension( player ), interior.x, interior.y, interior.z, interior.interior, '"%s"', tonumber( type ), tonumber( price ) }, ", " ) .. ")", name )
 				if insertid then
-					loadInterior( insertid, x, y, z, getElementInterior( player ), getElementDimension( player ), interior.x, interior.y, interior.z, interior.interior, name, tonumber( price ), tonumber( type ), 0 )
+					loadInterior( insertid, x, y, z, getElementInterior( player ), getElementDimension( player ), interior.x, interior.y, interior.z, interior.interior, name, tonumber( price ), tonumber( type ), 0, false )
 					outputChatBox( "Interior created (ID " .. insertid .. ")", player, 0, 255, 0 )
 				else
 					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
@@ -78,7 +78,7 @@ addCommandHandler( "createinterior",
 
 local p = { }
 
-function enterInterior( player, key, state, colShape )
+local function enterInterior( player, key, state, colShape )
 	local data = colspheres[ colShape ]
 	if data then
 		local interior = interiors[ data.id ]
@@ -108,15 +108,33 @@ function enterInterior( player, key, state, colShape )
 			else
 				outputChatBox( "You need $" .. ( interior.price - exports.players:getMoney( player ) ) .. " to buy this property.", player, 255, 0, 0 )
 			end
+		elseif interior.type > 0 and interior.locked then
+			exports.chat:me( player, "tries the door handle yet without success." )
 		else
 			local other = data.other
 			if other then
+				triggerEvent( "onColShapeLeave", colShape, player, true )
 				-- teleport the player
-				setElementPosition( player, getElementPosition( other ) )
 				setElementDimension( player, getElementDimension( other ) )
 				setElementInterior( player, getElementInterior( other ) )
 				setCameraInterior( player, getElementInterior( other ) )
+				setElementPosition( player, getElementPosition( other ) )
 				setCameraTarget( player, player )
+				
+				triggerEvent( "onColShapeHit", other, player, true )
+			end
+		end
+	end
+end
+
+local function lockInterior( player, key, state, colShape )
+	local data = colspheres[ colShape ]
+	if data then
+		if exports.items:has( player, 2, data.id ) then
+			if exports.sql:query_free( "UPDATE interiors SET locked = 1 - locked WHERE interiorID = " .. data.id ) then
+				local interior = interiors[ data.id ]
+				exports.chat:me( player, "puts the key in the door to " .. ( interior.locked and "un" or "" ) .. "lock it. ((" .. interior.name .. "))" )
+				interior.locked = not interior.locked
 			end
 		end
 	end
@@ -127,10 +145,12 @@ addEventHandler( "onColShapeHit", resourceRoot,
 		if matching and getElementType( element ) == "player" then
 			if p[ element ] then
 				unbindKey( element, "enter_exit", "down", enterInterior, p[ element ] )
+				unbindKey( element, "k", "down", lockInterior, p[ element ] )
 			end
 			
 			p[ element ] = source
 			bindKey( element, "enter_exit", "down", enterInterior, p[ element ] )
+			bindKey( element, "k", "down", lockInterior, p[ element ] )
 		end
 	end
 )
@@ -139,6 +159,7 @@ addEventHandler( "onColShapeLeave", resourceRoot,
 	function( element, matching )
 		if getElementType( element ) == "player" and p[ element ] then
 			unbindKey( element, "enter_exit", "down", enterInterior, p[ element ] )
+			unbindKey( element, "k", "down", lockInterior, p[ element ] )
 			p[ element ] = nil
 		end
 	end
