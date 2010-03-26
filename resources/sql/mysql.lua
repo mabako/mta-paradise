@@ -83,7 +83,8 @@ addEventHandler( "onResourceStart", resourceRoot,
 addEventHandler( "onResourceStop", resourceRoot,
 	function( )
 		for key, value in pairs( results ) do
-			mysql_free_result( value )
+			mysql_free_result( value.r )
+			outputDebugString( "Query not free()'d: " .. value.q, 2 )
 		end
 		
 		disconnect( )
@@ -115,7 +116,7 @@ function query( str, ... )
 	if result then
 		for num = 1, max_results do
 			if not results[ num ] then
-				results[ num ] = result
+				results[ num ] = { r = result, q = str }
 				return num
 			end
 		end
@@ -146,7 +147,7 @@ end
 
 function free_result( result )
 	if results[ result ] then
-		mysql_free_result( results[ result ] )
+		mysql_free_result( results[ result ].r )
 		results[ result ] = nil
 	end
 end
@@ -155,7 +156,7 @@ function query_assoc( str, ... )
 	local t = { }
 	local result, error = query( str, ... )
 	if result then
-		for result, row in mysql_rows_assoc( results[ result ] ) do
+		for result, row in mysql_rows_assoc( results[ result ].r ) do
 			local num = #t + 1
 			t[ num ] = { }
 			for key, value in pairs( row ) do
@@ -174,7 +175,7 @@ function query_assoc_single( str, ... )
 	local t = { }
 	local result, error = query( str, ... )
 	if result then
-		local row = mysql_fetch_assoc( results[ result ] )
+		local row = mysql_fetch_assoc( results[ result ].r )
 		if row then
 			for key, value in pairs( row ) do
 				if value ~= null then
