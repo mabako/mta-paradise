@@ -181,6 +181,7 @@ function query_assoc_single( str, ... )
 					t[ key ] = tonumber( value ) or value
 				end
 			end
+			free_result( result )
 			return t
 		end
 		free_result( result )
