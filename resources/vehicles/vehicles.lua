@@ -62,6 +62,7 @@ local vehicles = { }
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
+		-- load all vehicles
 		local result = exports.sql:query_assoc( "SELECT * FROM vehicles ORDER BY vehicleID ASC" )
 		if result then
 			for key, data in ipairs( result ) do
@@ -77,7 +78,13 @@ addEventHandler( "onResourceStart", resourceRoot,
 				setVehicleRespawnPosition( vehicle, data.respawnPosX, data.respawnPosY, data.respawnPosZ, data.respawnRotX, data.respawnRotY, data.respawnRotZ )
 				setElementInterior( vehicle, data.interior )
 				setElementDimension( vehicle, data.dimension )
+				setVehicleLocked( vehicle, data.locked == 1 )
 			end
+		end
+		
+		-- bind a key for everyone
+		for key, value in ipairs( getElementsByType( "player" ) ) do
+			bindKey( value, "k", "down", "lockvehicle" )
 		end
 	end
 )
@@ -396,6 +403,12 @@ addEventHandler( "onVehicleRespawn", resourceRoot,
 	end
 )
 
+addEventHandler( "onPlayerJoin", root,
+	function( )
+		bindKey( source, "k", "down", "lockvehicle" )
+	end
+)
+
 addEventHandler( "onPlayerQuit", root,
 	function( )
 		local vehicle = getPedOccupiedVehicle( source )
@@ -417,14 +430,67 @@ addEventHandler( "onElementDestroy", resourceRoot,
 
 addEventHandler( "onVehicleEnter", resourceRoot,
 	function( player )
-		local data = vehicles[ source ]
-		if data then
-			if data.characterID > 0 then
-				local name = exports.players:getCharacterName( data.characterID )
-				if name then
-					outputChatBox( "(( This " .. getVehicleName( source ) .. " belongs to " .. name .. ". ))", player, 255, 204, 0 )
-				else
-					outputDebugString( "Vehicle " .. data.vehicleID .. " (" .. getVehicleName( source ) .. ") has an invalid owner.", 2 )
+		if isVehicleLocked( source ) then
+			cancelEvent( )
+		else
+			local data = vehicles[ source ]
+			if data then
+				if data.characterID > 0 then
+					local name = exports.players:getCharacterName( data.characterID )
+					if name then
+						outputChatBox( "(( This " .. getVehicleName( source ) .. " belongs to " .. name .. ". ))", player, 255, 204, 0 )
+					else
+						outputDebugString( "Vehicle " .. data.vehicleID .. " (" .. getVehicleName( source ) .. ") has an invalid owner.", 2 )
+					end
+				end
+			end
+		end
+	end
+)
+
+--
+
+local function lockVehicle( player, vehicle, driver )
+	local vehicleID = vehicles[ vehicle ].vehicleID
+	if exports.sql:query_free( "UPDATE vehicles SET locked = 1 - locked WHERE vehicleID = " .. vehicleID ) then
+		if driver then
+			exports.chat:me( player, ( isVehicleLocked( vehicle ) and "un" or "" ) .. "locks the vehicle doors." )
+		else
+			exports.chat:me( player, "presses on the key to " .. ( isVehicleLocked( vehicle ) and "un" or "" ) .. "lock the " .. getVehicleName( vehicle ) .. "." )
+		end
+		setVehicleLocked( vehicle, not isVehicleLocked( vehicle ) )
+	end
+end
+
+addCommandHandler( "lockvehicle",
+	function( player, commandName )
+		if exports.players:isLoggedIn( player ) then
+			local vehicle = getPedOccupiedVehicle( player )
+			local vehicleID = vehicle and vehicles[ vehicle ] and vehicles[ vehicle ].vehicleID
+			if vehicleID then
+				local driver = getVehicleOccupant( vehicle ) == "player"
+				if driver or exports.items:has( player, 1, vehicleID ) or driver then
+					lockVehicle( player, vehicle, driver )
+				end
+			else
+				local dimension = getElementDimension( player )
+				local minDistance = 20
+				local vehicle = nil
+				local x, y, z = getElementPosition( player )
+				for key, value in pairs( vehicles ) do
+					if dimension == getElementDimension( key ) then
+						local distance = getDistanceBetweenPoints3D( x, y, z, getElementPosition( key ) )
+						if distance < minDistance then
+							if exports.items:has( player, 1, value.vehicleID ) then
+								minDistance = distance
+								vehicle = key
+							end
+						end
+					end
+				end
+				
+				if vehicle then
+					lockVehicle( player, vehicle )
 				end
 			end
 		end
