@@ -16,6 +16,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <meta>
 	<script src="vehicles.lua"/>
+	<script src="vehicles_c.lua" type="client"/>
 	<script src="util.lua"/>
 	
 	<export function="create"/>

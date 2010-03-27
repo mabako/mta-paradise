@@ -70,7 +70,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				
 				-- tables for ID -> vehicle and vehicle -> data
 				vehicleIDs[ data.vehicleID ] = vehicle
-				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension, characterID = data.characterID }
+				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension, characterID = data.characterID, engineState = data.engineState == 1 }
 				
 				-- some properties
 				setElementHealth( vehicle, data.health )
@@ -79,12 +79,14 @@ addEventHandler( "onResourceStart", resourceRoot,
 				setElementInterior( vehicle, data.interior )
 				setElementDimension( vehicle, data.dimension )
 				setVehicleLocked( vehicle, data.locked == 1 )
+				setVehicleEngineState( vehicle, data.engineState == 1 )
 			end
 		end
 		
 		-- bind a key for everyone
 		for key, value in ipairs( getElementsByType( "player" ) ) do
 			bindKey( value, "k", "down", "lockvehicle" )
+			bindKey( value, "j", "down", "toggleengine" )
 		end
 	end
 )
@@ -103,11 +105,12 @@ addCommandHandler( "createvehicle",
 				if vehicleID then
 					-- tables for ID -> vehicle and vehicle -> data
 					vehicleIDs[ vehicleID ] = vehicle
-					vehicles[ vehicle ] = { vehicleID = vehicleID, respawnInterior = getElementInterior( player ), respawnDimension = getElementDimension( player ), characterID = 0 }
+					vehicles[ vehicle ] = { vehicleID = vehicleID, respawnInterior = getElementInterior( player ), respawnDimension = getElementDimension( player ), characterID = 0, engineState = false }
 					
 					-- some properties
 					setElementInterior( vehicle, getElementInterior( player ) )
 					setElementDimension( vehicle, getElementDimension( player ) )
+					setVehicleEngineState( vehicle, false )
 					
 					-- success message
 					outputChatBox( "Created " .. getVehicleName( vehicle ) .. " (ID " .. vehicleID .. ")", player, 0, 255, 0 )
@@ -142,13 +145,14 @@ function create( player, vehicle )
 				
 				-- tables for ID -> vehicle and vehicle -> data
 				vehicleIDs[ vehicleID ] = newVehicle
-				vehicles[ newVehicle ] = { vehicleID = vehicleID, respawnInterior = interior, respawnDimension = dimension, characterID = characterID }
+				vehicles[ newVehicle ] = { vehicleID = vehicleID, respawnInterior = interior, respawnDimension = dimension, characterID = characterID, engineState = false }
 				
 				-- some properties
 				setVehicleColor( newVehicle, color1, color2, color1, color2 ) -- most vehicles don't use second/third color anyway
 				setVehicleRespawnPosition( newVehicle, x, y, z, rx, ry, rz )
 				setElementInterior( newVehicle, interior )
 				setElementDimension( newVehicle, dimension )
+				setVehicleEngineState( newVehicle, false )
 				
 				return newVehicle, vehicleID
 			end
@@ -406,6 +410,7 @@ addEventHandler( "onVehicleRespawn", resourceRoot,
 addEventHandler( "onPlayerJoin", root,
 	function( )
 		bindKey( source, "k", "down", "lockvehicle" )
+		bindKey( source, "j", "down", "toggleengine" )
 	end
 )
 
@@ -443,6 +448,8 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 						outputDebugString( "Vehicle " .. data.vehicleID .. " (" .. getVehicleName( source ) .. ") has an invalid owner.", 2 )
 					end
 				end
+				
+				setVehicleEngineState( source, data.engineState )
 			end
 		end
 	end
@@ -491,6 +498,23 @@ addCommandHandler( "lockvehicle",
 				
 				if vehicle then
 					lockVehicle( player, vehicle )
+				end
+			end
+		end
+	end
+)
+
+addCommandHandler( "toggleengine",
+	function( player, commandName )
+		if exports.players:isLoggedIn( player ) then
+			local vehicle = getPedOccupiedVehicle( player )
+			if vehicle then
+				local data = vehicles[ vehicle ]
+				if data then
+					if exports.sql:query_free( "UPDATE vehicles SET engineState = 1 - engineState WHERE vehicleID = " .. data.vehicleID ) then
+						setVehicleEngineState( vehicle, not data.engineState )
+						data.engineState = not data.engineState
+					end
 				end
 			end
 		end
