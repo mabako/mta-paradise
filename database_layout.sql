@@ -111,5 +111,6 @@ CREATE TABLE  `vehicles` (
   `characterID` int(11) NOT NULL DEFAULT '0',
   `locked` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `engineState` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `lightsState` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`vehicleID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

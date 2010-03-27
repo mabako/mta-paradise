@@ -80,6 +80,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				setElementDimension( vehicle, data.dimension )
 				setVehicleLocked( vehicle, data.locked == 1 )
 				setVehicleEngineState( vehicle, data.engineState == 1 )
+				setVehicleOverrideLights( vehicle, data.lightsState + 1 )
 			end
 		end
 		
@@ -87,6 +88,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		for key, value in ipairs( getElementsByType( "player" ) ) do
 			bindKey( value, "k", "down", "lockvehicle" )
 			bindKey( value, "j", "down", "toggleengine" )
+			bindKey( value, "l", "down", "togglelights" )
 		end
 	end
 )
@@ -111,6 +113,7 @@ addCommandHandler( "createvehicle",
 					setElementInterior( vehicle, getElementInterior( player ) )
 					setElementDimension( vehicle, getElementDimension( player ) )
 					setVehicleEngineState( vehicle, false )
+					setVehicleOverrideLights( vehicle, 1 )
 					
 					-- success message
 					outputChatBox( "Created " .. getVehicleName( vehicle ) .. " (ID " .. vehicleID .. ")", player, 0, 255, 0 )
@@ -153,6 +156,7 @@ function create( player, vehicle )
 				setElementInterior( newVehicle, interior )
 				setElementDimension( newVehicle, dimension )
 				setVehicleEngineState( newVehicle, false )
+				setVehicleOverrideLights( newVehicle, 1 )
 				
 				return newVehicle, vehicleID
 			end
@@ -411,6 +415,7 @@ addEventHandler( "onPlayerJoin", root,
 	function( )
 		bindKey( source, "k", "down", "lockvehicle" )
 		bindKey( source, "j", "down", "toggleengine" )
+		bindKey( source, "l", "down", "togglelights" )
 	end
 )
 
@@ -514,6 +519,22 @@ addCommandHandler( "toggleengine",
 					if exports.sql:query_free( "UPDATE vehicles SET engineState = 1 - engineState WHERE vehicleID = " .. data.vehicleID ) then
 						setVehicleEngineState( vehicle, not data.engineState )
 						data.engineState = not data.engineState
+					end
+				end
+			end
+		end
+	end
+)
+
+addCommandHandler( "togglelights",
+	function( player, commandName )
+		if exports.players:isLoggedIn( player ) then
+			local vehicle = getPedOccupiedVehicle( player )
+			if vehicle then
+				local data = vehicles[ vehicle ]
+				if data then
+					if exports.sql:query_free( "UPDATE vehicles SET lightsState = 1 - lightsState WHERE vehicleID = " .. data.vehicleID ) then
+						setVehicleOverrideLights( vehicle, getVehicleOverrideLights( vehicle ) == 2 and 1 or 2 )
 					end
 				end
 			end
