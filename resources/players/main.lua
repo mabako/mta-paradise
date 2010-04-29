@@ -105,7 +105,15 @@ addEventHandler( "onResourceStart", resourceRoot,
 )
 --
 
-local function showLoginScreen( player )
+local function showLoginScreen( player, screenX, screenY )
+	-- we need at least 800x600 for proper display of all GUI
+	if screenX and screenY then
+		if screenX < 800 or screenY < 600 then
+			kickPlayer( player, "Use 800x600 or a larger resolution." )
+			return
+		end
+	end
+	
 	-- remove the player from his vehicle if any
 	if isPedInVehicle( player ) then
 		removePedFromVehicle( player )
@@ -129,9 +137,9 @@ end
 
 addEvent( getResourceName( resource ) .. ":ready", true )
 addEventHandler( getResourceName( resource ) .. ":ready", root,
-	function( )
+	function( ... )
 		if source == client then
-			showLoginScreen( source )
+			showLoginScreen( source, ... )
 		end
 	end
 )

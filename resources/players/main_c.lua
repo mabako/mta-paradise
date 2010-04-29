@@ -160,7 +160,7 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 
 addEventHandler( "onClientResourceStart", getResourceRootElement( ),
 	function( )
-		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer )
+		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer, screenX, screenY )
 	end
 )
 

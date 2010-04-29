@@ -26,6 +26,10 @@
         <acl name="manageAccounts" />
         <object name="resource.players" />
     </group>
+    <group name="kickable">
+        <acl name="kickable" />
+        <object name="resource.players" />
+    </group>
     <group name="Developer">
         <acl name="Developer" />
         <object name="user.mabako" />
@@ -245,5 +249,8 @@
         <right name="function.addAccount" access="true" />
         <right name="function.setAccountPassword" access="true" />
         <right name="function.removeAccount" access="true" />
+    </acl>
+    <acl name="kickable">
+        <right name="function.kickPlayer" access="true" />
     </acl>
 </acl>
