@@ -58,7 +58,7 @@ local function showMenu( )
 	local cursorX, cursorY = getCursorPosition( )
 	if cursorX then
 		if waitMenu == 0 and cursorY >= 0.82 and cursorY < 0.86 then
-			if cursorX >= 0.42 and cursorX < 0.5 then
+			if cursorX >= 0.37 and cursorX < 0.5 then
 				activeMenu = 1
 				
 				if getKeyState( "mouse1" ) then
@@ -67,7 +67,7 @@ local function showMenu( )
 					waitStart = getTickCount( )
 					infotext = "Create an account at\nforum.paradisegaming.net"
 				end
-			elseif cursorX >= 0.5 and cursorX <= 0.58 then
+			elseif cursorX >= 0.5 and cursorX <= 0.63 then
 				activeMenu = 2
 				
 				if getKeyState( "mouse1" ) then
@@ -105,8 +105,8 @@ local function showMenu( )
 	
 	waitAlpha = waitStart > 0 and math.min( 255, math.max( 0, ( waitMenu == 0 and waitStart - getTickCount( ) or getTickCount( ) - waitStart ) / 2000 * 255 ) ) or 0
 	
-	dxDrawText( "Register", screenX * 0.42, screenY * 0.82, screenX * 0.5, screenY * 0.86, tocolor( 255 - menu1Alpha, 255, 255, menuAlpha - waitAlpha ), 2, "default", "center", "center" )
-	dxDrawText( "Login", screenX * 0.5, screenY * 0.82, screenX * 0.58, screenY * 0.86, tocolor( 255 - menu2Alpha, 255, 255, menuAlpha - waitAlpha ), 2, "default", "center", "center" )
+	dxDrawText( "Register", screenX * 0.37, screenY * 0.82, screenX * 0.5, screenY * 0.86, tocolor( 255 - menu1Alpha, 255, 255, menuAlpha - waitAlpha ), 2, "default", "center", "center" )
+	dxDrawText( "Login", screenX * 0.5, screenY * 0.82, screenX * 0.63, screenY * 0.86, tocolor( 255 - menu2Alpha, 255, 255, menuAlpha - waitAlpha ), 2, "default", "center", "center" )
 	
 	dxDrawText( infotext, screenX * 0.42, screenY * 0.82, screenX * 0.58, screenY * 0.86, tocolor( 255, 255, 255, waitAlpha ), 2, "default", "center", "center" )
 	
