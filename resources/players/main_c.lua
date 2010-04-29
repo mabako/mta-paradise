@@ -225,6 +225,7 @@ addCommandHandler( "changechar",
 						charEnd = 0
 						charSelectionActive = false
 						showChat( true )
+						showPlayerHudComponent( "radar", true )
 					end, 2000, 1
 				)
 			else
@@ -233,6 +234,7 @@ addCommandHandler( "changechar",
 				charSelectionWaiting = false
 				addEventHandler( "onClientRender", root, showCharacters )
 				showChat( false )
+				showPlayerHudComponent( "radar", false )
 			end
 		end
 	end
@@ -255,6 +257,7 @@ local function selectChar( id, name )
 				charEnd = 0
 				charSelectionActive = false
 				showChat( true )
+				showPlayerHudComponent( "radar", false )
 			end, 2000, 1
 		)
 	else
@@ -410,8 +413,6 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 addEvent( getResourceName( resource ) .. ":onSpawn", true )
 addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 	function( )
-		showPlayerHudComponent( "radar", true )
-		showPlayerHudComponent( "area_name", true )
 		showCursor( false )
 		guiSetInputEnabled( false )
 		
@@ -424,6 +425,8 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 				charSelectionActive = false
 				loggedIn = true
 				showChat( true )
+				showPlayerHudComponent( "radar", true )
+				showPlayerHudComponent( "area_name", true )
 			end, 2000, 1
 		)
 	end
