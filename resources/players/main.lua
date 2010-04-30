@@ -316,7 +316,7 @@ addEventHandler( "onPlayerQuit", root,
 addEvent( getResourceName( resource ) .. ":spawn", true )
 addEventHandler( getResourceName( resource ) .. ":spawn", root, 
 	function( charID )
-		if source == client then
+		if source == client and ( not isPedDead( source ) or not isLoggedIn( source ) ) then
 			local userID = p[ source ] and p[ source ].userID
 			if tonumber( userID ) and tonumber( charID ) then
 				-- if the player is logged in, save him
@@ -363,18 +363,6 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					exports.sql:query_free( "UPDATE characters SET lastLogin = NOW() WHERE characterID = " .. tonumber( charID ) )
 				end
 			end
-		end
-	end
-)
-
-addEventHandler( "onPlayerWasted", root,
-	function( )
-		if isLoggedIn( source ) then
-			local x, y, z = getElementPosition( source )
-			spawnPlayer( source, x, y, z, getPedRotation( source ), getElementModel( source ), getElementInterior( source ), getElementDimension( source ) )
-			fadeCamera( source, true )
-			setCameraTarget( source, source )
-			setCameraInterior( source, getElementInterior( source ) )
 		end
 	end
 )

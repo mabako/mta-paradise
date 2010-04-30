@@ -38,4 +38,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<!-- Skin Images -->
 	<file src="images/skins/-1.png"/>
 	<file src="images/skins/-2.png"/>
+	
+	<script src="respawn.lua"/>
+	<script src="respawn_c.lua" type="client"/>
 </meta>

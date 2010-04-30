@@ -216,7 +216,7 @@ local charSelectionWaiting = false
 
 addCommandHandler( "changechar",
 	function( )
-		if loggedIn and charEnd == 0 then
+		if loggedIn and charEnd == 0 and not isPlayerDead( localPlayer ) then
 			if charSelectionActive then
 				charEnd = getTickCount( ) + 2000
 				setTimer(
