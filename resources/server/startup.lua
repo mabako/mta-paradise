@@ -24,7 +24,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		setRuleValue( "license", "GPL Version 3" )
 		setRuleValue( "source", "http://github.com/marcusbauer/mta-paradise" )
 		setRuleValue( "git-url", "git://github.com/marcusbauer/mta-paradise.git" )
-		setRuleValue( "version", "1.0" )
+		setRuleValue( "version", getVersion( ) )
 		
 		setTimer( 
 			function( )
@@ -35,7 +35,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				outputServerLog( "   | | | | | | || (_| | | |_) | (_| | | | (_| | (_| | \\__ \\  __/" )
 				outputServerLog( "   |_| |_| |_|\\__\\__,_| | .__/ \\__,_|_|  \\__,_|\\__,_|_|___/\\___|" )
 				outputServerLog( "                        | |" )
-				outputServerLog( "                        |_| v" .. getRuleValue( "version" ) )
+				outputServerLog( "                        |_| v" .. getVersion( ) )
 			end, 50, 1
 		)
 	end

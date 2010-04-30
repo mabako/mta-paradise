@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,13 +13,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<script src="version.lua"/>
-	<script src="version.lua" type="client"/>
-	<export function="getVersion"/>
-	<export function="getVersion" type="client"/>
-	
-	<script src="credits_c.lua" type="client"/>
-	<script src="startup.lua"/>
-</meta>
+]]
+
+function getVersion( )
+	return "1.0"
+end
