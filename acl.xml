@@ -7,7 +7,6 @@
     <group name="Admin">
         <acl name="Admin" />
         <acl name="RPC" />
-        <object name="user.Jumba" />
         <object name="user.mabako" />
     </group>
     <group name="Console">
