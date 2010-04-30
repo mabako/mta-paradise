@@ -9,11 +9,16 @@ Create a new database and import the file *database_layout.sql* into it, this sh
 To make your server use your MySQL database, edit your *settings.xml* to at least contain the following settings - of course, replace the example values with the MySQL data to connect to the server.
 
     <settings>
+        <!-- MySQL Configuration -->
         <setting name="@sql.username" value="username"/>
         <setting name="@sql.password" value="password"/>
         <setting name="@sql.database" value="database"/>
         <setting name="@sql.hostname" value="localhost"/>
         <setting name="@sql.port" value="3306"/>
+        
+        <!-- Registration -->
+        <setting name="@players.allow_registration" value="1"/><!-- Change to 0 to disable registration and show an error message -->
+        <setting name="@players.registration_error_message" value="Edit this to show the user a message when registration is disabled"/>
     </settings>
 
 ## MTA Server configuration

@@ -27,6 +27,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="takeMoney"/>
 	<export function="getMoney"/>
 	
+	<script src="registration.lua"/>
+	
 	<script src="ids.lua"/>
 	<export function="getFromName"/>
 	<export function="getID"/>

@@ -48,6 +48,33 @@ local function tryLogin( )
 	keyStateEnter = getKeyState( 'enter' )
 end
 
+local function tryRegister( )
+	local u = guiGetText( username )
+	local p = guiGetText( password )
+	if u and p then
+		if #u < 3 then
+			waitAlpha = 0
+			waitMenu = 1
+			waitStart = getTickCount( )
+			infotext = "Your username\nis too short."
+		elseif #p < 8 then
+			waitAlpha = 0
+			waitMenu = 1
+			waitStart = getTickCount( )
+			infotext = "Your password\nis too short."
+		else
+			triggerServerEvent( getResourceName( resource ) .. ":register", localPlayer, u, p )
+			guiSetEnabled( username, false )
+			guiSetEnabled( password, false )
+			waitAlpha = 0
+			waitMenu = activeMenu
+			waitStart = getTickCount( )
+			infotext = "Registering..."
+		end
+	end
+	keyStateEnter = getKeyState( 'enter' )
+end
+
 local function showMenu( )
 	menuAlpha = math.min( ( menuEnd == 0 and ( getTickCount( ) - menuStart ) or ( menuEnd - getTickCount( ) ) ) / 2000 * 255, 255 )
 	
@@ -62,10 +89,7 @@ local function showMenu( )
 				activeMenu = 1
 				
 				if getKeyState( "mouse1" ) then
-					waitAlpha = 0
-					waitMenu = 1
-					waitStart = getTickCount( )
-					infotext = "Create an account at\nforum.paradisegaming.net"
+					tryRegister( )
 				end
 			elseif cursorX >= 0.5 and cursorX <= 0.63 then
 				activeMenu = 2
@@ -191,6 +215,33 @@ addEventHandler( getResourceName( resource ) .. ":loginResult", localPlayer,
 			setTimer( function( ) waitMenu = 0; waitStart = getTickCount( ) + 2000 end, 3000, 1 )
 		elseif code == 5 then
 			infotext = "Another player\nuses that account."
+			guiSetEnabled( username, true )
+			guiSetEnabled( password, true )
+			
+			-- fade it out
+			setTimer( function( ) waitMenu = 0; waitStart = getTickCount( ) + 2000 end, 3000, 1 )
+		end
+	end
+)
+
+addEvent( getResourceName( resource ) .. ":registrationResult", true )
+addEventHandler( getResourceName( resource ) .. ":registrationResult", localPlayer,
+	function( code, message )
+		if code == 0 then
+			tryLogin( )
+		elseif code == 1 then
+			infotext = "Try later."
+			guiSetVisible( username, false )
+			guiSetVisible( password, false )
+		elseif code == 2 then
+			infotext = message or "Registration disabled."
+			guiSetEnabled( username, true )
+			guiSetEnabled( password, true )
+			
+			-- fade it out
+			setTimer( function( ) waitMenu = 0; waitStart = getTickCount( ) + 2000 end, 3000, 1 )
+		elseif code == 3 then
+			infotext = "This username\nalready exists."
 			guiSetEnabled( username, true )
 			guiSetEnabled( password, true )
 			
