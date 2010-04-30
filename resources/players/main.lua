@@ -261,10 +261,10 @@ local function savePlayer( player )
 			savePlayer( value )
 		end
 	else
-		if isLoggedIn( source ) then
+		if isLoggedIn( player ) then
 			-- save character since it's logged in
-			local x, y, z = getElementPosition( source )
-			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( source ) .. ", interior = " .. getElementInterior( source ) .. ", rotation = " .. getPedRotation( source ) .. ", health = " .. math.ceil( getElementHealth( source ) ) .. ", armor = " .. math.ceil( getPedArmor( source ) ) .. ", lastLogin = NOW() WHERE characterID = " .. tonumber( p[ source ].charID ) )
+			local x, y, z = getElementPosition( player )
+			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( player ) .. ", interior = " .. getElementInterior( player ) .. ", rotation = " .. getPedRotation( player ) .. ", health = " .. math.ceil( getElementHealth( player ) ) .. ", armor = " .. math.ceil( getPedArmor( player ) ) .. ", lastLogin = NOW() WHERE characterID = " .. tonumber( getCharacterID( player ) ) )
 		end
 	end
 end
