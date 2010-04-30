@@ -62,7 +62,7 @@ end
 addEventHandler( "onPlayerChat", getRootElement( ),
 	function( message, type )
 		cancelEvent( )
-		if exports.players:isLoggedIn( source ) then
+		if exports.players:isLoggedIn( source ) and not isPedDead( source ) then
 			if type == 0 then
 				localMessage( source, " " .. getPlayerName( source ) .. " says: " .. message, 230, 230, 230, false, 127, 127, 127 )
 			elseif type == 1 then
@@ -75,7 +75,7 @@ addEventHandler( "onPlayerChat", getRootElement( ),
 -- /do
 addCommandHandler( "do", 
 	function( thePlayer, commandName, ... )
-		if exports.players:isLoggedIn( thePlayer ) then
+		if exports.players:isLoggedIn( thePlayer ) and not isPedDead( thePlayer ) then
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
 				localMessage( thePlayer, " *" .. message .. " ((" .. getPlayerName( thePlayer ) .. "))", 255, 40, 80 )
@@ -89,7 +89,7 @@ addCommandHandler( "do",
 -- /b; bound to 'b' client-side
 addCommandHandler( { "b", "LocalOOC" },
 	function( thePlayer, commandName, ... )
-		if exports.players:isLoggedIn( thePlayer ) then
+		if exports.players:isLoggedIn( thePlayer ) and not isPedDead( thePlayer ) then
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
 				localMessage( thePlayer, getPlayerName( thePlayer ) ..  ": (( " .. message .. " ))", 196, 255, 255 )
