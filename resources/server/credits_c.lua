@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 local function showCredits( )
 	outputChatBox( " " )
 	outputChatBox( "MTA:Paradise " .. getVersion( ), 0, 255, 255 )
-	outputChatBox( "  Marcus Bauer <mabako@gmail.com>", 193, 255, 255 )
+	outputChatBox( "  mabako <mabako@gmail.com>", 193, 255, 255 )
 	outputChatBox( "  Calvin Wong Loi Sing <jumba990@gmail.com>", 193, 255, 255 )
 	outputChatBox( " " )
 end
