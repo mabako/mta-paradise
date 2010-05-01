@@ -21,8 +21,8 @@ addEvent( "onCharacterLogout", false )
 
 -- Import Groups
 local groups = {
-	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator" },
-	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer" }
+	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator", nametagColor = { 255, 255, 191 } },
+	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer", nametagColor = { 191, 255, 191 } },
 }
 
 addEventHandler( "onResourceStart", resourceRoot,
@@ -129,8 +129,9 @@ local function showLoginScreen( player, screenX, screenY )
 	setElementAlpha( source, 0 )
 	
 	setCameraInterior( source, 0 )
-	
 	setCameraMatrix( source, 1999.8, 1580.95, 17.6, 2000, 1580, 17.5 )
+	
+	setPlayerNametagColor( source, 127, 127, 127 )
 	
 	triggerClientEvent( player, getResourceName( resource ) .. ":spawnscreen", player )
 end
@@ -171,7 +172,7 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 								return
 							end
 						end
-						p[ source ] = { userID = info.userID, username = username }
+						p[ source ] = { userID = info.userID, username = username, groups = { } }
 						
 						-- check for admin rights
 						local shouldHaveAccount = false
@@ -209,6 +210,7 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 												outputDebugString( "Account Error for " .. username .. " - login failed.", 1 )
 											else
 												-- show him a message
+												table.insert( p[ source ].groups, group2 )
 												outputChatBox( "You are now logged in as " .. group2.displayName .. ".", source, 0, 255, 0 )
 												if aclGroupAddObject( aclGetGroup( group2.aclGroup ), "user." .. username ) then
 													saveAcl = true
@@ -301,6 +303,12 @@ addEventHandler( getResourceName( resource ) .. ":logout", root,
 	end
 )
 
+addEventHandler( "onPlayerJoin", root,
+	function( )
+		setPlayerNametagColor( source, 127, 127, 127 )
+	end
+)
+
 addEventHandler( "onPlayerQuit", root,
 	function( )
 		if p[ source ] then
@@ -337,6 +345,13 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					end
 					setPlayerName( source, mtaCharName )
 					setPlayerNametagText( source, "[" .. getID( source ) .. "] " .. char.characterName )
+					local nametagColor = { 255, 255, 255 }
+					for key, value in ipairs( p[ source ].groups ) do
+						if value.nametagColor then
+							nametagColor = value.nametagColor
+						end
+					end
+					setPlayerNametagColor( source, unpack( nametagColor ) )
 					
 					-- spawn the player, as it's a valid char
 					spawnPlayer( source, char.x, char.y, char.z, char.rotation, char.skin, char.interior, char.dimension )
