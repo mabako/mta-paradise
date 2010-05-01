@@ -235,6 +235,15 @@ local function draw( window, y )
 	return y
 end
 
+local changeableWindows = { 'scoreboard', 'characters' }
+local function isChangeableWindow( windowName )
+	for key, value in ipairs( changeableWindows ) do
+		if value == windowName then
+			return key
+		end
+	end
+	return false
+end
 addEventHandler( "onClientRender", root,
 	function( )
 		if window then
@@ -252,6 +261,34 @@ addEventHandler( "onClientRender", root,
 			local y = ( screenY - height ) / 2
 			dxDrawRectangle( x - 5, y - 5, width + 10, height + 10, tocolor( 0, 0, 0, 127 ) )
 			draw( window, y )
+			
+			-- draw left/right if it's the scoreboard/char selection and is not forced
+			if not forcedWindow then
+				local key = isChangeableWindow( windowName )
+				if key then
+					dxDrawRectangle( x - 35, screenY / 2 - 15, 30, 30, tocolor( 0, 0, 0, 127 ) )
+					dxDrawText( "<", x - 35, screenY / 2 - 15, x - 5, screenY / 2 + 15, tocolor( 255, 255, 255, 255 ), 1, "bankgothic", "center", "center", true, false, true )
+					if clicked.mouse1 and cursorX >= x - 35 and cursorX <= x - 5 and cursorY >= screenY / 2 - 15 and cursorY <= screenY / 2 + 15 then
+						if key == 1 then
+							key = #key
+						else
+							key = key - 1
+						end
+						show( changeableWindows[ key ] )
+					end
+					
+					dxDrawRectangle( x + width + 5, screenY / 2 - 15, 30, 30, tocolor( 0, 0, 0, 127 ) )
+					dxDrawText( ">", x + width + 5, screenY / 2 - 15, x + width + 35, screenY / 2 + 15, tocolor( 255, 255, 255, 255 ), 1, "bankgothic", "center", "center", true, false, true )
+					if clicked.mouse1 and cursorX >= x + width + 5 and cursorX <= x + width + 35 and cursorY >= screenY / 2 - 15 and cursorY <= screenY / 2 + 15 then
+						if key == #changeableWindows then
+							key = 1
+						else
+							key = key + 1
+						end
+						show( changeableWindows[ key ] )
+					end
+				end
+			end
 		end
 		clicked = { }
 	end
@@ -287,11 +324,13 @@ addEventHandler( "onClientMouseWheel", root,
 )
 
 addEventHandler( "onClientClick", root,
-	function( button )
-		if button == 'left' then
-			clicked.mouse1 = true
-		elseif button == 'right' then
-			clicked.mouse2 = true
+	function( button, state )
+		if state == 'down' then
+			if button == 'left' then
+				clicked.mouse1 = true
+			elseif button == 'right' then
+				clicked.mouse2 = true
+			end
 		end
 	end
 )
