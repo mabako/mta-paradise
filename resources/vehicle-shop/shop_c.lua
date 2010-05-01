@@ -29,7 +29,7 @@ addEventHandler( "onClientResourceStart", resourceRoot,
 				-- stick a blip to it
 				if shop.blip then
 					local x, y, z = unpack( shop.position )
-					createBlip( x, y, z, shop.blip )
+					createBlip( x, y, z, shop.blip, 2, 255, 255, 255, 255, 0, 300 )
 				end
 			end
 		end
