@@ -34,7 +34,7 @@ addEventHandler( "onPlayerWasted", root,
 
 addEventHandler( "onPlayerQuit", root,
 	function( )
-		wastedTime[ source ] = nil
+		wastedTimes[ source ] = nil
 	end
 )
 
