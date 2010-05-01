@@ -234,9 +234,16 @@ bindKey( 'tab', 'both',
 	function( key, state )
 		if not forcedWindow then
 			if state == 'down' then
-				show( 'scoreboard' )
+				if window == windows.scoreboard then
+					hide( )
+				else
+					show( 'scoreboard' )
+					scoreboardTick = getTickCount( )
+				end
 			else
-				hide( )
+				if getTickCount( ) - scoreboardTick > 200 then
+					hide( )
+				end
 			end
 		end
 	end
