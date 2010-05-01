@@ -128,7 +128,7 @@ addCommandHandler( "setinterior",
 					outputChatBox( "Interior " .. id .. " does not exist.", player, 255, 0, 0 )
 				end
 			else
-					outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
+				outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
@@ -137,10 +137,40 @@ addCommandHandler( "setinterior",
 	true
 )
 
+addCommandHandler( "setinteriorprice",
+	function( player, commandName, price )
+		price = math.ceil( tonumber( price ) or -1 )
+		if price and price >= 0 then
+			local int = interiors[ getElementDimension( player ) ]
+			if int then
+				-- change the price in the db
+				if exports.sql:query_free( "UPDATE interiors SET interiorPrice = " .. price .. " WHERE interiorID = " .. getElementDimension( player ) ) then
+					if getElementData( int.outside, "price" ) then
+						setElementData( int.outside, "price", price )
+					end
+					
+					-- update the price
+					int.price = price
+					
+					-- show a message
+					outputChatBox( "Interior updated.", player, 0, 255, 0 )
+				else
+					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [price]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
 addCommandHandler( "getinterior",
 	function( player, ... )
 		-- check if he has permissions to see at least one prop
-		if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) then
+		if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorprice", false ) then
 			local int = interiors[ getElementDimension( player ) ]
 			if int then
 				local interior = getElementInterior( int.inside )
@@ -150,8 +180,13 @@ addCommandHandler( "getinterior",
 				
 				-- check if he has permissions to view each of the props
 				outputChatBox( "-- Interior " .. getElementDimension( player ) .. " --", player, 255, 255, 255 )
+				
 				if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) then
 					outputChatBox( "id: " .. name, player, 255, 255, 255 )
+				end
+				
+				if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorprice", false ) then
+					outputChatBox( "price: " .. int.price, player, 255, 255, 255 )
 				end
 			else
 				outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
