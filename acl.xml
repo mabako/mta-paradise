@@ -142,18 +142,11 @@
         <right name="command.addaccount" access="true" />
         <right name="command.delaccount" access="true" />
         <right name="command.debugscript" access="true" />
-        <right name="command.chgpass" access="true" />
-        <right name="command.loadmodule" access="true" />
-        <right name="command.upgrade" access="true" />
-        <right name="command.mute" access="true" />
-        <right name="command.unmute" access="true" />
         <right name="command.kick" access="true" />
         <right name="command.ban" access="true" />
         <right name="command.banip" access="true" />
         <right name="command.unbanip" access="true" />
         <right name="command.shutdown" access="true" />
-        <right name="command.install" access="true" />
-        <right name="command.aexec" access="true" />
         <right name="command.whois" access="true" />
         <right name="command.whowas" access="true" />
         <right name="command.createinterior" access="true" />
