@@ -79,10 +79,55 @@ addCommandHandler( "createinterior",
 					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 				end
 			else
-				outputChatBox( "Interior " .. interiorName .. " does not exist.", player, 255, 0, 0 )
+				outputChatBox( "Interior " .. id:lower( ) .. " does not exist.", player, 255, 0, 0 )
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [id] [price] [type 0=Gov 1=House 2=Biz] [name]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+addCommandHandler( "setinterior",
+	function( player, commandName, id )
+		if id then
+			local int = interiors[ getElementDimension( player ) ]
+			if int then
+				interior = interiorPositions[ id:lower( ) ]
+				if interior then
+					if exports.sql:query_free( "UPDATE interiors SET insideX = " .. interior.x .. ", insideY = " .. interior.y .. ", insideZ = " .. interior.z .. " , insideInterior = " .. interior.interior .. " WHERE interiorID = " .. getElementDimension( player ) ) then
+						-- move the colshape
+						setElementPosition( int.inside, interior.x, interior.y, interior.z )
+						setElementInterior( int.inside, interior.interior )
+						
+						-- teleport all players to the new point
+						for key, value in ipairs( getElementsByType( "player" ) ) do
+							if exports.players:isLoggedIn( value ) then
+								setElementPosition( value, interior.x, interior.y, interior.z )
+								setElementInterior( value, interior.interior )
+							end
+						end
+						
+						-- create a blip if used
+						if int.blip then
+							destroyElement( int.blip )
+							int.blip = nil
+						end
+						int.blip = not int.locked and getElementDimension( int.outside ) == 0 and not getElementData( int.outside, "price" ) and createBlipEx( int.outside, int.inside )
+						
+						-- show a message
+						outputChatBox( "Interior updated.", player, 0, 255, 0 )
+					else
+						outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( "Interior " .. id .. " does not exist.", player, 255, 0, 0 )
+				end
+			else
+					outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
 		end
 	end,
 	true

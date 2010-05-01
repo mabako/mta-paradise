@@ -157,6 +157,7 @@
         <right name="command.whois" access="true" />
         <right name="command.whowas" access="true" />
         <right name="command.createinterior" access="true" />
+        <right name="command.setinterior" access="true" />
         <right name="command.createvehicle" access="true" />
         <right name="command.deletevehicle" access="true" />
         <right name="command.repairvehicle" access="true" />

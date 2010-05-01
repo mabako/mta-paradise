@@ -23,7 +23,7 @@ interiorPositions =
 	house1  = { x =   235.25, y =  1186.68, z = 1080.26, interior = 3 }, -- two floors
 	house2  = { x =   226.79, y =  1240.02, z = 1082.14, interior = 2 },
 	house3  = { x =   223.07, y =  1287.09, z = 1082.14, interior = 1 },
-	house4  = { x =   327.94, y =  1477.73, z = 1084.44, interior = 15 },	
+	house4  = { x =   327.94, y =  1477.73, z = 1084.44, interior = 15 },
 	house5  = { x =  2468.84, y = -1698.29, z = 1013.51, interior = 2 }, -- ryder's house
 	house6  = { x =  2535.83, y = -1674.32, z = 1015.50, interior = 1 }, -- sweet's house
 	house7  = { x =   387.23, y =  1471.79, z = 1080.19, interior = 15 },
