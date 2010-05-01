@@ -302,7 +302,7 @@ local function savePlayer( player )
 		if isLoggedIn( player ) then
 			-- save character since it's logged in
 			local x, y, z = getElementPosition( player )
-			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( player ) .. ", interior = " .. getElementInterior( player ) .. ", rotation = " .. getPedRotation( player ) .. ", health = " .. math.ceil( getElementHealth( player ) ) .. ", armor = " .. math.ceil( getPedArmor( player ) ) .. ", lastLogin = NOW() WHERE characterID = " .. tonumber( getCharacterID( player ) ) )
+			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( player ) .. ", interior = " .. getElementInterior( player ) .. ", rotation = " .. getPedRotation( player ) .. ", health = " .. math.floor( getElementHealth( player ) ) .. ", armor = " .. math.floor( getPedArmor( player ) ) .. ", lastLogin = NOW() WHERE characterID = " .. tonumber( getCharacterID( player ) ) )
 		end
 	end
 end
@@ -476,4 +476,17 @@ end
 
 function getMoney( player, amount )
 	return isLoggedIn( player ) and p[ player ].money
+end
+
+--
+function createCharacter( player, name )
+	if p[ player ].userID then
+		if exports.sql:query_assoc_single( "SELECT characterID FROM characters WHERE characterName = '%s'", name ) then
+			triggerClientEvent( player, "players:characterCreationResult", player, 1 )
+		elseif exports.sql:query_free( "INSERT INTO characters (characterName, userID, x, y, z, interior, dimension, skin, rotation) VALUES ('%s', " .. p[ player ].userID .. ", -1984.5, 138, 27.7, 0, 0, 0, 90)", name ) then
+			local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. p[ player ].userID .. " ORDER BY lastLogin DESC" )
+			triggerClientEvent( player, getResourceName( resource ) .. ":characters", player, chars, false )
+			triggerClientEvent( player, "players:characterCreationResult", player, 0 )
+		end
+	end
 end

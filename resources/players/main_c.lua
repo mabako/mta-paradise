@@ -81,6 +81,7 @@ bindKey( "pause", "down", "changechar" )
 function selectCharacter( id, name )
 	if id == -1 then
 		-- new character
+		exports.gui:show( 'create_character', true )
 	elseif id == -2 then
 		-- logout
 		exports.gui:hide( )
