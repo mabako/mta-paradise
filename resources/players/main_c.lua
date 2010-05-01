@@ -129,8 +129,14 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 		exports.gui:hide( )
 		
 		showChat( true )
+		showCursor( false )
 		showPlayerHudComponent( "radar", true )
 		showPlayerHudComponent( "area_name", true )
 		loggedIn = true
+		exports.gui:updateCharacters( characters )
 	end
 )
+
+function isLoggedIn( )
+	return loggedIn
+end
