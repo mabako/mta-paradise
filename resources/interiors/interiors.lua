@@ -18,17 +18,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 local interiors = { }
 local colspheres = { }
 
+local function getInterior( x, y, z, interior )
+	for name, i in pairs( interiorPositions ) do
+		if interior == i.interior and getDistanceBetweenPoints3D( x, y, z, i.x, i.y, i.z ) < 15 then
+			return name, i
+		end
+	end
+end
+
 local function createBlipEx( outside, inside )
 	local interior = getElementInterior( inside )
 	local x, y, z = getElementPosition( inside )
-	for _, i in pairs( interiorPositions ) do
-		if interior == i.interior and getDistanceBetweenPoints3D( x, y, z, i.x, i.y, i.z ) < 15 then
-			if i.blip then
-				return createBlipAttachedTo( outside, i.blip, 2, 255, 255, 255, 255, 0, 300 )
-			else
-				break
-			end
-		end
+	
+	local name, i = getInterior( x, y, z, interior )
+	if i and i.blip then
+		return createBlipAttachedTo( outside, i.blip, 2, 255, 255, 255, 255, 0, 300 )
 	end
 end
 
@@ -131,6 +135,29 @@ addCommandHandler( "setinterior",
 		end
 	end,
 	true
+)
+
+addCommandHandler( "getinterior",
+	function( player, ... )
+		-- check if he has permissions to see at least one prop
+		if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) then
+			local int = interiors[ getElementDimension( player ) ]
+			if int then
+				local interior = getElementInterior( int.inside )
+				local x, y, z = getElementPosition( int.inside )
+				
+				local name, i = getInterior( x, y, z, interior )
+				
+				-- check if he has permissions to view each of the props
+				outputChatBox( "-- Interior " .. getElementDimension( player ) .. " --", player, 255, 255, 255 )
+				if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) then
+					outputChatBox( "id: " .. name, player, 255, 255, 255 )
+				end
+			else
+				outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
+			end
+		end
+	end
 )
 
 --
