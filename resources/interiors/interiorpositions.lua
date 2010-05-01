@@ -39,6 +39,15 @@ interiorPositions =
 	
 	-- business
 	atrium = { x = 1727.04, y = -1637.84, z = 20.22, interior = 18 },
+	['24/7-1'] = { x = -25.89, y = -188.24, z = 1003.54, interior = 17 },
+	['24/7-2'] = { x =   6.11, y =  -31.75, z = 1003.54, interior = 10 },
+	['24/7-3'] = { x = -25.89, y = -188.24, z = 1003.54, interior = 17 },
+	['24/7-4'] = { x = -25.77, y = -141.55, z = 1003.55, interior = 16 },
+	['24/7-5'] = { x = -27.30, y =  -31.76, z = 1003.56, interior = 4 },
+	['24/7-6'] = { x = -27.34, y =  -58.26, z = 1003.55, interior = 6 },
+	office1 = { x =   390.76, y =   173.79, z = 1008.38, interior = 3 }, -- City Planning Department
+	office2 = { x = -2026.86, y =  -103.60, z = 1035.18, interior = 3 }, -- Driving School
+	office3 = { x =  1494.36, y =  1303.57, z = 1093.28, interior = 3 }, -- Bike School
 	
 	-- police departments
 	lspd = { x = 246.75, y =  62.32, z = 1003.64, interior = 6 },
