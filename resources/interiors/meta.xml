@@ -21,6 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="interiors_c.lua" type="client"/>
 	
 	<script src="map_fixes.lua" type="client"/>
+	<script src="blips.lua"/>
 	
 	<include resource="sql"/>
 </meta>
