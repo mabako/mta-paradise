@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,15 +13,12 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<script src="version.lua"/>
-	<script src="version.lua" type="client"/>
-	<export function="getVersion"/>
-	<export function="getVersion" type="client"/>
-	
-	<script src="credits_c.lua" type="client"/>
-	<script src="startup.lua"/>
-	
-	<script src="1.0.4.lua"/>
-</meta>
+]]
+
+addEventHandler( "onPlayerConnect", root,
+	function( name, ip, username, serial, version )
+		if version < 0x104 then
+			cancelEvent( true, "Please install MTA:SA 1.0.4 from http://nightly.mtasa.com" )
+		end
+	end
+)
