@@ -477,6 +477,10 @@ end
 addCommandHandler( "lockvehicle",
 	function( player, commandName )
 		if exports.players:isLoggedIn( player ) then
+			if getElementData( player, "interiorMarker" ) then
+				return
+			end
+			
 			local vehicle = getPedOccupiedVehicle( player )
 			local vehicleID = vehicle and vehicles[ vehicle ] and vehicles[ vehicle ].vehicleID
 			if vehicleID then

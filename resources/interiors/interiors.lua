@@ -151,6 +151,7 @@ addEventHandler( "onColShapeHit", resourceRoot,
 			p[ element ] = source
 			bindKey( element, "enter_exit", "down", enterInterior, p[ element ] )
 			bindKey( element, "k", "down", lockInterior, p[ element ] )
+			setElementData( element, "interiorMarker", true, false )
 		end
 	end
 )
@@ -160,6 +161,7 @@ addEventHandler( "onColShapeLeave", resourceRoot,
 		if getElementType( element ) == "player" and p[ element ] then
 			unbindKey( element, "enter_exit", "down", enterInterior, p[ element ] )
 			unbindKey( element, "k", "down", lockInterior, p[ element ] )
+			removeElementData( element, "interiorMarker", true, false )
 			p[ element ] = nil
 		end
 	end
