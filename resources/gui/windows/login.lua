@@ -37,7 +37,7 @@ setTimer(
 				end, 100, 50
 			)
 		end
-
+		
 		local function tryLogin( key )
 			if key ~= 2 and destroy and destroy['g:login:username'] and destroy['g:login:password'] then
 				local u = guiGetText( destroy['g:login:username'] )
@@ -53,7 +53,7 @@ setTimer(
 				end
 			end
 		end
-
+		
 		windows.login =
 		{
 			{
@@ -91,7 +91,7 @@ setTimer(
 				onClick = tryLogin,
 			}
 		}
-
+		
 		if getElementData( getResourceRootElement( getResourceFromName( "players" ) ), "allowRegistration" ) then
 			table.insert( windows.login,
 				{
@@ -115,9 +115,9 @@ setTimer(
 				}
 			)
 		end
-
+		
 		table.insert( windows.login, { type = "label", text = "", alignX = "center" } )
-
+		
 		addEvent( "players:loginResult", true )
 		addEventHandler( "players:loginResult", getLocalPlayer( ),
 			function( code )
@@ -134,7 +134,7 @@ setTimer(
 				end
 			end
 		)
-
+		
 		addEvent( "players:registrationResult", true )
 		addEventHandler( "players:registrationResult", getLocalPlayer( ),
 			function( code, message )
@@ -149,7 +149,7 @@ setTimer(
 				end
 			end
 		)
-
+		
 		windows.banned =
 		{
 			type = "label",
@@ -158,7 +158,7 @@ setTimer(
 			color = { 255, 0, 0, 255 },
 			alignX = "center",
 		}
-
+		
 		windows.activation_required =
 		{
 			type = "label",
