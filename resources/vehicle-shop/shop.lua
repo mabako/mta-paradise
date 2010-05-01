@@ -112,8 +112,10 @@ addEventHandler( "onResourceStart", resourceRoot,
 
 addEventHandler( "onVehicleStartEnter", resourceRoot,
 	function( player )
-		-- show popup for buying
-		triggerClientEvent( player, getResourceName( resource ) .. ":buyPopup", source )
+		if not isPedDead( player ) then
+			-- show popup for buying
+			triggerClientEvent( player, getResourceName( resource ) .. ":buyPopup", source )
+		end
 		
 		-- don't let him enter the vehicle
 		cancelEvent( )
