@@ -204,10 +204,12 @@ addCommandHandler( { "repairvehicle", "fixvehicle" },
 			local vehicle = getPedOccupiedVehicle( target )
 			if vehicle then
 				fixVehicle( vehicle )
-			end
-			outputChatBox( "Your vehicle has been repaired by " .. getPlayerName( player ):gsub( "_", " " ) .. ".", target, 0, 255, 153 )
-			if player ~= target then
-				outputChatBox( "You repaired " .. targetName .. "'s vehicle.", target, 0, 255, 153 )
+				outputChatBox( "Your vehicle has been repaired by " .. getPlayerName( player ):gsub( "_", " " ) .. ".", target, 0, 255, 153 )
+				if player ~= target then
+					outputChatBox( "You repaired " .. targetName .. "'s vehicle.", target, 0, 255, 153 )
+				end
+			else
+				outputChatBox( targetName .. " is not in a vehicle.", player, 255, 0, 0 )
 			end
 		end
 	end,
