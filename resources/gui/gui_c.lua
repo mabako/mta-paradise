@@ -27,6 +27,7 @@ local clicked = { }
 destroy = { }
 
 local window = nil
+local windowName = nil
 
 local function cache( window )
 	local size = 0
@@ -64,6 +65,8 @@ local function cache( window )
 		size = size + dxGetFontHeight( window.scale or 1, window.font or "default" ) * math.max( window.type == "edit" and 2 or 1, window.cachedlines )
 	elseif window.type == "button" then
 		size = size + line_height * 2
+	elseif window.type == "pane" then
+		size = size + 66
 	end
 	
 	for k, v in ipairs( window ) do
@@ -197,6 +200,30 @@ local function draw( window, y )
 		end
 		
 		y = y + line_height
+	elseif window.type == "pane" then
+		y = y + 1
+		
+		-- check for hover/click
+		if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY <= y + 64 then
+			if window.onHover then
+				window.onHover( { cursorX, cursorY }, { x, y, x + width, y + 64 } )
+			end
+			
+			if window.onClick then
+				if clicked.mouse1 then
+					window.onClick( 1, { cursorX, cursorY }, { x, y, x + width, y + 64 } )
+				end
+				if clicked.mouse2 then
+					window.onClick( 2, { cursorX, cursorY }, { x, y, x + width, y + 64 } )
+				end
+			end
+		end
+		
+		-- draw the pane
+		dxDrawImage( x, y, 64, 64, window.image, 0, 0, 0, tocolor( 255, 255, 255, 255 ), true )
+		dxDrawText( window.title, x + 65, y, x + width, y + 18, tocolor( 255, 255, 255, 255 ), 0.6, "bankgothic", "left", "top", true, false, true )
+		dxDrawText( window.text, x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, false, true )
+		y = y + 65
 	end
 	
 	-- run all child drawings
@@ -224,9 +251,8 @@ addEventHandler( "onClientRender", root,
 			local y = ( screenY - height ) / 2
 			dxDrawRectangle( x - 5, y - 5, width + 10, height + 10, tocolor( 0, 0, 0, 127 ) )
 			draw( window, y )
-			
-			clicked = { }
 		end
+		clicked = { }
 	end
 )
 
@@ -260,7 +286,7 @@ addEventHandler( "onClientMouseWheel", root,
 )
 
 addEventHandler( "onClientClick", root,
-	function( direction )
+	function( button )
 		if button == 'left' then
 			clicked.mouse1 = true
 		elseif button == 'right' then
@@ -279,22 +305,30 @@ addEventHandler( "onClientPlayerRadioSwitch", root,
 
 --
 
+function getShowing( )
+	return windowName, forcedWindow
+end
+
 function show( name, forced )
 	-- destroy old window if we have one
 	if window then
 		hide( )
 	end
 	
-	window = windows[name]
-	if forced then
-		forcedWindow = true
-		showCursor( true )
-		guiSetInputEnabled( true )
+	if windows[name] then
+		window = windows[name]
+		windowName = name
+		if forced then
+			forcedWindow = true
+			showCursor( true )
+			guiSetInputEnabled( true )
+		end
 	end
 end
 
 function hide( )
 	window = nil
+	windowName = nil
 	if forcedWindow then
 		showCursor( false )
 		guiSetInputEnabled( false )

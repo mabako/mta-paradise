@@ -21,7 +21,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="windows/login.lua" type="client"/>
 	<script src="windows/scoreboard.lua" type="client"/>
 	
+	<script src="windows/characters.lua" type="client"/>
+	<export function="updateCharacters" type="client"/>
+	
 	<script src="gui_c.lua" type="client"/>
 	<export function="show" type="client"/>
 	<export function="hide" type="client"/>
+	<export function="getShowing" type="client"/>
 </meta>

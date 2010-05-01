@@ -26,6 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="giveMoney"/>
 	<export function="takeMoney"/>
 	<export function="getMoney"/>
+	<export function="selectCharacter" type="client"/>
 	
 	<script src="registration.lua"/>
 	
