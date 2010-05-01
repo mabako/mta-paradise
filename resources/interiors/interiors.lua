@@ -18,6 +18,20 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 local interiors = { }
 local colspheres = { }
 
+local function createBlipEx( outside, inside )
+	local interior = getElementInterior( inside )
+	local x, y, z = getElementPosition( inside )
+	for _, i in pairs( interiorPositions ) do
+		if interior == i.interior and getDistanceBetweenPoints3D( x, y, z, i.x, i.y, i.z ) < 15 then
+			if i.blip then
+				return createBlipAttachedTo( outside, i.blip, 2, 255, 255, 255, 255, 0, 300 )
+			else
+				break
+			end
+		end
+	end
+end
+
 local function loadInterior( id, outsideX, outsideY, outsideZ, outsideInterior, outsideDimension, insideX, insideY, insideZ, insideInterior, interiorName, interiorPrice, interiorType, characterID, locked )
 	local outside = createColSphere( outsideX, outsideY, outsideZ, 1 )
 	setElementInterior( outside, outsideInterior )
@@ -36,7 +50,7 @@ local function loadInterior( id, outsideX, outsideY, outsideZ, outsideInterior, 
 	
 	colspheres[ outside ] = { id = id, other = inside }
 	colspheres[ inside ] = { id = id, other = outside }
-	interiors[ id ] = { inside = inside, outside = outside, name = interiorName, type = interiorType, price = interiorPrice, characterID = characterID, locked = locked }
+	interiors[ id ] = { inside = inside, outside = outside, name = interiorName, type = interiorType, price = interiorPrice, characterID = characterID, locked = locked, blip = not locked and outsideDimension == 0 and not getElementData( outside, "price" ) and createBlipEx( outside, inside ) }
 end
 
 addEventHandler( "onResourceStart", resourceRoot,
@@ -135,6 +149,13 @@ local function lockInterior( player, key, state, colShape )
 				local interior = interiors[ data.id ]
 				exports.chat:me( player, "puts the key in the door to " .. ( interior.locked and "un" or "" ) .. "lock it. ((" .. interior.name .. "))" )
 				interior.locked = not interior.locked
+				
+				if interior.locked and interior.blip then
+					destroyElement( interior.blip )
+					interior.blip = nil
+				elseif not interior.locked and getElementDimension( interior.outside ) == 0 and not getElementData( interior.outside, "price" ) then
+					interior.blip = createBlipEx( interior.outside, interior.inside )
+				end
 			end
 		end
 	end
