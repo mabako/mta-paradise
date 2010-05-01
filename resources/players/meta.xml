@@ -34,6 +34,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="getID"/>
 	
 	<include resource="sql"/>
+	<include resource="gui"/>
 	
 	<!-- Skin Images -->
 	<file src="images/skins/-1.png"/>
