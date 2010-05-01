@@ -300,7 +300,7 @@ addEventHandler( "onClientRender", root,
 						else
 							key = key - 1
 						end
-						show( changeableWindows[ key ] )
+						show( changeableWindows[ key ], false, false, showMouse )
 					end
 					
 					dxDrawRectangle( x + width + 5, screenY / 2 - 15, 30, 30, tocolor( 0, 0, 0, 127 ) )
@@ -311,7 +311,7 @@ addEventHandler( "onClientRender", root,
 						else
 							key = key + 1
 						end
-						show( changeableWindows[ key ] )
+						show( changeableWindows[ key ], false, false, showMouse )
 					end
 				end
 			end
@@ -378,7 +378,7 @@ function getShowing( )
 	return windowName, forcedWindow
 end
 
-function show( name, forced, dontEnableInput )
+function show( name, forced, dontEnableInput, mouse )
 	-- destroy old window if we have one
 	if window then
 		hide( )
@@ -393,6 +393,9 @@ function show( name, forced, dontEnableInput )
 			if not dontEnableInput then
 				guiSetInputEnabled( true )
 			end
+		elseif mouse then
+			showCursor( true )
+			showMouse = true
 		end
 	end
 end
@@ -400,8 +403,8 @@ end
 function hide( )
 	window = nil
 	windowName = nil
+	showCursor( false )
 	if forcedWindow then
-		showCursor( false )
 		guiSetInputEnabled( false )
 	end
 	forcedWindow = nil

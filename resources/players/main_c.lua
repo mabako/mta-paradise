@@ -53,10 +53,8 @@ addCommandHandler( "changechar",
 			if not forced then
 				if window == 'characters' then
 					exports.gui:hide( )
-					showCursor( false )
 				else
-					exports.gui:show( 'characters', false )
-					showCursor( true )
+					exports.gui:show( 'characters', false, false, true )
 				end
 			end
 		end
@@ -73,7 +71,6 @@ function selectCharacter( id, name )
 		triggerServerEvent( getResourceName( resource ) .. ":logout", localPlayer )
 	elseif loggedIn and name == getPlayerName( localPlayer ):gsub( "_", " " ) then
 		exports.gui:hide( )
-		showCursor( false )
 	else
 		exports.gui:hide( )
 		triggerServerEvent( getResourceName( resource ) .. ":spawn", localPlayer, id )
@@ -129,7 +126,6 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 		exports.gui:hide( )
 		
 		showChat( true )
-		showCursor( false )
 		showPlayerHudComponent( "radar", true )
 		showPlayerHudComponent( "area_name", true )
 		loggedIn = true
