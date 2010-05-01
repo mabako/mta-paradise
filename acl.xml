@@ -248,6 +248,7 @@
         <right name="function.addAccount" access="true" />
         <right name="function.setAccountPassword" access="true" />
         <right name="function.removeAccount" access="true" />
+        <right name="function.getClientIP" access="true" />
     </acl>
     <acl name="kickable">
         <right name="function.kickPlayer" access="true" />

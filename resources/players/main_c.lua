@@ -25,7 +25,14 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 	function( )
 		setTimer(
 			function( )
-				exports.gui:show( 'login', true )
+				if not characters then
+					local xml = xmlCreateFile( "login.xml", "login" )
+					if xml then
+						xmlSaveFile( xml )
+						xmlUnloadFile( xml )
+					end
+					exports.gui:show( 'login', true )
+				end
 			end, 300, 1
 		)
 		
@@ -40,7 +47,16 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 
 addEventHandler( "onClientResourceStart", getResourceRootElement( ),
 	function( )
-		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer, screenX, screenY )
+		local username = nil
+		local token = nil
+		local xml = xmlLoadFile( "login.xml" )
+		if xml then
+			username = xmlNodeGetAttribute( xml, "username" )
+			token = xmlNodeGetAttribute( xml, "token" )
+			xmlUnloadFile( xml )
+			xml = nil
+		end
+		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer, screenX, screenY, username, token )
 	end
 )
 
@@ -79,7 +95,7 @@ end
 
 addEvent( getResourceName( resource ) .. ":characters", true )
 addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
-	function( chars, spawn )
+	function( chars, spawn, username, token )
 		characters = chars
 		exports.gui:updateCharacters( chars )
 		isSpawnScreen = spawn
@@ -89,6 +105,18 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 			showPlayerHudComponent( "radar", false )
 			showPlayerHudComponent( "area_name", false )
 			loggedIn = false
+		end
+		
+		-- auto-login
+		if username and token then
+			local xml = xmlCreateFile( "login.xml", "login" )
+			if xml then
+				xmlNodeSetAttribute( xml, "username", username )
+				xmlNodeSetAttribute( xml, "token", token )
+				xmlSaveFile( xml )
+				xmlUnloadFile( xml )
+				xml = nil
+			end
 		end
 	end
 )

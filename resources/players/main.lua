@@ -105,7 +105,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 )
 --
 
-local function showLoginScreen( player, screenX, screenY )
+local function showLoginScreen( player, screenX, screenY, username, token )
 	-- we need at least 800x600 for proper display of all GUI
 	if screenX and screenY then
 		if screenX < 800 or screenY < 600 then
@@ -134,6 +134,9 @@ local function showLoginScreen( player, screenX, screenY )
 	setPlayerNametagColor( source, 127, 127, 127 )
 	
 	triggerClientEvent( player, getResourceName( resource ) .. ":spawnscreen", player )
+	if username and token then
+		performLogin( source, username, token )
+	end
 end
 
 addEvent( getResourceName( resource ) .. ":ready", true )
@@ -149,27 +152,54 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 
 local p = { }
 
+local function getPlayerHash( player )
+	local ip = getPlayerIP( player ) or "255.255.255.0"
+	return ip:sub(ip:find("%d+%.%d+%.")) .. ( getPlayerSerial( player ) or "R0FLR0FLR0FLR0FLR0FLR0FLR0FLR0FL" )
+end
+
 addEvent( getResourceName( resource ) .. ":login", true )
 addEventHandler( getResourceName( resource ) .. ":login", root,
 	function( username, password )
 		if source == client then
 			if username and password and #username > 0 and #password > 0 then
-				local info = exports.sql:query_assoc_single( "SELECT userID, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salt FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('%s'))))) LIMIT 1", username, password )
-				
+				local info = exports.sql:query_assoc_single( "SELECT SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password))))))))) AS token FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('%s')))))", getPlayerHash( source ), username, password )
 				p[ source ] = nil
 				if not info then
 					triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 1 ) -- Wrong username/password
 				else
+					performLogin( source, username, info.token, true )
+				end
+			end
+		end
+	end
+)
+
+function performLogin( source, username, token, isPasswordAuth )
+	if source then
+		if username and token then
+			if #username > 0 and #token == 40 then
+				local info = exports.sql:query_assoc_single( "SELECT userID, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salt FROM wcf1_user WHERE `username` = '%s' AND SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password))))))))) = '%s' LIMIT 1", username, getPlayerHash( source ), token )
+				
+				p[ source ] = nil
+				if not info then
+					if isPasswordAuth then
+						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 1 ) -- Wrong username/password
+					else
+						return false
+					end
+				else
 					if info.banned == 1 then
 						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 2 ) -- Banned
+						return false
 					elseif info.activationCode > 0 then
 						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 3 ) -- Requires activation
+						return false
 					else
 						-- check if another user is logged in on that account
 						for player, data in pairs( p ) do
 							if data.userID == info.userID then
 								triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 5 ) -- another player with that account found
-								return
+								return false
 							end
 						end
 						p[ source ] = { userID = info.userID, username = username, groups = { } }
@@ -249,13 +279,19 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 						
 						-- show characters
 						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID .. " ORDER BY lastLogin DESC" )
-						triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
+						if isPasswordAuth then
+							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true, username, token )
+						else
+							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
+						end
+						return true
 					end
 				end
 			end
 		end
 	end
-)
+	return false
+end
 
 local function savePlayer( player )
 	if not player then
