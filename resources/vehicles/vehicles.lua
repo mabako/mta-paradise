@@ -93,7 +93,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 	end
 )
 
-addCommandHandler( "createvehicle", 
+addCommandHandler( { "createvehicle", "makevehicle" },
 	function( player, commandName, ... )
 		model = table.concat( { ... }, " " )
 		model = getVehicleModelFromName( model ) or tonumber( model )
