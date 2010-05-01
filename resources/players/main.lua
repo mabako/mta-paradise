@@ -105,7 +105,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 )
 --
 
-local function showLoginScreen( player, screenX, screenY, username, token )
+local function showLoginScreen( player, screenX, screenY, token )
 	-- we need at least 800x600 for proper display of all GUI
 	if screenX and screenY then
 		if screenX < 800 or screenY < 600 then
@@ -134,8 +134,8 @@ local function showLoginScreen( player, screenX, screenY, username, token )
 	setPlayerNametagColor( source, 127, 127, 127 )
 	
 	triggerClientEvent( player, getResourceName( resource ) .. ":spawnscreen", player )
-	if username and token then
-		performLogin( source, username, token )
+	if token and #token > 0 then
+		performLogin( source, token )
 	end
 end
 
@@ -162,24 +162,23 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 	function( username, password )
 		if source == client then
 			if username and password and #username > 0 and #password > 0 then
-				local info = exports.sql:query_assoc_single( "SELECT SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password))))))))) AS token FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('%s')))))", getPlayerHash( source ), username, password )
+				local info = exports.sql:query_assoc_single( "SELECT CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) AS token FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, " .. ( sha1 and ( "'" .. sha1(password) .. "'" ) or "SHA1('%s')" ) .. "))))", getPlayerHash( source ), getPlayerHash( source ), username, not sha1 and password )
 				p[ source ] = nil
 				if not info then
 					triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 1 ) -- Wrong username/password
 				else
-					performLogin( source, username, info.token, true )
+					performLogin( source, info.token, true )
 				end
 			end
 		end
 	end
 )
 
-function performLogin( source, username, token, isPasswordAuth )
+function performLogin( source, token, isPasswordAuth )
 	if source then
-		if username and token then
-			if #username > 0 and #token == 40 then
-				local info = exports.sql:query_assoc_single( "SELECT userID, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salt FROM wcf1_user WHERE `username` = '%s' AND SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password))))))))) = '%s' LIMIT 1", username, getPlayerHash( source ), token )
-				
+		if token then
+			if #token == 80 then
+				local info = exports.sql:query_assoc_single( "SELECT userID, username, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salts FROM wcf1_user WHERE CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) = '%s' LIMIT 1", getPlayerHash( source ), getPlayerHash( source ), token )
 				p[ source ] = nil
 				if not info then
 					if isPasswordAuth then
@@ -202,6 +201,7 @@ function performLogin( source, username, token, isPasswordAuth )
 								return false
 							end
 						end
+						local username = info.username
 						p[ source ] = { userID = info.userID, username = username, groups = { } }
 						
 						-- check for admin rights
@@ -221,7 +221,7 @@ function performLogin( source, username, token, isPasswordAuth )
 										
 										-- add an account if it doesn't exist
 										if not account then
-											account = addAccount( username, info.salt ) -- due to MTA's limitations, the password can't be longer than 30 chars
+											account = addAccount( username, info.salts ) -- due to MTA's limitations, the password can't be longer than 30 chars
 											if not account then
 												outputDebugString( "Account Error for " .. username .. " - addAccount failed.", 1 )
 											else
@@ -231,11 +231,11 @@ function performLogin( source, username, token, isPasswordAuth )
 										
 										if account then
 											-- if the player has a different account password, change it
-											if not getAccount( username, info.salt ) then
-												setAccountPassword( account, info.salt )
+											if not getAccount( username, info.salts ) then
+												setAccountPassword( account, info.salts )
 											end
 											
-											if isGuestAccount( getPlayerAccount( source ) ) and not logIn( source, account, info.salt ) then
+											if isGuestAccount( getPlayerAccount( source ) ) and not logIn( source, account, info.salts) then
 												-- something went wrong here
 												outputDebugString( "Account Error for " .. username .. " - login failed.", 1 )
 											else
@@ -280,7 +280,7 @@ function performLogin( source, username, token, isPasswordAuth )
 						-- show characters
 						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID .. " ORDER BY lastLogin DESC" )
 						if isPasswordAuth then
-							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true, username, token )
+							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true, token )
 						else
 							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
 						end

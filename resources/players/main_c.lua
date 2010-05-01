@@ -47,16 +47,14 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 
 addEventHandler( "onClientResourceStart", getResourceRootElement( ),
 	function( )
-		local username = nil
 		local token = nil
 		local xml = xmlLoadFile( "login.xml" )
 		if xml then
-			username = xmlNodeGetAttribute( xml, "username" )
-			token = xmlNodeGetAttribute( xml, "token" )
+			token = xmlNodeGetValue( xml )
 			xmlUnloadFile( xml )
 			xml = nil
 		end
-		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer, screenX, screenY, username, token )
+		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer, screenX, screenY, token and #token > 0 and token )
 	end
 )
 
@@ -96,7 +94,7 @@ end
 
 addEvent( getResourceName( resource ) .. ":characters", true )
 addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
-	function( chars, spawn, username, token )
+	function( chars, spawn, token )
 		characters = chars
 		exports.gui:updateCharacters( chars )
 		isSpawnScreen = spawn
@@ -109,11 +107,10 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 		end
 		
 		-- auto-login
-		if username and token then
+		if token then
 			local xml = xmlCreateFile( "login.xml", "login" )
 			if xml then
-				xmlNodeSetAttribute( xml, "username", username )
-				xmlNodeSetAttribute( xml, "token", token )
+				xmlNodeSetValue( xml, token )
 				xmlSaveFile( xml )
 				xmlUnloadFile( xml )
 				xml = nil
