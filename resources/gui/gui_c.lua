@@ -296,7 +296,7 @@ addEventHandler( "onClientRender", root,
 					dxDrawText( "<", x - 35, screenY / 2 - 15, x - 5, screenY / 2 + 15, tocolor( 255, 255, 255, 255 ), 1, "bankgothic", "center", "center", true, false, true )
 					if clicked.mouse1 and cursorX >= x - 35 and cursorX <= x - 5 and cursorY >= screenY / 2 - 15 and cursorY <= screenY / 2 + 15 then
 						if key == 1 then
-							key = #key
+							key = #changeableWindows
 						else
 							key = key - 1
 						end
