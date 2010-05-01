@@ -165,6 +165,7 @@
         <right name="command.respawnvehicles" access="true" />
         <right name="command.getvehicle" access="true" />
         <right name="command.gotovehicle" access="true" />
+        <right name="command.setskin" access="true" />
         <right name="function.executeCommandHandler" access="true" />
         <right name="function.setPlayerMuted" access="true" />
         <right name="function.addAccount" access="true" />

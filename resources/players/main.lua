@@ -479,13 +479,22 @@ function getMoney( player, amount )
 end
 
 --
+
+function updateCharacters( player )
+	if player and p[ player ].userID then
+		local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. p[ player ].userID .. " ORDER BY lastLogin DESC" )
+		triggerClientEvent( player, getResourceName( resource ) .. ":characters", player, chars, false )
+		return true
+	end
+	return false
+end
+
 function createCharacter( player, name )
-	if p[ player ].userID then
+	if player and p[ player ].userID then
 		if exports.sql:query_assoc_single( "SELECT characterID FROM characters WHERE characterName = '%s'", name ) then
 			triggerClientEvent( player, "players:characterCreationResult", player, 1 )
 		elseif exports.sql:query_free( "INSERT INTO characters (characterName, userID, x, y, z, interior, dimension, skin, rotation) VALUES ('%s', " .. p[ player ].userID .. ", -1984.5, 138, 27.7, 0, 0, 0, 90)", name ) then
-			local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. p[ player ].userID .. " ORDER BY lastLogin DESC" )
-			triggerClientEvent( player, getResourceName( resource ) .. ":characters", player, chars, false )
+			updateCharacters( player )
 			triggerClientEvent( player, "players:characterCreationResult", player, 0 )
 		end
 	end
