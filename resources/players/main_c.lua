@@ -130,6 +130,9 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 		showPlayerHudComponent( "area_name", true )
 		loggedIn = true
 		exports.gui:updateCharacters( characters )
+		
+		outputChatBox( " " )
+		outputChatBox( "You are now playing as " .. getPlayerName( localPlayer ):gsub( "_", " " ) .. ".", 0, 255, 0 )
 	end
 )
 
