@@ -39,4 +39,9 @@ interiorPositions =
 	
 	-- business
 	atrium = { x = 1727.04, y = -1637.84, z = 20.22, interior = 18 },
+	
+	-- police departments
+	lspd = { x = 246.75, y =  62.32, z = 1003.64, interior = 6 },
+	sfpd = { x = 246.35, y = 107.30, z = 1003.22, interior = 10 },
+	lvpd = { x = 238.72, y = 138.62, z = 1003.02, interior = 3 },
 }
