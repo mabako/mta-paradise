@@ -66,6 +66,7 @@ local function cache( window )
 	elseif window.type == "button" then
 		size = size + line_height * 2
 	elseif window.type == "pane" then
+		window.cachedtext = type( window.text ) == "function" and window.text( ) or window.text
 		size = size + 66
 	end
 	
@@ -222,7 +223,7 @@ local function draw( window, y )
 		-- draw the pane
 		dxDrawImage( x, y, 64, 64, window.image, 0, 0, 0, tocolor( 255, 255, 255, 255 ), true )
 		dxDrawText( window.title, x + 65, y, x + width, y + 18, tocolor( 255, 255, 255, 255 ), 0.6, "bankgothic", "left", "top", true, false, true )
-		dxDrawText( window.text, x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, false, true )
+		dxDrawText( window.cachedtext, x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, false, true )
 		y = y + 65
 	end
 	
