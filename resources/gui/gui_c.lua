@@ -87,7 +87,7 @@ local function draw( window, y )
 		-- draw column headers
 		for k, v in ipairs( window.columns ) do
 			-- actually draw the text
-			dxDrawText( tostring( v.name ), v.pos._start, y, v.pos._end, y + line_height, v.color and tocolor( unpack( v.color ) ) or tocolor( 255, 255, 255, 255 ), 1, v.font or "default-bold", v.alignX or "left", v.alignY or "center", true )
+			dxDrawText( tostring( v.name ), v.pos._start, y, v.pos._end, y + line_height, v.color and tocolor( unpack( v.color ) ) or tocolor( 255, 255, 255, 255 ), 1, v.font or "default-bold", v.alignX or "left", v.alignY or "center", true, false, true )
 		end
 		
 		-- go to the next line
@@ -122,7 +122,7 @@ local function draw( window, y )
 				
 				-- draw it
 				local v = window.columns[k]
-				dxDrawText( tostring( text ), v.pos._start, y, v.pos._end, y + line_height, color and tocolor( unpack( color ) ) or v.color and tocolor( unpack( v.color ) ) or tocolor( 255, 255, 255, 255 ), 1, v.font or "default-bold", v.alignX or "left", v.alignY or "center", true )
+				dxDrawText( tostring( text ), v.pos._start, y, v.pos._end, y + line_height, color and tocolor( unpack( color ) ) or v.color and tocolor( unpack( v.color ) ) or tocolor( 255, 255, 255, 255 ), 1, v.font or "default-bold", v.alignX or "left", v.alignY or "center", true, false, true )
 			end
 			
 			-- go to the next line
@@ -130,7 +130,7 @@ local function draw( window, y )
 		end
 	elseif window.type == "label" or window.type == "edit" then
 		local line_height = dxGetFontHeight( window.scale or 1, window.font or "default" ) * math.max( window.type == "edit" and 2 or 1, window.cachedlines )
-		dxDrawText( tostring( window.cachedtext ), x, y, x + width / ( window.type == "edit" and 2.7 or 1 ), y + line_height, window.color and tocolor( unpack( window.color ) ) or tocolor( 255, 255, 255, 255 ), window.scale or 1, window.font or "default", window.alignX or window.type == "edit" and "right" or "left", window.alignY or "center", true )
+		dxDrawText( tostring( window.cachedtext ), x, y, x + width / ( window.type == "edit" and 2.7 or 1 ), y + line_height, window.color and tocolor( unpack( window.color ) ) or tocolor( 255, 255, 255, 255 ), window.scale or 1, window.font or "default", window.alignX or window.type == "edit" and "right" or "left", window.alignY or "center", true, false, true )
 		
 		if window.type == "edit" then
 			if not window.edit then
