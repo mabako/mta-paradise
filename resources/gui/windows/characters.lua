@@ -18,13 +18,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 windows.characters = { }
 
 function updateCharacters( characters )
-	windows.characters = { }
+	windows.characters = { type = "pane", panes = { } }
 	
 	-- helper function
 	local function add( title, text, skin, characterID )
-		table.insert( windows.characters,
+		table.insert( windows.characters.panes,
 			{
-				type = "pane",
 				image = ":players/images/skins/" .. skin .. ".png",
 				title = title,
 				text = text,

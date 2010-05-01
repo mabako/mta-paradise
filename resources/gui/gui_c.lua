@@ -23,6 +23,7 @@ local x = ( screenX - width ) / 2
 local line_height = 16
 local max_lines = 31
 local max_height = line_height * max_lines
+local max_panes = math.floor( max_height / 66 )
 local clicked = { }
 destroy = { }
 
@@ -35,7 +36,6 @@ local function cache( window )
 		-- content generation either via a function or table
 		local content = type( window.content ) == "function" and window.content( ) or window.content
 		
-		-- let's see how far we can go
 		local max_lines = max_lines - 1
 		if #content > max_lines then
 			if not window.scrollpos then
@@ -66,8 +66,32 @@ local function cache( window )
 	elseif window.type == "button" then
 		size = size + line_height * 2
 	elseif window.type == "pane" then
-		window.cachedtext = type( window.text ) == "function" and window.text( ) or window.text
-		size = size + 66
+		local panes = window.panes
+		
+		-- let's see how far we can go
+		if #panes > max_panes then
+			if not window.scrollpos then
+				window.scrollpos = 1
+			else
+				-- use up/down scrolling
+				if clicked.mouse_wheel_up then
+					window.scrollpos = math.max( 1, window.scrollpos - math.ceil( max_panes / 2 ) )
+				elseif clicked.mouse_wheel_down then
+					window.scrollpos = math.min( #panes - max_panes + 1, window.scrollpos + math.ceil( max_panes / 2 ) )
+				end
+			end
+			
+			window.cachedpanes = { }
+			for i = window.scrollpos, math.min( #panes, window.scrollpos + max_panes - 1 ) do
+				if panes[i] then
+					table.insert( window.cachedpanes, panes[i] )
+				end
+			end
+		else
+			window.cachedpanes = panes
+		end
+		
+		size = size + ( #window.cachedpanes * 66 )
 	end
 	
 	for k, v in ipairs( window ) do
@@ -202,29 +226,31 @@ local function draw( window, y )
 		
 		y = y + line_height
 	elseif window.type == "pane" then
-		y = y + 1
-		
-		-- check for hover/click
-		if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY <= y + 64 then
-			if window.onHover then
-				window.onHover( { cursorX, cursorY }, { x, y, x + width, y + 64 } )
+		for key, value in ipairs( window.cachedpanes ) do
+			y = y + 1
+			
+			-- check for hover/click
+			if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY <= y + 64 then
+				if value.onHover then
+					value.onHover( { cursorX, cursorY }, { x, y, x + width, y + 64 } )
+				end
+				
+				if value.onClick then
+					if clicked.mouse1 then
+						value.onClick( 1, { cursorX, cursorY }, { x, y, x + width, y + 64 } )
+					end
+					if clicked.mouse2 then
+						value.onClick( 2, { cursorX, cursorY }, { x, y, x + width, y + 64 } )
+					end
+				end
 			end
 			
-			if window.onClick then
-				if clicked.mouse1 then
-					window.onClick( 1, { cursorX, cursorY }, { x, y, x + width, y + 64 } )
-				end
-				if clicked.mouse2 then
-					window.onClick( 2, { cursorX, cursorY }, { x, y, x + width, y + 64 } )
-				end
-			end
+			-- draw the pane
+			dxDrawImage( x, y, 64, 64, value.image, 0, 0, 0, tocolor( 255, 255, 255, 255 ), true )
+			dxDrawText( value.title, x + 65, y, x + width, y + 18, tocolor( 255, 255, 255, 255 ), 0.6, "bankgothic", "left", "top", true, false, true )
+			dxDrawText( tostring( type( value.text ) == "function" and value.text( ) or value.text ), x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, false, true )
+			y = y + 65
 		end
-		
-		-- draw the pane
-		dxDrawImage( x, y, 64, 64, window.image, 0, 0, 0, tocolor( 255, 255, 255, 255 ), true )
-		dxDrawText( window.title, x + 65, y, x + width, y + 18, tocolor( 255, 255, 255, 255 ), 0.6, "bankgothic", "left", "top", true, false, true )
-		dxDrawText( window.cachedtext, x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, false, true )
-		y = y + 65
 	end
 	
 	-- run all child drawings
@@ -315,6 +341,7 @@ bindKey( 'tab', 'both',
 
 addEventHandler( "onClientMouseWheel", root,
 	function( direction )
+		outputChatBox( tostring( direction ) )
 		if direction > 0 then
 			clicked.mouse_wheel_up = true
 		else
@@ -334,6 +361,8 @@ addEventHandler( "onClientClick", root,
 		end
 	end
 )
+bindKey( 'mouse_wheel_up', 'down', function( ) clicked.mouse_wheel_up = true end )
+bindKey( 'mouse_wheel_down', 'down', function( ) clicked.mouse_wheel_down = true end )
 
 addEventHandler( "onClientPlayerRadioSwitch", root,
 	function( )
@@ -349,7 +378,7 @@ function getShowing( )
 	return windowName, forcedWindow
 end
 
-function show( name, forced )
+function show( name, forced, dontEnableInput )
 	-- destroy old window if we have one
 	if window then
 		hide( )
@@ -361,7 +390,9 @@ function show( name, forced )
 		if forced then
 			forcedWindow = true
 			showCursor( true )
-			guiSetInputEnabled( true )
+			if not dontEnableInput then
+				guiSetInputEnabled( true )
+			end
 		end
 	end
 end
