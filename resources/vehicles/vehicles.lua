@@ -164,7 +164,7 @@ function create( player, vehicle )
 	end
 end
 
-addCommandHandler( "deletevehicle", 
+addCommandHandler( { "deletevehicle", "delvehicle" },
 	function( player, commandName, vehicleID )
 		vehicleID = tonumber( vehicleID )
 		if vehicleID then
