@@ -142,7 +142,7 @@ function create( player, vehicle )
 			local dimension = getElementDimension( vehicle )
 			local color1, color2 = getVehicleColor( vehicle )
 			
-			local vehicleID, error = exports.sql:query_insertid( "INSERT INTO vehicles (model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, color1, color2, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, interior, dimension, respawnInterior, respawnDimension) VALUES (" .. table.concat( { model, x, y, z, rx, ry, rz, '"%s"', color1, color2, x, y, z, rx, ry, rz, interior, dimension, interior, dimension }, ", " ) .. ")", getVehiclePlateText( vehicle ) )
+			local vehicleID, error = exports.sql:query_insertid( "INSERT INTO vehicles (model, posX, posY, posZ, rotX, rotY, rotZ, numberplate, color1, color2, respawnPosX, respawnPosY, respawnPosZ, respawnRotX, respawnRotY, respawnRotZ, interior, dimension, respawnInterior, respawnDimension, characterID) VALUES (" .. table.concat( { model, x, y, z, rx, ry, rz, '"%s"', color1, color2, x, y, z, rx, ry, rz, interior, dimension, interior, dimension, characterID }, ", " ) .. ")", getVehiclePlateText( vehicle ) )
 			if vehicleID then
 				local newVehicle = createVehicle( model, x, y, z, rx, ry, rz, getVehiclePlateText( vehicle ) )
 				
