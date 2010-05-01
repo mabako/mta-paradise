@@ -22,6 +22,13 @@ if registrationErrorMessage then
 	registrationErrorMessage = registrationErrorMessage:gsub( "\\n", "\n" )
 end
 
+addEventHandler( "onResourceStart", resourceRoot,
+	function( )
+		setElementData( source, "allowRegistration", allowRegistration )
+		setElementData( source, "registrationErrorMessage", registrationErrorMessage )
+	end
+)
+
 local function trim( str )
 	return str:gsub("^%s*(.-)%s*$", "%1")
 end

@@ -33,8 +33,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="getFromName"/>
 	<export function="getID"/>
 	
-	<file src="logo.png"/>
-	
 	<include resource="sql"/>
 	
 	<!-- Skin Images -->
