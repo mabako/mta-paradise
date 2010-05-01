@@ -480,7 +480,7 @@ addCommandHandler( "lockvehicle",
 			local vehicle = getPedOccupiedVehicle( player )
 			local vehicleID = vehicle and vehicles[ vehicle ] and vehicles[ vehicle ].vehicleID
 			if vehicleID then
-				local driver = getVehicleOccupant( vehicle ) == "player"
+				local driver = getVehicleOccupant( vehicle ) == player
 				if driver or exports.items:has( player, 1, vehicleID ) or driver then
 					lockVehicle( player, vehicle, driver )
 				end
