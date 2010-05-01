@@ -22,7 +22,11 @@ local screenX, screenY = guiGetScreenSize( )
 addEvent( getResourceName( resource ) .. ":spawnscreen", true )
 addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 	function( )
-		exports.gui:show( 'login', true )
+		setTimer(
+			function( )
+				exports.gui:show( 'login', true )
+			end, 300, 1
+		)
 		
 		fadeCamera( true, 1 )
 		showChat( false )
