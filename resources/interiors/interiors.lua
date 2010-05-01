@@ -120,7 +120,7 @@ addCommandHandler( "setinterior",
 						int.blip = not int.locked and getElementDimension( int.outside ) == 0 and not getElementData( int.outside, "price" ) and createBlipEx( int.outside, int.inside )
 						
 						-- show a message
-						outputChatBox( "Interior updated.", player, 0, 255, 0 )
+						outputChatBox( "Interior updated - new id: " .. id:lower( ) .. ".", player, 0, 255, 0 )
 					else
 						outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 					end
@@ -153,7 +153,34 @@ addCommandHandler( "setinteriorprice",
 					int.price = price
 					
 					-- show a message
-					outputChatBox( "Interior updated.", player, 0, 255, 0 )
+					outputChatBox( "Interior updated - new price: $" .. price .. ".", player, 0, 255, 0 )
+				else
+					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [price]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+addCommandHandler( "setinteriorname",
+	function( player, commandName, ... )
+		local name = table.concat( { ... }, " " )
+		if #name > 0 then
+			local int = interiors[ getElementDimension( player ) ]
+			if int then
+				-- change the price in the db
+				if exports.sql:query_free( "UPDATE interiors SET interiorName = '%s' WHERE interiorID = " .. getElementDimension( player ), name ) then
+					-- update the name
+					int.name = name
+					setElementData( int.outside, "name", name )
+					
+					-- show a message
+					outputChatBox( "Interior updated - new name: " .. name .. ".", player, 0, 255, 0 )
 				else
 					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 				end
@@ -183,6 +210,10 @@ addCommandHandler( "getinterior",
 				
 				if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) then
 					outputChatBox( "id: " .. name, player, 255, 255, 255 )
+				end
+				
+				if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorname", false ) then
+					outputChatBox( "name: " .. int.name, player, 255, 255, 255 )
 				end
 				
 				if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorprice", false ) then
