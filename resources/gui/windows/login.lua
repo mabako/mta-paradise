@@ -146,6 +146,8 @@ setTimer(
 					setMessage( "Registration is disabled." )
 				elseif code == 3 then
 					setMessage( "This username already exists." )
+				elseif code == 4 then
+					setMessage( "Database error." )
 				end
 			end
 		)
