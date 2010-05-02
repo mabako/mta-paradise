@@ -63,3 +63,23 @@ addCommandHandler( "get",
 	end,
 	true
 )
+
+addCommandHandler( "goto",
+	function( player, commandName, otherPlayer )
+		if otherPlayer then
+			local other, name = exports.players:getFromName( player, otherPlayer )
+			if other then
+				-- todo: vehicle teleports
+				removePedFromVehicle( player )
+				
+				local x, y, z = getElementPosition( other )
+				setElementPosition( player, x + 1, y, z )
+				setElementInterior( player, getElementInterior( other ) )
+				setElementDimension( player, getElementDimension( other ) )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
