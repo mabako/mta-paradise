@@ -1,0 +1,8 @@
+<meta>
+	<info author="jbeta" name="Scripting console" type="script" version="1.0.1"/>
+	<script src="client.lua" type="client"/>
+	<script src="client_util.lua" type="client"/>
+	<script src="server.lua" type="server"/>
+	<script src="server_util.lua" type="server"/>
+</meta>
+
