@@ -86,6 +86,20 @@ addCommandHandler( "do",
 	end
 )
 
+-- /c
+addCommandHandler( "c", 
+	function( thePlayer, commandName, ... )
+		if exports.players:isLoggedIn( thePlayer ) and not isPedDead( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				localMessage( thePlayer, " " .. getPlayerName( thePlayer ) .. " whispers: " .. message, 255, 255, 255, 3 )
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [local ic text]", thePlayer, 255, 255, 255 )
+			end
+		end
+	end
+)
+
 -- /b; bound to 'b' client-side
 addCommandHandler( { "b", "LocalOOC" },
 	function( thePlayer, commandName, ... )
