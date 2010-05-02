@@ -33,6 +33,9 @@ local function connect( )
 	-- connect
 	connection = mysql_connect ( server, user, password, db, port )
 	if connection then
+		if user == "root" then
+			setTimer( outputDebugString, 100, 1, "Connecting to your MySQL as 'root' is strongly discouraged.", 2 )
+		end
 		return true
 	else
 		outputDebugString ( "Connection to MySQL Failed.", 1 )
