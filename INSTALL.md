@@ -10,7 +10,7 @@ To make your server use your MySQL database, edit your *settings.xml* to at leas
 
     <settings>
         <!-- MySQL Configuration -->
-        <setting name="@sql.username" value="username"/>
+        <setting name="@sql.user" value="username"/>
         <setting name="@sql.password" value="password"/>
         <setting name="@sql.database" value="database"/>
         <setting name="@sql.hostname" value="localhost"/>
