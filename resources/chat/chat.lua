@@ -20,8 +20,26 @@ local _getPlayerName = getPlayerName
 local getPlayerName = function( x ) return _getPlayerName( x ):gsub( "_", " " ) end
 
 -- addCommandHandler supporting arrays as command names (multiple commands with the same function)
-local _addCommandHandler = addCommandHandler
-local addCommandHandler = function( a, ... ) if type( a ) ~= "table" then a = { a } end for _, value in ipairs( a ) do addCommandHandler( value, ... ) end end
+local addCommandHandler_ = addCommandHandler
+      addCommandHandler  = function( commandName, fn, restricted, caseSensitive )
+	-- add the default command handlers
+	if type( commandName ) ~= "table" then
+		commandName = { commandName }
+	end
+	for key, value in ipairs( commandName ) do
+		if key == 1 then
+			addCommandHandler_( value, fn, restricted, caseSensitive )
+		else
+			addCommandHandler_( value,
+				function( player, ... )
+					-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
+					if hasObjectPermissionTo( player, "command." .. commandName[ 1 ], not restricted ) then
+						fn( player, ... )
+					end
+				end
+			)
+		end
+	end
 
 -- returns all players within <range> units away <from>
 local function getPlayersInRange( from, range )
@@ -140,6 +158,20 @@ addCommandHandler( { "o", "GlobalOOC" },
 			end
 		end
 	end
+)
+
+addCommandHandler( { "announce", "ann" },
+	function( thePlayer, commandName, ... )
+		if exports.players:isLoggedIn( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				outputChatBox( "*** " .. message .. " ***", root, 0, 255, 153 )
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [text]", thePlayer, 255, 255, 255 )
+			end
+		end
+	end,
+	true
 )
 
 -- /pm to message other players
