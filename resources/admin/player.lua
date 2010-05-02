@@ -43,3 +43,23 @@ addCommandHandler( "setskin",
 	end,
 	true
 )
+
+addCommandHandler( "get",
+	function( player, commandName, otherPlayer )
+		if otherPlayer then
+			local other, name = exports.players:getFromName( player, otherPlayer )
+			if other then
+				-- todo: vehicle teleports
+				removePedFromVehicle( other )
+				
+				local x, y, z = getElementPosition( player )
+				setElementPosition( other, x + 1, y, z )
+				setElementInterior( other, getElementInterior( player ) )
+				setElementDimension( other, getElementDimension( player ) )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
