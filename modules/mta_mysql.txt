@@ -1,2 +1,0 @@
-Windows: 
-  Copy libmysql.dll to ../../../ (same directory as MTA Server.exe)

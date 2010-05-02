@@ -35,6 +35,9 @@ with
 
         <module src="mta_mysql.so"/>
 
+### Windows
+You need to copy the file *mods/deathmatch/modules/libmysql.dll* to your *MTA Server* directory (the one with MTA Server.exe in it)
+
 ### Ready to go!
 
 Assuming your MySQL connection details are correctly set up, all left to do is to start the MTA server. Otherwise, the server will keep shutting down on startup, look at *mods/deathmatch/logs/server.log* for a detailed error message.
