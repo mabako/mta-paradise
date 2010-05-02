@@ -141,7 +141,6 @@
         <right name="command.refreshall" access="true" />
         <right name="command.addaccount" access="true" />
         <right name="command.delaccount" access="true" />
-        <right name="command.debugscript" access="true" />
         <right name="command.kick" access="true" />
         <right name="command.ban" access="true" />
         <right name="command.banip" access="true" />
@@ -207,6 +206,7 @@
     <acl name="Developer">
         <right name="command.srun" access="true" />
         <right name="command.crun" access="true" />
+        <right name="command.debugscript" access="true" />
     </acl>
     <acl name="RPC">
         <right name="function.callRemote" access="true" />
