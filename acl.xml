@@ -6,8 +6,12 @@
     </group>
     <group name="Admin">
         <acl name="Admin" />
+        <acl name="Moderator" />
         <acl name="RPC" />
         <object name="user.mabako" />
+    </group>
+    <group name="Moderator">
+        <acl name="Moderator" />
     </group>
     <group name="Console">
         <acl name="Admin" />
@@ -130,6 +134,18 @@
         <right name="function.mysql_stat" access="false" />
         <right name="function.mysql_warning_count" access="false" />
     </acl>
+    <acl name="Moderator">
+        <right name="command.repairvehicle" access="true" />
+        <right name="command.repairvehicles" access="true" />
+        <right name="command.respawnvehicle" access="true" />
+        <right name="command.respawnvehicles" access="true" />
+        <right name="command.getvehicle" access="true" />
+        <right name="command.gotovehicle" access="true" />
+        <right name="command.setskin" access="true" />
+        <right name="command.get" access="true" />
+        <right name="command.goto" access="true" />
+        <right name="command.announce" access="true" />
+    </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />
         <right name="general.http" access="true" />
@@ -154,16 +170,6 @@
         <right name="command.setinteriorprice" access="true" />
         <right name="command.createvehicle" access="true" />
         <right name="command.deletevehicle" access="true" />
-        <right name="command.repairvehicle" access="true" />
-        <right name="command.repairvehicles" access="true" />
-        <right name="command.respawnvehicle" access="true" />
-        <right name="command.respawnvehicles" access="true" />
-        <right name="command.getvehicle" access="true" />
-        <right name="command.gotovehicle" access="true" />
-        <right name="command.setskin" access="true" />
-        <right name="command.get" access="true" />
-        <right name="command.goto" access="true" />
-        <right name="command.announce" access="true" />
         <right name="function.executeCommandHandler" access="true" />
         <right name="function.setPlayerMuted" access="true" />
         <right name="function.addAccount" access="true" />

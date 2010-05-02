@@ -75,7 +75,7 @@ CREATE TABLE `wcf1_group` (
  `groupName` varchar(255) NOT NULL default '',
  PRIMARY KEY  (`groupID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-INSERT INTO `wcf1_group` (`groupID`, `groupName`) VALUES (1, 'MTA Administrators');
+INSERT INTO `wcf1_group` (`groupID`, `groupName`) VALUES (1, 'MTA Administrators'), (2, 'Developers'), (3, 'MTA Moderators');
 
 CREATE TABLE `wcf1_user_to_groups` (
  `userID` int(10) unsigned NOT NULL default '0',
