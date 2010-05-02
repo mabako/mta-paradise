@@ -9,6 +9,7 @@
         <acl name="Moderator" />
         <acl name="RPC" />
         <object name="user.mabako" />
+        <object name="resource.admin" />
     </group>
     <group name="Moderator">
         <acl name="Moderator" />
@@ -16,6 +17,7 @@
     <group name="Console">
         <acl name="Admin" />
         <acl name="RPC" />
+        <acl name="Developer" />
         <object name="user.Console" />
     </group>
     <group name="RPC">
@@ -216,6 +218,7 @@
         <right name="command.srun" access="true" />
         <right name="command.crun" access="true" />
         <right name="command.debugscript" access="true" />
+        <right name="command.reloadacl" access="true" />
     </acl>
     <acl name="RPC">
         <right name="function.callRemote" access="true" />

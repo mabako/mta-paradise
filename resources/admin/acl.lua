@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,10 +13,21 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<info author="mabako" name="Admin-Script via Commands" version="1.0"/>
-	
-	<script src="acl.lua"/>
-	<script src="player.lua"/>
-</meta>
+]]
+
+addCommandHandler( "reloadacl",
+	function( player )
+		if aclReload( ) then
+			outputServerLog( "ACL has been reloaded. (Requested by " .. ( not player and "Console" or getAccountName( getPlayerAccount( player ) ) or getPlayerName(player) ) .. ")" )
+			if player then
+				outputChatBox( "ACL has been reloaded.", player, 0, 255, 0 )
+			end
+		else
+			outputServerLog( "ACL reload failed. (Requested by " .. ( not player and "Console" or getAccountName( getPlayerAccount( player ) ) or getPlayerName(player) ) .. ")" )
+			if player then
+				outputChatBox( "ACL reload failed.", player, 255, 0, 0 )
+			end
+		end
+	end,
+	true
+)
