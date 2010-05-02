@@ -21,9 +21,9 @@ addEvent( "onCharacterLogout", false )
 
 -- Import Groups
 local groups = {
-	{ groupName = "MTA Moderators", groupID = false, aclGroup = "Moderator", displayName = "Moderator", nametagColor = { 255, 255, 191 } },
-	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator", nametagColor = { 255, 255, 91 } },
-	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer", nametagColor = { 191, 255, 191 } },
+	{ groupName = "MTA Moderators", groupID = false, aclGroup = "Moderator", displayName = "Moderator", nametagColor = { 255, 255, 191, priority = 5 } },
+	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator", nametagColor = { 255, 255, 91, priority = 10 } },
+	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer", nametagColor = { 191, 255, 191, priority = 20 } },
 }
 
 addEventHandler( "onResourceStart", resourceRoot,
@@ -382,10 +382,12 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					end
 					setPlayerName( source, mtaCharName )
 					setPlayerNametagText( source, "[" .. getID( source ) .. "] " .. char.characterName )
-					local nametagColor = { 255, 255, 255 }
+					local nametagColor = { 255, 255, 255, priority = 0 }
 					for key, value in ipairs( p[ source ].groups ) do
 						if value.nametagColor then
-							nametagColor = value.nametagColor
+							if value.nametagColor.priority > nametagColor.priority then
+								nametagColor = value.nametagColor
+							end
 						end
 					end
 					setPlayerNametagColor( source, unpack( nametagColor ) )
