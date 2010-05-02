@@ -37,6 +37,8 @@ addCommandHandler( "setskin",
 					outputChatBox( "Skin " .. skin .. " is invalid.", player, 255, 0, 0 )
 				end
 			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [skin]", player, 255, 255, 255 )
 		end
 	end,
 	true
