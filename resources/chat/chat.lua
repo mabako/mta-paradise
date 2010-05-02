@@ -40,6 +40,7 @@ local addCommandHandler_ = addCommandHandler
 			)
 		end
 	end
+end
 
 -- returns all players within <range> units away <from>
 local function getPlayersInRange( from, range )
