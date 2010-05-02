@@ -1,5 +1,17 @@
 local function runString (commandstring)
 	outputChatBoxR("Executing client-side command: "..commandstring)
+	
+	-- wrap a few custom variables
+	source = getLocalPlayer( )
+	p = getPlayerFromName
+	c = function(p) return getPedOccupiedVehicle(p) or getPedContactElement(p) end
+	vehicle = c(source)
+	car = c(source)
+	res = getResourceFromName
+	rr = getResourceRootElement
+	set = setElementData
+	get = getElementData
+	
 	local notReturned
 	--First we test with return
 	local commandFunction,errorMsg = loadstring("return "..commandstring)

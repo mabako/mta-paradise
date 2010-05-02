@@ -8,6 +8,20 @@ function runString (commandstring, outputTo, source)
 		sourceName = "Console"
 	end
 	outputChatBoxR(sourceName.." executed command: "..commandstring, outputTo)
+	
+	-- wrap a few custom variables
+	source = source
+	p = getPlayerFromName
+	c = function(p) return getPedOccupiedVehicle(p) or getPedContactElement(p) end
+	vehicle = c(source)
+	car = c(source)
+	res = getResourceFromName
+	rr = getResourceRootElement
+	settingsSet = set
+	settingsGet = get
+	set = setElementData
+	get = getElementData
+	
 	local notReturned
 	--First we test with return
 	local commandFunction,errorMsg = loadstring("return "..commandstring)
