@@ -578,3 +578,10 @@ addCommandHandler( "togglelights",
 		end
 	end
 )
+
+function getOwner( vehicle )
+	if vehicles[ vehicle ] then
+		local owner = vehicles[ vehicle ].characterID
+		return owner ~= 0 and owner or false -- false is in that case civilian
+	end
+end

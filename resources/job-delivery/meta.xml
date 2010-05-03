@@ -15,12 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <meta>
-	<script src="vehicles.lua"/>
-	<script src="vehicles_c.lua" type="client"/>
-	<script src="util.lua"/>
+	<script src="delivery.lua"/>
+	<script src="delivery_c.lua" type="client"/>
 	
-	<export function="create"/>
-	<export function="getOwner"/>
+	<include resource="vehicles"/>
+	<include resource="shops"/>
+	<include resource="interiors"/>
 	
-	<include resource="sql"/>
+	<settings>
+		<!-- (Civilian) Vehicles you can use for the delivery job -->
+		<setting name="#vehicles" value="[['Mule', 'Yankee']]" />
+	</settings>
 </meta>

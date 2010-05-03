@@ -1,0 +1,77 @@
+--[[
+Copyright (c) 2010 MTA: Paradise
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+]]
+
+local localPlayer = getLocalPlayer( )
+local position = nil
+local marker = nil
+local blip = nil
+
+local function hideDropOff( )
+	if isElement( blip ) then
+		destroyElement( blip )
+	end
+	blip = nil
+	
+	if isElement( marker ) then
+		destroyElement( marker )
+	end
+	marker = nil
+end
+
+local function showDropOff( )
+	hideDropOff( )
+	
+	if position then
+		-- in lack of a more detailed close-location (aka we use the entrance), use large markers
+		marker = createMarker( position.x, position.y, position.z, "checkpoint", 17.5, 0, 255, 0, 63 )
+		if marker then
+			blip = createBlipAttachedTo( marker, 0, 3, 0, 255, 0, 255 )
+		end
+	end
+end
+
+addEvent( "job-delivery:showdropoff", true )
+addEventHandler( "job-delivery:showdropoff", localPlayer, showDropOff )
+
+addEvent( "job-delivery:setdropoff", true )
+addEventHandler( "job-delivery:setdropoff", localPlayer,
+	function( x, y, z )
+		if x and y and z then
+			position = { x = x, y = y, z = z }
+			showDropOff( )
+		else
+			position = nil
+			hideDropOff( )
+		end
+	end
+)
+
+addEventHandler( "onClientPlayerVehicleExit", localPlayer, hideDropOff )
+
+addEventHandler( "onClientResourceStart", resourceRoot,
+	function( )
+		triggerServerEvent( "job-delivery:ready", localPlayer )
+	end
+)
+
+addEventHandler( "onClientMarkerHit", resourceRoot,
+	function( element, matching )
+		if matching and element == localPlayer then
+			triggerServerEvent( "job-delivery:complete", localPlayer )
+		end
+	end
+)
