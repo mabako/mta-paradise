@@ -18,17 +18,44 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- we don't want our shops to die, do we?
 addEventHandler( "onClientPedDamage", resourceRoot, cancelEvent )
 
+--
+
+local currentShop = false
+local shopCache = { }
+
+addEvent( "shops:sync", true )
+addEventHandler( "shops:sync", resourceRoot,
+	function( id, content )
+		shopCache[ id ] = content
+	end
+)
+
+addEvent( "shops:clear", true )
+addEventHandler( "shops:clear", resourceRoot,
+	function( id )
+		shopCache[ id ] = nil
+		
+		if currentShop == id and exports.gui:getShowing( ) == 'shop' then
+			exports.gui:hide( )
+		end
+	end
+)
+
+--
+
 addEvent( "shops:open", true )
 addEventHandler( "shops:open", resourceRoot,
 	function( configuration )
-		local c = shop_configurations[ configuration ]
+		local c = shopCache[ configuration ] or shop_configurations[ configuration ] or { }
 		local items = { }
 		for key, value in ipairs( c ) do
 			table.insert( items, value )
 		end
 		
-		exports.gui:updateShopContent( items, c.name )
+		exports.gui:updateShopContent( items, c.name or "" )
 		exports.gui:show( 'shop' )
+		
+		currentShop = configuration
 	end
 )
 
