@@ -10,7 +10,7 @@ function runString (commandstring, outputTo, source)
 	outputChatBoxR(sourceName.." executed command: "..commandstring, outputTo)
 	
 	-- wrap a few custom variables
-	source = source
+	_G['source'] = source
 	p = getPlayerFromName
 	c = function(p) return getPedOccupiedVehicle(p) or getPedContactElement(p) end
 	vehicle = c(source)
