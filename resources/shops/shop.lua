@@ -75,7 +75,7 @@ addEventHandler( "onPedWasted", resourceRoot,
 )
 
 local function loadShop( shopID, x, y, z, rotation, interior, dimension, configuration, skin )
-	shops[ shopID ] = { x = x, y = y, z = z, rotation = rotation, interior = interior, dimension = dimension, configuration = configuration, skin = skin }
+	shops[ shopID ] = { shopID = shopID, x = x, y = y, z = z, rotation = rotation, interior = interior, dimension = dimension, configuration = configuration, skin = skin }
 	if not createShopPed( shopID ) then
 		outputDebugString( "shop creation failed: shop " .. tostring( shopID ) )
 	end
@@ -161,6 +161,28 @@ addCommandHandler( "createshop",
 	true
 )
 
+local function deleteShop( shopID )
+	local shop = shops[ shopID ]
+	if shop then
+		-- close gui using this shop
+		for player, data in pairs( p ) do
+			if data.shopID == shopID then
+				triggerClientEvent( player, "shops:clear", shop.ped or resourceRoot )
+				p[ player ].shopID = nil
+			end
+		end
+		
+		-- remove from shops list
+		if shop.ped then
+			destroyElement( shop.ped )
+			shops[ shop.ped ] = nil
+		end
+		
+		-- unset
+		shops[ shopID ] = nil
+	end
+end
+
 addCommandHandler( { "deleteshop", "delshop" },
 	function( player, commandName, shopID )
 		shopID = tonumber( shopID )
@@ -169,23 +191,7 @@ addCommandHandler( { "deleteshop", "delshop" },
 			if shop then
 				if exports.sql:query_free( "DELETE FROM shops WHERE shopID = " .. shopID ) and exports.sql:query_free( "DELETE FROM shopitems WHERE shopID = " .. shopID ) then
 					outputChatBox( "You deleted shop " .. shopID .. ".", player, 0, 255, 153 )
-					
-					-- close gui using this shop
-					for player, data in pairs( p ) do
-						if data.shopID == shopID then
-							triggerClientEvent( player, "shops:clear", shop.ped or resourceRoot )
-							p[ player ].shopID = nil
-						end
-					end
-					
-					-- remove from shops list
-					if shop.ped then
-						destroyElement( shop.ped )
-						shops[ shop.ped ] = nil
-					end
-					
-					-- unset
-					shops[ shopID ] = nil
+					deleteShop( shopID )
 				else
 					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 				end
@@ -272,3 +278,19 @@ addEventHandler( "shops:buy", root,
 		end
 	end
 )
+
+--
+
+function clearDimension( dimension )
+	if dimension then
+		for key, value in pairs( shops ) do
+			if type( value ) == "table" then
+				if value.dimension == dimension then
+					if exports.sql:query_free( "DELETE FROM shops WHERE shopID = " .. value.shopID ) and exports.sql:query_free( "DELETE FROM shopitems WHERE shopID = " .. value.shopID ) then
+						deleteShop( value.shopID )
+					end
+				end
+			end
+		end
+	end
+end

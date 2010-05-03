@@ -15,6 +15,50 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addCommandHandler_ = addCommandHandler
+      addCommandHandler  = function( commandName, fn, restricted, caseSensitive )
+	-- add the default command handlers
+	if type( commandName ) ~= "table" then
+		commandName = { commandName }
+	end
+	for key, value in ipairs( commandName ) do
+		if key == 1 then
+			addCommandHandler_( value, fn, restricted, caseSensitive )
+		else
+			addCommandHandler_( value,
+				function( player, ... )
+					-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
+					if hasObjectPermissionTo( player, "command." .. commandName[ 1 ], not restricted ) then
+						fn( player, ... )
+					end
+				end
+			)
+		end
+	end
+	
+	-- check for alternative handlers, such as createinterior = createint
+	for k, v in ipairs( commandName ) do
+		if v:find( "interior" ) then
+			for key, value in pairs( { "int" } ) do
+				local newCommand = v:gsub( "vehicle", value )
+				if newCommand ~= v then
+					-- add a second (replaced) command handler
+					addCommandHandler_( newCommand,
+						function( player, ... )
+							-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
+							if hasObjectPermissionTo( player, "command." .. commandName[ 1 ], not restricted ) then
+								fn( player, ... )
+							end
+						end
+					)
+				end
+			end
+		end
+	end
+end
+
+--
+
 local interiors = { }
 local colspheres = { }
 
@@ -114,6 +158,46 @@ addCommandHandler( "createinterior",
 	true
 )
 
+addCommandHandler( { "deleteinterior", "delinterior" },
+	function( player, commandName, interiorID )
+		interiorID = tonumber( interiorID )
+		if interiorID then
+			local interior = interiors[ interiorID ]
+			if interior then
+				if exports.sql:query_free( "DELETE FROM interiors WHERE interiorID = " .. interiorID ) then
+					outputChatBox( "You deleted interior " .. interiorID .. ".", player, 0, 255, 153 )
+					
+					-- teleport all players who're inside to the exit
+					for key, value in ipairs( getElementsByType( "player" ) ) do
+						if exports.players:isLoggedIn( value ) and getElementDimension( value ) == interiorID then
+							setElementPosition( value, getElementPosition( interior.outside ) )
+							setElementInterior( value, getElementInterior( interior.outside ) )
+							setElementDimension( value, getElementDimension( interior.outside ) )
+						end
+					end
+					-- cleanup now unused shops
+					exports.shops:clearDimension( interiorID )
+					
+					-- delete the markers
+					destroyElement( interior.outside )
+					destroyElement( interior.inside )
+					if interior.blip then
+						destroyElement( interior.blip )
+					end
+				else
+					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "Shop not found.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+
 addCommandHandler( "setinterior",
 	function( player, commandName, id )
 		if id then
@@ -128,7 +212,7 @@ addCommandHandler( "setinterior",
 						
 						-- teleport all players to the new point
 						for key, value in ipairs( getElementsByType( "player" ) ) do
-							if exports.players:isLoggedIn( value ) then
+							if exports.players:isLoggedIn( value ) and getElementDimension( value ) == getElementDimension( player ) then
 								setElementPosition( value, interior.x, interior.y, interior.z )
 								setElementInterior( value, interior.interior )
 							end
@@ -219,7 +303,7 @@ addCommandHandler( "setinteriorname",
 addCommandHandler( "getinterior",
 	function( player, ... )
 		-- check if he has permissions to see at least one prop
-		if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorprice", false ) then
+		if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.deleteinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorprice", false ) then
 			local int = interiors[ getElementDimension( player ) ]
 			if int then
 				local interior = getElementInterior( int.inside )
@@ -230,7 +314,7 @@ addCommandHandler( "getinterior",
 				-- check if he has permissions to view each of the props
 				outputChatBox( "-- Interior " .. getElementDimension( player ) .. " --", player, 255, 255, 255 )
 				
-				if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) then
+				if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.deleteinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) then
 					outputChatBox( "id: " .. name, player, 255, 255, 255 )
 				end
 				

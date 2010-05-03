@@ -79,3 +79,9 @@ addEventHandler( "onClientRender", getRootElement( ),
 		end
 	end
 )
+
+addEventHandler( "onClientElementDestroy", resourceRoot,
+	function( )
+		destroy( source )
+	end
+)
