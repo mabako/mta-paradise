@@ -42,9 +42,7 @@ local p = { }
 -- this would ideally be done depending on what shops order supplies/which government owned shops are even low on supplies
 local function getNextDropOffPoint( current )
 	-- select a random dropoff point as in an interior with a shop in it.
-	local query = "SELECT interiorID, outsideX, outsideY, outsideZ, interiorName FROM shops s LEFT JOIN interiors i ON dimension = interiorID WHERE outsideDimension = 0 AND (characterID != 0 OR interiorType = 0)" .. ( current and ( " AND interiorID != " .. tonumber( current ) ) or "" ) .. " GROUP BY interiorID ORDER BY RAND() LIMIT 1"
-	outputServerLog( query )
-	local result = exports.sql:query_assoc_single( query )
+	local result = exports.sql:query_assoc_single( "SELECT interiorID, outsideX, outsideY, outsideZ, interiorName FROM shops s LEFT JOIN interiors i ON dimension = interiorID WHERE outsideDimension = 0 AND (characterID != 0 OR interiorType = 0)" .. ( current and ( " AND interiorID != " .. tonumber( current ) ) or "" ) .. " GROUP BY interiorID ORDER BY RAND() LIMIT 1" )
 	if result then
 		-- it would probably help if we used the position to calculate some position on the street or sidewalk
 		return result.interiorID, result.outsideX, result.outsideY, result.outsideZ, result.interiorName
