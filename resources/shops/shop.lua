@@ -57,6 +57,33 @@ end
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
+		-- check for our tables to exist
+		if not exports.sql:create_table( 'shops', 
+			{
+				{ name = 'shopID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
+				{ name = 'x', type = 'float' },
+				{ name = 'y', type = 'float' },
+				{ name = 'z', type = 'float' },
+				{ name = 'rotation', type = 'float' },
+				{ name = 'interior', type = 'int(10) unsigned' },
+				{ name = 'dimension', type = 'int(10) unsigned' },
+				{ name = 'configuration', type = 'varchar(45)' },
+				{ name = 'skin', type = 'int(10) unsigned', default = 0 },
+			} ) then cancelEvent( ) return end
+		
+		if not exports.sql:create_table( 'shopitems',
+			{
+				{ name = 'shopItemID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
+				{ name = 'shopID', type = 'int(10) unsigned' },
+				{ name = 'item', type = 'int(10) unsigned' },
+				{ name = 'value', type = 'text' },
+				{ name = 'name', type = 'text', null = true },
+				{ name = 'description', type = 'text', null = true },
+				{ name = 'price', type = 'int(10) unsigned' },
+			} ) then cancelEvent( ) return end
+		
+		--
+		
 		local result = exports.sql:query_assoc( "SELECT * FROM shops ORDER BY shopID ASC" )
 		if result then
 			for key, data in ipairs( result ) do

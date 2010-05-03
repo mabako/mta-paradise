@@ -22,20 +22,77 @@ addEvent( "onCharacterLogout", false )
 -- Import Groups
 local groups = {
 	{ groupName = "MTA Moderators", groupID = false, aclGroup = "Moderator", displayName = "Moderator", nametagColor = { 255, 255, 191, priority = 5 } },
-	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator", nametagColor = { 255, 255, 91, priority = 10 } },
+	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator", nametagColor = { 255, 255, 91, priority = 10 }, defaultForFirstUser = true },
 	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer", nametagColor = { 191, 255, 191, priority = 20 } },
 }
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		-- import all groups
-		local data = exports.sql:query_assoc( "SELECT groupID, groupName FROM wcf1_group" )
-		if data then
-			for key, value in ipairs( data ) do
-				for key2, value2 in ipairs( groups ) do
-					if value.groupName == value2.groupName then
-						value2.groupID = value.groupID
+		-- create all mysql tables
+		if not exports.sql:create_table( 'characters',
+			{
+				{ name = 'characterID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
+				{ name = 'characterName', type = 'varchar(22)' },
+				{ name = 'userID', type = 'int(10) unsigned' },
+				{ name = 'x', type = 'float' },
+				{ name = 'y', type = 'float' },
+				{ name = 'z', type = 'float' },
+				{ name = 'interior', type = 'int(10) unsigned' },
+				{ name = 'dimension', type = 'int(10) unsigned' },
+				{ name = 'skin', type = 'int(10) unsigned' },
+				{ name = 'rotation', type = 'float' },
+				{ name = 'health', type = 'tinyint(3) unsigned', default = 100 },
+				{ name = 'armor', type = 'tinyint(3) unsigned', default = 0 },
+				{ name = 'money', type = 'bigint(20) unsigned', default = 100 },
+				{ name = 'created', type = 'timestamp', default = 'CURRENT_TIMESTAMP' },
+				{ name = 'lastLogin', type = 'timestamp', default = '0000-00-00 00:00:00' },
+			} ) then cancelEvent( ) return end
+		
+		if not exports.sql:create_table( 'wcf1_user',
+			{
+				{ name = 'userID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
+				{ name = 'username', type = 'varchar(255)' },
+				{ name = 'password', type = 'varchar(40)' },
+				{ name = 'salt',  type = 'varchar(40)' },
+				{ name = 'banned',  type = 'tinyint(1) unsigned', default = 0 },
+				{ name = 'activationCode',  type = 'int(10) unsigned', default = 0 },
+			} ) then cancelEvent( ) return end
+		
+		local success, didCreateTable = exports.sql:create_table( 'wcf1_group',
+			{
+				{ name = 'groupID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
+				{ name = 'groupName', type = 'varchar(255)', default = '' },
+			} )
+		if not success then cancelEvent( ) return end
+		if didCreateTable then
+			-- add default groups
+			for key, value in ipairs( groups ) do
+				value.groupID = exports.sql:query_insertid( "INSERT INTO wcf1_group (groupName) VALUES ('%s')", value.groupName )
+			end
+		else
+			-- import all groups
+			local data = exports.sql:query_assoc( "SELECT groupID, groupName FROM wcf1_group" )
+			if data then
+				for key, value in ipairs( data ) do
+					for key2, value2 in ipairs( groups ) do
+						if value.groupName == value2.groupName then
+							value2.groupID = value.groupID
+						end
 					end
+				end
+			end
+		end
+		
+		local success, didCreateTable = exports.sql:create_table( 'wcf1_user_to_groups',
+			{
+				{ name = 'userID', type = 'int(10) unsigned', default = 0, primary_key = true },
+				{ name = 'groupID', type = 'int(10) unsigned', default = 0, primary_key = true },
+			} )
+		if not success then cancelEvent( ) return end
+		if didCreateTable then
+			for key, value in ipairs( groups ) do
+				if value.defaultForFirstUser then
+					exports.sql:query_free( "INSERT INTO wcf1_user_to_groups (userID, groupID) VALUES (1, " .. value.groupID .. ")" )
 				end
 			end
 		end

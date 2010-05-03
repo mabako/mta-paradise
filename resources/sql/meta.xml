@@ -25,4 +25,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="query_assoc"/>
 	<export function="query_assoc_single"/>
 	<export function="query_insertid"/>
+
+	<script src="layout.lua"/>
+	<export function="create_table"/>
 </meta>
