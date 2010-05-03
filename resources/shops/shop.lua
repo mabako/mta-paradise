@@ -104,7 +104,8 @@ addCommandHandler( "createshop",
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [type]", player, 255, 255, 255 )
 		end
-	end
+	end,
+	true
 )
 
 -- client interaction

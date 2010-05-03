@@ -147,6 +147,7 @@
         <right name="command.get" access="true" />
         <right name="command.goto" access="true" />
         <right name="command.announce" access="true" />
+        <right name="command.createshop" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />
