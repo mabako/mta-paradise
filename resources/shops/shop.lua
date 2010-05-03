@@ -15,6 +15,31 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addCommandHandler_ = addCommandHandler
+      addCommandHandler  = function( commandName, fn, restricted, caseSensitive )
+	-- add the default command handlers
+	if type( commandName ) ~= "table" then
+		commandName = { commandName }
+	end
+	for key, value in ipairs( commandName ) do
+		if key == 1 then
+			addCommandHandler_( value, fn, restricted, caseSensitive )
+		else
+			addCommandHandler_( value,
+				function( player, ... )
+					-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
+					if hasObjectPermissionTo( player, "command." .. commandName[ 1 ], not restricted ) then
+						fn( player, ... )
+					end
+				end
+			)
+		end
+	end
+end
+
+--
+
+local p = { }
 local shops = { }
 
 local function createShopPed( shopID )
@@ -23,6 +48,7 @@ local function createShopPed( shopID )
 		local ped = createPed( shop.skin ~= 0 and shop.skin or shop_configurations[ shop.configuration ].skin, shop.x, shop.y, shop.z, shop.rotation )
 		if ped then
 			shops[ ped ] = shopID
+			shop.ped = ped
 			
 			setPedRotation( ped, shop.rotation )
 			setElementInterior( ped, shop.interior )
@@ -135,9 +161,45 @@ addCommandHandler( "createshop",
 	true
 )
 
--- client interaction
+addCommandHandler( { "deleteshop", "delshop" },
+	function( player, commandName, shopID )
+		shopID = tonumber( shopID )
+		if shopID then
+			local shop = shops[ shopID ]
+			if shop then
+				if exports.sql:query_free( "DELETE FROM shops WHERE shopID = " .. shopID ) and exports.sql:query_free( "DELETE FROM shopitems WHERE shopID = " .. shopID ) then
+					outputChatBox( "You deleted shop " .. shopID .. ".", player, 0, 255, 153 )
+					
+					-- close gui using this shop
+					for player, data in pairs( p ) do
+						if data.shopID == shopID then
+							triggerClientEvent( player, "shops:clear", shop.ped or resourceRoot )
+							p[ player ].shopID = nil
+						end
+					end
+					
+					-- remove from shops list
+					if shop.ped then
+						destroyElement( shop.ped )
+						shops[ shop.ped ] = nil
+					end
+					
+					-- unset
+					shops[ shopID ] = nil
+				else
+					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "Shop not found.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
 
-local p = { }
+-- client interaction
 
 addEventHandler( "onElementClicked", resourceRoot,
 	function( button, state, player )

@@ -149,6 +149,7 @@
         <right name="command.announce" access="true" />
         <right name="command.modchat" access="true" />
         <right name="command.createshop" access="true" />
+        <right name="command.deleteshop" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />

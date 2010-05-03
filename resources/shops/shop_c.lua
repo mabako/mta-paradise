@@ -34,9 +34,11 @@ addEventHandler( "shops:sync", resourceRoot,
 addEvent( "shops:clear", true )
 addEventHandler( "shops:clear", resourceRoot,
 	function( id )
-		shopCache[ id ] = nil
+		if id then
+			shopCache[ id ] = nil
+		end
 		
-		if currentShop == id and exports.gui:getShowing( ) == 'shop' then
+		if ( not id or currentShop == id ) and exports.gui:getShowing( ) == 'shop' then
 			exports.gui:hide( )
 		end
 	end
