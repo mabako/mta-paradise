@@ -30,7 +30,7 @@ CREATE TABLE  `characters` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lastLogin` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`characterID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `interiors` (
   `interiorID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -49,7 +49,7 @@ CREATE TABLE  `interiors` (
   `characterID` int(10) unsigned NOT NULL DEFAULT '0',
   `locked` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`interiorID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `items` (
   `index` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -58,7 +58,7 @@ CREATE TABLE  `items` (
   `value` text NOT NULL,
   `name` text,
   PRIMARY KEY (`index`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `shops` (
   `shopID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -71,7 +71,7 @@ CREATE TABLE  `shops` (
   `configuration` varchar(45) NOT NULL,
   `skin` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`shopID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE  `shopitems` (
   `shopItemID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -81,8 +81,8 @@ CREATE TABLE  `shopitems` (
   `name` text,
   `description` text,
   `price` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`shopItemID`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`shopItemID`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE  `wcf1_user` (
   `userID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -92,13 +92,13 @@ CREATE TABLE  `wcf1_user` (
   `banned` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `activationCode` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`userID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `wcf1_group` (
  `groupID` int(10) unsigned NOT NULL auto_increment,
  `groupName` varchar(255) NOT NULL default '',
  PRIMARY KEY  (`groupID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 INSERT INTO `wcf1_group` (`groupID`, `groupName`) VALUES (1, 'MTA Administrators'), (2, 'Developers'), (3, 'MTA Moderators');
 
 CREATE TABLE `wcf1_user_to_groups` (
@@ -137,4 +137,4 @@ CREATE TABLE  `vehicles` (
   `engineState` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `lightsState` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`vehicleID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
