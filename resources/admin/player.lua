@@ -84,14 +84,24 @@ addCommandHandler( "goto",
 	true
 )
 
+addEventHandler( "onPlayerQuit", root,
+	function( type, reason, player )
+		if player and getElementType( player ) == "player" then
+			if type == "Kicked" then
+				outputChatBox( getPlayerName( player ):gsub( "_", " " ) .. " kicked " .. getPlayerName( source ) .. "." .. ( reason and #reason > 0 and ( " Reason: " .. reason ) or "" ), root, 255, 0, 0 )
+			end
+		end
+	end
+)
+
 addCommandHandler( "kick",
 	function( player, commandName, otherPlayer, ... )
-		if otherPlayer and ( ... ) then
+		if otherPlayer then
 			local other, name = exports.players:getFromName( player, otherPlayer )
 			if other then
 				if not hasObjectPermissionTo( other, "command.kick" ) then
 					local reason = table.concat( { ... }, " " )
-					kickPlayer( other, player, reason )
+					kickPlayer( other, player, #reason > 0 and reason )
 				else
 					outputChatBox( "You can't kick this player.", player, 255, 0, 0 )
 				end
