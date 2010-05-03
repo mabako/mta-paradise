@@ -19,6 +19,28 @@ local localPlayer = getLocalPlayer( )
 local position = nil
 local marker = nil
 local blip = nil
+local wait = false
+local screenX, screenY = guiGetScreenSize( )
+
+function drawWaitingText( )
+	-- check if we still need to wait
+	local text = "Wait..."
+	if wait and wait ~= 0 then
+		local diff = wait - getTickCount( )
+		if diff >= 0 then
+			text = ( "Please wait %.1f seconds" ):format( diff / 1000 )
+		else
+			triggerServerEvent( "job-delivery:complete", localPlayer )
+			wait = 0
+		end
+	end
+	
+	-- draw the text
+	dxDrawText( text, 4, 4, screenX, screenY, tocolor( 0, 0, 0, 255 ), 1, "pricedown", "center", "center" )
+	dxDrawText( text, 0, 0, screenX, screenY, tocolor( 255, 255, 255, 255 ), 1, "pricedown", "center", "center" )
+end
+
+--
 
 local function hideDropOff( )
 	if isElement( blip ) then
@@ -30,6 +52,11 @@ local function hideDropOff( )
 		destroyElement( marker )
 	end
 	marker = nil
+	
+	if wait then
+		wait = false
+		removeEventHandler( "onClientRender", root, drawWaitingText )
+	end
 end
 
 local function showDropOff( )
@@ -71,7 +98,17 @@ addEventHandler( "onClientResourceStart", resourceRoot,
 addEventHandler( "onClientMarkerHit", resourceRoot,
 	function( element, matching )
 		if matching and element == localPlayer then
-			triggerServerEvent( "job-delivery:complete", localPlayer )
+			wait = getTickCount( ) + getElementData( resourceRoot, "delay" ) * 1000
+			addEventHandler( "onClientRender", root, drawWaitingText )
+		end
+	end
+)
+
+addEventHandler( "onClientMarkerLeave", resourceRoot,
+	function( element, matching )
+		if matching and element == localPlayer then
+			wait = false
+			removeEventHandler( "onClientRender", root, drawWaitingText )
 		end
 	end
 )

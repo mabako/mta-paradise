@@ -17,6 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local vehicles = get( "vehicles" ) or { "Mule" } -- load the civilian vehicles that'll automatically trigger the delivery mission if being entered
 local max_earnings = tonumber( get( "earnings" ) ) or 10
+local delay = tonumber( get( "delay" ) ) or 5
 
 -- put it in a for us better format
 local vehicles2 = { }
@@ -85,6 +86,10 @@ addEventHandler( "onVehicleEnter", root,
 
 addEventHandler( "onResourceStart", root,
 	function( )
+		setElementData( resourceRoot, "delay", delay )
+		
+		--
+		
 		for key, value in ipairs( getElementsByType( "player" ) ) do
 			local vehicle = getPedOccupiedVehicle( value )
 			if vehicle and getPedOccupiedVehicleSeat( value ) == 0 and isDeliveryVehicle( vehicle ) then
