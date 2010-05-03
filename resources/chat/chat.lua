@@ -175,6 +175,54 @@ addCommandHandler( { "announce", "ann" },
 	true
 )
 
+addCommandHandler( { "adminchat", "a" },
+	function( thePlayer, commandName, ... )
+		if exports.players:isLoggedIn( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				message = getPlayerName( thePlayer ) .. ": " .. message
+				local groups = exports.players:getGroups( thePlayer )
+				if groups and #groups >= 1 then
+					message = groups[1].displayName .. " " .. message
+				end
+				
+				for key, value in ipairs( getElementsByType( "player" ) ) do
+					if hasObjectPermissionTo( value, "command.adminchat", false ) then
+						outputChatBox( message, value, 255, 255, 91 )
+					end
+				end
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [text]", thePlayer, 255, 255, 255 )
+			end
+		end
+	end,
+	true
+)
+
+addCommandHandler( { "modchat", "m" },
+	function( thePlayer, commandName, ... )
+		if exports.players:isLoggedIn( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				message = getPlayerName( thePlayer ) .. ": " .. message
+				local groups = exports.players:getGroups( thePlayer )
+				if groups and #groups >= 1 then
+					message = groups[1].displayName .. " " .. message
+				end
+				
+				for key, value in ipairs( getElementsByType( "player" ) ) do
+					if hasObjectPermissionTo( value, "command.modchat", false ) then
+						outputChatBox( message, value, 255, 255, 191 )
+					end
+				end
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [text]", thePlayer, 255, 255, 255 )
+			end
+		end
+	end,
+	true
+)
+
 -- /pm to message other players
 local function pm( player, target, message )
 	outputChatBox( "PM to [" .. exports.players:getID( target ) .. "] " .. getPlayerName( target ) .. ": " .. message, player, 255, 255, 0 )

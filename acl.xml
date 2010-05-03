@@ -147,6 +147,7 @@
         <right name="command.get" access="true" />
         <right name="command.goto" access="true" />
         <right name="command.announce" access="true" />
+        <right name="command.modchat" access="true" />
         <right name="command.createshop" access="true" />
     </acl>
     <acl name="Admin">
@@ -174,6 +175,7 @@
         <right name="command.createvehicle" access="true" />
         <right name="command.deletevehicle" access="true" />
         <right name="command.reloadpermissions" access="true" />
+        <right name="command.adminchat" access="true" />
         <right name="function.executeCommandHandler" access="true" />
         <right name="function.setPlayerMuted" access="true" />
         <right name="function.addAccount" access="true" />
