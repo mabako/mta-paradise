@@ -60,6 +60,19 @@ CREATE TABLE  `items` (
   PRIMARY KEY (`index`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+CREATE TABLE  `shops` (
+  `shopID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `x` float NOT NULL,
+  `y` float NOT NULL,
+  `z` float NOT NULL,
+  `rotation` float NOT NULL,
+  `interior` int(10) unsigned NOT NULL,
+  `dimension` int(10) unsigned NOT NULL,
+  `configuration` varchar(45) NOT NULL,
+  `skin` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`shopID`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
 CREATE TABLE  `wcf1_user` (
   `userID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
