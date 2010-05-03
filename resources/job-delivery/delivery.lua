@@ -33,7 +33,7 @@ vehicles = vehicles2
 vehicles2 = nil
 
 local function isDeliveryVehicle( vehicle )
-	return vehicles[ getElementModel( vehicle ) ] and not exports.vehicles:getOwner( vehicle )
+	return vehicle and vehicles[ getElementModel( vehicle ) ] and not exports.vehicles:getOwner( vehicle ) or false
 end
 
 --
@@ -125,7 +125,7 @@ addEventHandler( "job-delivery:complete", root,
 	function( )
 		if source == client then
 			local vehicle = getPedOccupiedVehicle( source )
-			if vehicle and p[ source ] and p[ source ].dropOff and isDeliveryVehicle( vehicle ) and getPedOccupiedVehicleSeat( source ) == 0 then
+			if p[ source ] and p[ source ].dropOff and isDeliveryVehicle( vehicle ) and getPedOccupiedVehicleSeat( source ) == 0 then
 				-- distance check
 				if getDistanceBetweenPoints2D( p[ source ].x, p[ source ].y, getElementPosition( vehicle ) ) < 22.5 then
 					local health = math.min( 1000, getElementHealth( vehicle ) )
