@@ -51,6 +51,8 @@ local function populateSpots( force )
 					local data = value.prices[ math.random( 1, #value.prices ) ]
 					
 					if v.vehicle and isElement( v.vehicle ) then
+						-- set it back to its respawn position
+						respawnVehicle( v )
 						-- already have a car, change it with another one
 						if setElementModel( v.vehicle, data.model ) then
 							-- if we actually changed the model, assign a random color if we can
@@ -85,6 +87,14 @@ local function populateSpots( force )
 							-- save it
 							v.vehicle = vehicle
 						end
+					end
+				end
+			else
+				-- shouldn't update the old ones, respawn ours
+				for k, v in ipairs( value.spots ) do
+					if v.vehicle and isElement( v.vehicle ) then
+						-- already have a car, respawn it
+						respawnVehicle( v )
 					end
 				end
 			end
