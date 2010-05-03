@@ -21,6 +21,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="windows/login.lua" type="client"/>
 	<script src="windows/scoreboard.lua" type="client"/>
 	
+	<script src="windows/shop.lua" type="client"/>
+	<export function="updateShopContent" type="client"/>
+	
 	<script src="verify/create_character.lua"/>
 	<script src="verify/create_character.lua" type="client"/>
 	<script src="windows/create_character_s.lua"/>

@@ -15,10 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-addCommandHandler( "togglecursor",
-	function( player )
-		if exports.players:isLoggedIn( player ) then
-			showCursor( player, not isCursorShowing( player ) )
-		end
-	end
-)
+item_list =
+{
+	{ name = "Vehicle Key" },
+	{ name = "House Key" },
+	{ name = "Food" },
+	{ name = "Drink" },
+}
+
+function getName( id )
+	return item_list[ id ] and item_list[ id ].name or ""
+end
+
+function getDescription( id )
+	return item_list[ id ] and item_list[ id ].description or ""
+end

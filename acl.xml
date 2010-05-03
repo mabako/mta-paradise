@@ -219,6 +219,7 @@
         <right name="command.crun" access="true" />
         <right name="command.debugscript" access="true" />
         <right name="command.reloadacl" access="true" />
+        <right name="command.showitems" access="true" />
     </acl>
     <acl name="RPC">
         <right name="function.callRemote" access="true" />

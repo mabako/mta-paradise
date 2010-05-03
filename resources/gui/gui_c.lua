@@ -248,7 +248,7 @@ local function draw( window, y )
 			-- draw the pane
 			dxDrawImage( x, y, 64, 64, value.image, 0, 0, 0, tocolor( 255, 255, 255, 255 ), true )
 			dxDrawText( value.title, x + 65, y, x + width, y + 18, tocolor( 255, 255, 255, 255 ), 0.6, "bankgothic", "left", "top", true, false, true )
-			dxDrawText( tostring( type( value.text ) == "function" and value.text( ) or value.text ), x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, false, true )
+			dxDrawText( tostring( type( value.text ) == "function" and value.text( ) or value.text ), x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, value.wordBreak or false, true )
 			y = y + 65
 		end
 	end
@@ -401,15 +401,26 @@ function show( name, forced, dontEnableInput, mouse )
 end
 
 function hide( )
-	window = nil
-	windowName = nil
-	showCursor( false )
-	if forcedWindow then
-		guiSetInputEnabled( false )
+	if window then
+		if window.onClose then
+			window.onClose( )
+		end
+		window = nil
+		windowName = nil
+		showCursor( false )
+		if forcedWindow then
+			guiSetInputEnabled( false )
+		end
+		forcedWindow = nil
+		for key, value in pairs( destroy ) do
+			destroyElement( value )
+		end
+		destroy = { }
 	end
-	forcedWindow = nil
-	for key, value in pairs( destroy ) do
-		destroyElement( value )
-	end
-	destroy = { }
 end
+
+addEventHandler( "onClientResourceStop", resourceRoot,
+	function( )
+		hide( )
+	end
+)

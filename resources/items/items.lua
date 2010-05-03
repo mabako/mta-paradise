@@ -239,3 +239,20 @@ addEventHandler( "loadItems", root,
 		end
 	end
 )
+
+--
+
+addCommandHandler( "showitems",
+	-- TODO: remove this once we have an inventory
+	function( player )
+		local items = get( player )
+		if items then
+			for key, value in ipairs( items ) do
+				outputChatBox( "Item " .. tostring( item_list[ value.item ].name ) .. " - " .. tostring( value.value ) .. " - " .. tostring( value.name ), player )
+			end
+		else
+			outputChatBox( "Unable to load your items...", player )
+		end
+	end,
+	true
+)

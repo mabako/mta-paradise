@@ -15,6 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <meta>
+	<script src="items_list.lua"/>
+	<script src="items_list.lua" type="client"/>
+	<export function="getName"/>
+	<export function="getName" type="client"/>
+	<export function="getDescription"/>
+	<export function="getDescription" type="client"/>
+	
 	<script src="items.lua"/>
 	<export function="get"/>
 	<export function="give"/>

@@ -413,6 +413,8 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
 					triggerEvent( "onCharacterLogin", source )
 					
+					showCursor( source, false )
+					
 					-- set last login to now
 					exports.sql:query_free( "UPDATE characters SET lastLogin = NOW() WHERE characterID = " .. tonumber( charID ) )
 				end

@@ -15,10 +15,27 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-addCommandHandler( "togglecursor",
-	function( player )
-		if exports.players:isLoggedIn( player ) then
-			showCursor( player, not isCursorShowing( player ) )
+-- we don't want our shops to die, do we?
+addEventHandler( "onClientPedDamage", resourceRoot, cancelEvent )
+
+addEvent( "shops:open", true )
+addEventHandler( "shops:open", resourceRoot,
+	function( configuration )
+		local c = shop_configurations[ configuration ]
+		local items = { }
+		for key, value in ipairs( c ) do
+			table.insert( items, value )
+		end
+		
+		exports.gui:updateShopContent( items )
+		exports.gui:show( 'shop' )
+	end
+)
+
+addEventHandler( "onClientResourceStop", resourceRoot,
+	function( )
+		if exports.gui:getShowing( ) == "shop" then
+			exports.gui:hide( )
 		end
 	end
 )

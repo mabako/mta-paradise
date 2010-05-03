@@ -15,10 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-addCommandHandler( "togglecursor",
-	function( player )
-		if exports.players:isLoggedIn( player ) then
-			showCursor( player, not isCursorShowing( player ) )
-		end
-	end
-)
+-- Bind to toggle the cursor from showing
+bindKey( "m", "down", "togglecursor" )
+
+-- Local OOC bind
+bindKey( "b", "down", "chatbox", "LocalOOC" )
+
+-- Global OOC bind
+bindKey( "o", "down", "chatbox", "GlobalOOC" )
