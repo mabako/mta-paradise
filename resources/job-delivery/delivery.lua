@@ -84,7 +84,7 @@ addEventHandler( "onVehicleEnter", root,
 
 --
 
-addEventHandler( "onResourceStart", root,
+addEventHandler( "onResourceStart", resourceRoot,
 	function( )
 		setElementData( resourceRoot, "delay", delay )
 		
