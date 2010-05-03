@@ -22,8 +22,8 @@ addEventHandler( "onResourceStart", resourceRoot,
 		setRuleValue( "homepage", "http://paradisegaming.net" )
 		setRuleValue( "forum", "http://forum.paradisegaming.net" )
 		setRuleValue( "license", "GPL Version 3" )
-		setRuleValue( "source", "http://github.com/marcusbauer/mta-paradise" )
-		setRuleValue( "git-url", "git://github.com/marcusbauer/mta-paradise.git" )
+		setRuleValue( "source", "http://github.com/mabako/mta-paradise" )
+		setRuleValue( "git-url", "git://github.com/mabako/mta-paradise.git" )
 		setRuleValue( "version", getVersion( ) )
 		setMapName( "San Fierro" )
 		
