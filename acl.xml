@@ -150,6 +150,7 @@
         <right name="command.modchat" access="true" />
         <right name="command.createshop" access="true" />
         <right name="command.deleteshop" access="true" />
+        <right name="command.kick" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />
@@ -162,7 +163,6 @@
         <right name="command.refreshall" access="true" />
         <right name="command.addaccount" access="true" />
         <right name="command.delaccount" access="true" />
-        <right name="command.kick" access="true" />
         <right name="command.ban" access="true" />
         <right name="command.banip" access="true" />
         <right name="command.unbanip" access="true" />

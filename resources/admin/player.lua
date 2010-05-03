@@ -83,3 +83,22 @@ addCommandHandler( "goto",
 	end,
 	true
 )
+
+addCommandHandler( "kick",
+	function( player, commandName, otherPlayer, ... )
+		if otherPlayer and ( ... ) then
+			local other, name = exports.players:getFromName( player, otherPlayer )
+			if other then
+				if not hasObjectPermissionTo( other, "command.kick" ) then
+					local reason = table.concat( { ... }, " " )
+					kickPlayer( other, player, reason )
+				else
+					outputChatBox( "You can't kick this player.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [reason]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
