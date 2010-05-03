@@ -25,19 +25,24 @@ local screenX, screenY = guiGetScreenSize( )
 function drawWaitingText( )
 	-- check if we still need to wait
 	local text = "Wait..."
-	if wait and wait ~= 0 then
-		local diff = wait - getTickCount( )
-		if diff >= 0 then
-			text = ( "Please wait %.1f seconds" ):format( diff / 1000 )
-		else
-			triggerServerEvent( "job-delivery:complete", localPlayer )
-			wait = 0
+	local vehicle = getPedOccupiedVehicle( localPlayer )
+	if vehicle then
+		if getElementHealth( vehicle ) <= 350 then
+			text = "Fix your vehicle"
+		elseif wait and wait ~= 0 then
+			local diff = wait - getTickCount( )
+			if diff >= 0 then
+				text = ( "Please wait %.1f seconds" ):format( diff / 1000 )
+			else
+				triggerServerEvent( "job-delivery:complete", localPlayer )
+				wait = 0
+			end
 		end
+		
+		-- draw the text
+		dxDrawText( text, 4, 4, screenX, screenY, tocolor( 0, 0, 0, 255 ), 1, "pricedown", "center", "center" )
+		dxDrawText( text, 0, 0, screenX, screenY, tocolor( 255, 255, 255, 255 ), 1, "pricedown", "center", "center" )
 	end
-	
-	-- draw the text
-	dxDrawText( text, 4, 4, screenX, screenY, tocolor( 0, 0, 0, 255 ), 1, "pricedown", "center", "center" )
-	dxDrawText( text, 0, 0, screenX, screenY, tocolor( 255, 255, 255, 255 ), 1, "pricedown", "center", "center" )
 end
 
 --

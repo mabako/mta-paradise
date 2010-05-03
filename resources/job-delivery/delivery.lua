@@ -129,9 +129,7 @@ addEventHandler( "job-delivery:complete", root,
 				-- distance check
 				if getDistanceBetweenPoints2D( p[ source ].x, p[ source ].y, getElementPosition( vehicle ) ) < 22.5 then
 					local health = math.min( 1000, getElementHealth( vehicle ) )
-					if health <= 350 then
-						outputChatBox( "Fix your truck!", player, 255, 0, 0 )
-					else
+					if health > 350 then
 						-- calculate earnings based on vehicle health
 						local earnings = math.ceil( ( health - 350 ) / 650 * max_earnings )
 						exports.players:giveMoney( source, earnings )
