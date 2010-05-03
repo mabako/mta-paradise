@@ -119,21 +119,24 @@ addEventHandler( "onElementClicked", resourceRoot,
 			if shopID then
 				local shop = shops[ shopID ]
 				if shop then
-					if not p[ player ] then
-						p[ player ] = { synched = { } }
-					end
-					p[ player ].shopID = shopID
-					
-					if shop.items then -- custom items
-						-- these are manually synched if not sent yet
-						if not p[ player ].synched[ shopID ] then
-							triggerClientEvent( player, "shops:sync", source, shopID, shop.items )
-							p[ player ].synched[ shopID ] = true
+					local x, y, z = getElementPosition( player )
+					if getDistanceBetweenPoints3D( x, y, z, getElementPosition( source ) ) < 5 and getElementDimension( player ) == getElementDimension( source ) then
+						if not p[ player ] then
+							p[ player ] = { synched = { } }
 						end
+						p[ player ].shopID = shopID
 						
-						triggerClientEvent( player, "shops:open", source, shopID )
-					elseif shop_configurations[ shop.configuration ] then
-						triggerClientEvent( player, "shops:open", source, shop.configuration )
+						if shop.items then -- custom items
+							-- these are manually synched if not sent yet
+							if not p[ player ].synched[ shopID ] then
+								triggerClientEvent( player, "shops:sync", source, shopID, shop.items )
+								p[ player ].synched[ shopID ] = true
+							end
+							
+							triggerClientEvent( player, "shops:open", source, shopID )
+						elseif shop_configurations[ shop.configuration ] then
+							triggerClientEvent( player, "shops:open", source, shop.configuration )
+						end
 					end
 				end
 			end
