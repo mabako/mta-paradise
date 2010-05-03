@@ -98,8 +98,10 @@ addEventHandler( "onClientResourceStart", resourceRoot,
 addEventHandler( "onClientMarkerHit", resourceRoot,
 	function( element, matching )
 		if matching and element == localPlayer then
-			wait = getTickCount( ) + getElementData( resourceRoot, "delay" ) * 1000
-			addEventHandler( "onClientRender", root, drawWaitingText )
+			if not wait then
+				wait = getTickCount( ) + getElementData( resourceRoot, "delay" ) * 1000
+				addEventHandler( "onClientRender", root, drawWaitingText )
+			end
 		end
 	end
 )
