@@ -165,7 +165,7 @@ local function aclUpdate( player, saveAclIfChanged )
 										
 										-- make sure acl rights are set correctly
 										if aclGroupAddObject( aclGetGroup( group.aclGroup ), "user." .. accountName ) then
-											outputDebugString( "Cleanup: Added account " .. accountName .. " to ACL " .. group.aclGroup, 3 )
+											outputDebugString( "Added account " .. accountName .. " to ACL " .. group.aclGroup, 3 )
 											saveAcl = true
 											userChanged = true
 											if player then
@@ -179,7 +179,7 @@ local function aclUpdate( player, saveAclIfChanged )
 								if not hasGroup then
 									-- make sure acl rights are removed
 									if aclGroupRemoveObject( aclGetGroup( group.aclGroup ), "user." .. accountName ) then
-										outputDebugString( "Cleanup: Removed account " .. accountName .. " from ACL " .. group.aclGroup, 3 )
+										outputDebugString( "Removed account " .. accountName .. " from ACL " .. group.aclGroup, 3 )
 										saveAcl = true
 										userChanged = true
 										
@@ -197,7 +197,7 @@ local function aclUpdate( player, saveAclIfChanged )
 						if player then
 							logOut( player )
 						end
-						outputDebugString( "Cleanup: Removed account " .. accountName, 3 )
+						outputDebugString( "Removed account " .. accountName, 3 )
 						removeAccount( account )
 					elseif player and isGuestAccount( getPlayerAccount( player ) ) and not logIn( player, account, p[ player ].mtasalt ) then
 						-- something went wrong here
