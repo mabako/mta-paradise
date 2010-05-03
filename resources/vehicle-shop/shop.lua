@@ -52,7 +52,7 @@ local function populateSpots( force )
 					
 					if v.vehicle and isElement( v.vehicle ) then
 						-- set it back to its respawn position
-						respawnVehicle( v )
+						respawnVehicle( v.vehicle )
 						-- already have a car, change it with another one
 						if setElementModel( v.vehicle, data.model ) then
 							-- if we actually changed the model, assign a random color if we can
@@ -94,7 +94,7 @@ local function populateSpots( force )
 				for k, v in ipairs( value.spots ) do
 					if v.vehicle and isElement( v.vehicle ) then
 						-- already have a car, respawn it
-						respawnVehicle( v )
+						respawnVehicle( v.vehicle )
 					end
 				end
 			end
