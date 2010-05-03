@@ -69,7 +69,7 @@ end
 
 addEventHandler( "onVehicleEnter", root,
 	function( player, seat )
-		if seat == 0 and not isDeliveryVehicle( source ) then
+		if seat == 0 and isDeliveryVehicle( source ) then
 			if not p[ player ] then
 				p[ player ] = { }
 			end
