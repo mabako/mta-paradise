@@ -63,6 +63,21 @@ addEventHandler( "onResourceStart", resourceRoot,
 				loadShop( data.shopID, data.x, data.y, data.z, data.rotation, data.interior, data.dimension, data.configuration, data.skin )
 			end
 		end
+		
+		--
+		
+		local result = exports.sql:query_assoc( "SELECT * FROM shopitems ORDER BY shopItemID ASC" )
+		if result then
+			for key, data in ipairs( result ) do
+				local shop = shops[ data.shopID ]
+				if shop then
+					if not shop.items then
+						shop.items = { }
+					end
+					table.insert( shop.items, { itemID = data.item, itemValue = data.value, name = data.name and data.name ~= "" and data.name, description = data.description and data.description ~= "" and data.description, price = data.price } )
+				end
+			end
+		end
 	end
 )
 

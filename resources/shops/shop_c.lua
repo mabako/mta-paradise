@@ -30,6 +30,7 @@ addEventHandler( "shops:sync", resourceRoot,
 	end
 )
 
+-- if the shop is edited, we should trigger that
 addEvent( "shops:clear", true )
 addEventHandler( "shops:clear", resourceRoot,
 	function( id )

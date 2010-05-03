@@ -51,11 +51,12 @@ function updateShopContent( content, name )
 	
 	-- let's add all items
 	for k, value in ipairs( content ) do
+		local description = value.description or exports.items:getDescription( value.itemID )
 		table.insert( windows.shop[2].panes,
 			{
 				image = ":players/images/skins/-1.png",
 				title = value.name or exports.items:getName( value.itemID ),
-				text = "Costs $" .. value.price .. " - " .. ( value.description or exports.items:getDescription( value.itemID ) ),
+				text = "Costs $" .. value.price .. ( description and description ~= "" and ( " - " .. description ) or "" ),
 				onHover = function( cursor, pos )
 						dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( { 0, 255, 0, 31 } ) ) )
 					end,

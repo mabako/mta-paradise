@@ -73,6 +73,17 @@ CREATE TABLE  `shops` (
   PRIMARY KEY (`shopID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
+CREATE TABLE  `shopitems` (
+  `shopItemID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `shopID` int(10) unsigned NOT NULL,
+  `item` int(10) unsigned NOT NULL,
+  `value` text NOT NULL,
+  `name` text,
+  `description` text,
+  `price` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`shopItemID`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
 CREATE TABLE  `wcf1_user` (
   `userID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
