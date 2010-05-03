@@ -30,13 +30,19 @@ local closeButton =
 
 windows.shop = { closeButton }
 
-function updateShopContent( content )
+function updateShopContent( content, name )
 	-- scrap what we had before
 	windows.shop = {
 		onClose = function( )
 				triggerServerEvent( "shops:close", getLocalPlayer( ) )
 				windows.shop = { closeButton }
 			end,
+		{
+			type = "label",
+			text = name,
+			font = "bankgothic",
+			alignX = "center",
+		},
 		{
 			type = "pane",
 			panes = { }
@@ -45,7 +51,7 @@ function updateShopContent( content )
 	
 	-- let's add all items
 	for k, value in ipairs( content ) do
-		table.insert( windows.shop[1].panes,
+		table.insert( windows.shop[2].panes,
 			{
 				image = ":players/images/skins/-1.png",
 				title = value.name or exports.items:getName( value.itemID ),

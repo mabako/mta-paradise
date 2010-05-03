@@ -19,6 +19,7 @@ shop_configurations =
 {
 	cluckinbell =
 	{
+		name = "Cluckin' Bell",
 		skin = 167,
 		{ itemID = 3, itemValue = 10, name = "Cluckin' Little Meal", description = "Contains french fries, a Little Clucker Kids Meal and a can of Sprunk.", price = 2 },
 		{ itemID = 3, itemValue = 30, name = "Cluckin' Big Meal", description = "Contains french fries, a Fillet Burger, a Fowl Wrap and a can of Sprunk.", price = 5 },
@@ -29,6 +30,7 @@ shop_configurations =
 	},
 	burgershot =
 	{
+		name = "Burger-Shot",
 		skin = 205,
 		{ itemID = 3, itemValue = 15, name = "Moo Kids Meal", description = "A Little Moo's Kids Meal with a can of Sprunk.", price = 2 },
 		{ itemID = 3, itemValue = 30, name = "Beef Tower Meal", description = "Contains french fries, a Beef Tower burger, a Fowl Wrap and a can of Sprunk.", price = 5 },
@@ -39,6 +41,7 @@ shop_configurations =
 	},
 	pizza =
 	{
+		name = "The Well\nStacked Pizza Co.",
 		skin = 155,
 		{ itemID = 3, itemValue = 10, name = "Buster", description = "Contains french fries, a slice of Pizza and a can of Sprunk.", price = 3 },
 		{ itemID = 3, itemValue = 30, name = "Double D-Luxe", description = "Contains french fries, a slice of Pizza, a salad with chicken breast and a can of Sprunk.", price = 5 },
@@ -46,5 +49,17 @@ shop_configurations =
 		{ itemID = 3, itemValue = 70, name = "Large Salad Meal", description = "Contains a large plate of salad and a can of Sprunk.", price = 10 },
 		{ itemID = 4, itemValue = 30, name = "Sprunk", description = "A can of this delicious Sprunk.", price = 5 },
 		{ itemID = 4, itemValue = 20, name = "Water", description = "A bottle of crystal clear mountain water.", price = 3 },
+	},
+	hotdogs =
+	{
+		name = "Chilli Dogs",
+		skin = 168,
+		{ itemID = 3, itemValue = 15, name = "Hotdog", description = "A delicious hotdog.", price = 4 },
+	},
+	noodles =
+	{
+		name = "Noodle Exchange",
+		skin = 168,
+		{ itemID = 3, itemValue = 20, name = "Ramen", description = "A Japanese noodle soup.", price = 2 },
 	},
 }

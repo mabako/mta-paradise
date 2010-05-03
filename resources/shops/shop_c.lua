@@ -27,7 +27,7 @@ addEventHandler( "shops:open", resourceRoot,
 			table.insert( items, value )
 		end
 		
-		exports.gui:updateShopContent( items )
+		exports.gui:updateShopContent( items, c.name )
 		exports.gui:show( 'shop' )
 	end
 )
