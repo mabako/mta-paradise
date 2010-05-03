@@ -31,9 +31,11 @@ addEventHandler( "onClientVehicleStartEnter", resourceRoot,
 addEventHandler( "onClientVehicleEnter", resourceRoot,
 	function( player, seat )
 		-- restore the engine state
-		if seat == 0 and player == localPlayer and engineState.vehicle == source then
-			setVehicleEngineState( source, engineState.state )
+		if engineState then
+			if seat == 0 and player == localPlayer and engineState.vehicle == source then
+				setVehicleEngineState( source, engineState.state )
+			end
+			engineState = nil
 		end
-		engineState = nil
 	end
 )
