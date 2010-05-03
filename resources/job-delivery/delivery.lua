@@ -148,7 +148,7 @@ addEventHandler( "job-delivery:complete", root,
 addEventHandler( "onCharacterLogout", root,
 	function( )
 		if p[ source ] and p[ source ].dropOff then
-			triggerClientEvent( player, "job-delivery:setdropoff", player )
+			triggerClientEvent( source, "job-delivery:setdropoff", source )
 		end
 		p[ source ] = nil
 	end
