@@ -19,6 +19,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 addEvent( "onCharacterLogin", false )
 addEvent( "onCharacterLogout", false )
 
+--
+
+local p = { }
+
 -- Import Groups
 local groups = {
 	{ groupName = "MTA Moderators", groupID = false, aclGroup = "Moderator", displayName = "Moderator", nametagColor = { 255, 255, 191, priority = 5 } },
@@ -26,75 +30,215 @@ local groups = {
 	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer", nametagColor = { 191, 255, 191, priority = 20 } },
 }
 
-local function aclUpdate( )
-	-- verify all accounts and remove invalid ones; new (valid) accounts will not be added until the player logs in
+local function updateNametagColor( player )
+	local nametagColor = { 255, 255, 255, priority = 0 }
+	if p[ player ] then
+		for key, value in ipairs( groups ) do
+			if isObjectInACLGroup( "user." .. p[ player ].username, aclGetGroup( value.aclGroup ) ) and value.nametagColor then
+				if value.nametagColor.priority > nametagColor.priority then
+					nametagColor = value.nametagColor
+				end
+			end
+		end
+	end
+	setPlayerNametagColor( player, unpack( nametagColor ) )
+end
+
+local function aclUpdate( player, saveAclIfChanged )
 	local saveAcl = false
-	local accounts = getAccounts( )
-	for key, account in ipairs( accounts ) do
-		local accountName = getAccountName( account )
-		if accountName ~= "Console" then -- console may exist untouched
-			local user = exports.sql:query_assoc_single( "SELECT userID FROM wcf1_user WHERE username = '%s'", accountName )
-			if user then
-				-- account should be deleted if no group is found
-				local shouldBeDeleted = true
-				
-				if user.userID then -- if this doesn't exist, the user does not exist in the db
-					-- fetch all of his groups
-					local groupinfo = exports.sql:query_assoc( "SELECT groupID FROM wcf1_user_to_groups WHERE userID = " .. user.userID )
-					if groupinfo then
-						-- look through all of our pre-defined groups
-						for key, group in ipairs( groups ) do
-							-- user does not have this group
-							local hasGroup = false
+	
+	if player then
+		local info = p[ player ]
+		if info and info.username then
+			local shouldHaveAccount = false
+			local account = getAccount( info.username )
+			local groupinfo = exports.sql:query_assoc( "SELECT groupID FROM wcf1_user_to_groups WHERE userID = " .. info.userID )
+			if groupinfo then
+				-- loop through all retrieved groups
+				for key, group in ipairs( groupinfo ) do
+					for key2, group2 in ipairs( groups ) do
+						-- we have a acl group of interest
+						if group.groupID == group2.groupID then
+							-- mark as person to have an account
+							shouldHaveAccount = true
 							
-							-- check if he does have it
-							for key2, group2 in ipairs( groupinfo ) do
-								if group.groupID == group2.groupID then
-									-- has the group
-									hasGroup = true
-									
-									-- shouldn't delete his account
-									shouldBeDeleted = false
-									
-									-- make sure acl rights are set correctly
-									if aclGroupAddObject( aclGetGroup( group.aclGroup ), "user." .. accountName ) then
-										outputDebugString( "Cleanup: Added account " .. accountName .. " to ACL " .. group.aclGroup, 3 )
-										saveAcl = true
-									end
+							-- add an account if it doesn't exist
+							if not account then
+								outputServerLog( tostring( info.username ) .. " " .. tostring( info.mtasalt ) )
+								account = addAccount( info.username, info.mtasalt ) -- due to MTA's limitations, the password can't be longer than 30 chars
+								if not account then
+									outputDebugString( "Account Error for " .. info.username .. " - addAccount failed.", 1 )
+								else
+									outputDebugString( "Added account " .. info.username, 3 )
 								end
 							end
 							
-							-- doesn't have it
-							if not hasGroup then
-								-- make sure acl rights are removed
-								if aclGroupRemoveObject( aclGetGroup( group.aclGroup ), "user." .. accountName ) then
-									outputDebugString( "Cleanup: Removed account " .. accountName .. " from ACL " .. group.aclGroup, 3 )
-									saveAcl = true
+							if account then
+								-- if the player has a different account password, change it
+								if not getAccount( info.username, info.mtasalt ) then
+									setAccountPassword( account, info.mtasalt )
+								end
+								
+								if isGuestAccount( getPlayerAccount( player ) ) and not logIn( player, account, info.mtasalt ) then
+									-- something went wrong here
+									outputDebugString( "Account Error for " .. info.username .. " - login failed.", 1 )
+								else
+									-- show him a message
+									outputChatBox( "You are now logged in as " .. group2.displayName .. ".", player, 0, 255, 0 )
+									if aclGroupAddObject( aclGetGroup( group2.aclGroup ), "user." .. info.username ) then
+										saveAcl = true
+										outputDebugString( "Added account " .. info.username .. " to " .. group2.aclGroup .. " ACL", 3 )
+									end
 								end
 							end
 						end
 					end
 				end
+			end
+			if not shouldHaveAccount and account then
+				-- remove account from all ACL groups we use
+				for key, value in ipairs( groups ) do
+					if aclGroupRemoveObject( aclGetGroup( value.aclGroup ), "user." .. info.username ) then
+						saveAcl = true
+						outputDebugString( "Removed account " .. info.username .. " from " .. value.aclGroup .. " ACL", 3 )
+						outputChatBox( "You are no longer logged in as " .. group.displayName .. ".", player, 255, 0, 0 )
+					end
+				end
 				
-				-- has no relevant group, thus we don't need the MTA account
-				if shouldBeDeleted then
-					outputDebugString( "Cleanup: Removed account " .. accountName, 3 )
+				-- remove the account
+				removeAccount( account )
+				outputDebugString( "Removed account " .. info.username, 3 )
+			end
+			
+			if saveAcl then
+				updateNametagColor( player )
+			end
+		end
+	else
+		-- verify all accounts and remove invalid ones
+		local checkedPlayers = { }
+		local accounts = getAccounts( )
+		for key, account in ipairs( accounts ) do
+			local accountName = getAccountName( account )
+			local player = getAccountPlayer( account )
+			if player then
+				checkedPlayers[ player ] = true
+			end
+			if accountName ~= "Console" then -- console may exist untouched
+				local user = exports.sql:query_assoc_single( "SELECT userID FROM wcf1_user WHERE username = '%s'", accountName )
+				if user then
+					-- account should be deleted if no group is found
+					local shouldBeDeleted = true
+					local userChanged = false
+					
+					if user.userID then -- if this doesn't exist, the user does not exist in the db
+						-- fetch all of his groups groups
+						local groupinfo = exports.sql:query_assoc( "SELECT groupID FROM wcf1_user_to_groups WHERE userID = " .. user.userID )
+						if groupinfo then
+							-- look through all of our pre-defined groups
+							for key, group in ipairs( groups ) do
+								-- user does not have this group
+								local hasGroup = false
+								
+								-- check if he does have it
+								for key2, group2 in ipairs( groupinfo ) do
+									if group.groupID == group2.groupID then
+										-- has the group
+										hasGroup = true
+										
+										-- shouldn't delete his account
+										shouldBeDeleted = false
+										
+										-- make sure acl rights are set correctly
+										if aclGroupAddObject( aclGetGroup( group.aclGroup ), "user." .. accountName ) then
+											outputDebugString( "Cleanup: Added account " .. accountName .. " to ACL " .. group.aclGroup, 3 )
+											saveAcl = true
+											userChanged = true
+											if player then
+												outputChatBox( "You are now logged in as " .. group.displayName .. ".", player, 0, 255, 0 )
+											end
+										end
+									end
+								end
+								
+								-- doesn't have it
+								if not hasGroup then
+									-- make sure acl rights are removed
+									if aclGroupRemoveObject( aclGetGroup( group.aclGroup ), "user." .. accountName ) then
+										outputDebugString( "Cleanup: Removed account " .. accountName .. " from ACL " .. group.aclGroup, 3 )
+										saveAcl = true
+										userChanged = true
+										
+										if player then
+											outputChatBox( "You are no longer logged in as " .. group.displayName .. ".", player, 255, 0, 0 )
+										end
+									end
+								end
+							end
+						end
+					end
+					
+					-- has no relevant group, thus we don't need the MTA account
+					if shouldBeDeleted then
+						if player then
+							logOut( player )
+						end
+						outputDebugString( "Cleanup: Removed account " .. accountName, 3 )
+						removeAccount( account )
+					elseif player and isGuestAccount( getPlayerAccount( player ) ) and not logIn( player, account, p[ player ].mtasalt ) then
+						-- something went wrong here
+						outputDebugString( "Account Error for " .. p[ player ].username .. " - login failed.", 1 )
+					end
+					
+					-- update the color since we have none
+					if player and ( shouldBeDeleted or userChanged ) then
+						updateNametagColor( player )
+					end
+				else
+					-- Invalid user
+					
+					-- remove account from all ACL groups we use
+					for key, value in ipairs( groups ) do
+						if aclGroupRemoveObject( aclGetGroup( value.aclGroup ), "user." .. info.username ) then
+							saveAcl = true
+							outputDebugString( "Removed account " .. info.username .. " from " .. value.aclGroup .. " ACL", 3 )
+							
+							if player then
+								outputChatBox( "You are no longer logged in as " .. group.displayName .. ".", player, 255, 0, 0 )
+							end
+						end
+					end
+					
+					-- remove the account
+					if player then
+						logOut( player )
+					end
 					removeAccount( account )
+					outputDebugString( "Removed account " .. info.username, 3 )
+				end
+			end
+		end
+		
+		-- check all players not found by this for whetever they now have an account
+		for key, value in ipairs( getElementsByType( "player" ) ) do
+			if not checkedPlayers[ value ] then
+				local success, needsAclUpdate = aclUpdate( value, false )
+				if needsAclUpdate then
+					saveAcl = true
 				end
 			end
 		end
 	end
-	
 	-- if we should save the acl, do it (permissions changed)
-	if saveAcl then
+	if saveAclIfChanged and saveAcl then
 		aclSave( )
 	end
-	return true
+	return true, saveAcl
 end
 
 addCommandHandler( "reloadpermissions",
 	function( player )
-		if aclUpdate( ) then
+		if aclUpdate( nil, true ) then
 			outputServerLog( "Permissions have been reloaded. (Requested by " .. ( not player and "Console" or getAccountName( getPlayerAccount( player ) ) or getPlayerName(player) ) .. ")" )
 			if player then
 				outputChatBox( "Permissions have been reloaded.", player, 0, 255, 0 )
@@ -180,7 +324,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 			end
 		end
 		
-		aclUpdate( )
+		aclUpdate( nil, true )
 	end
 )
 --
@@ -229,8 +373,6 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 )
 
 --
-
-local p = { }
 
 local function getPlayerHash( player )
 	local ip = getPlayerIP( player ) or "255.255.255.0"
@@ -282,80 +424,10 @@ function performLogin( source, token, isPasswordAuth )
 							end
 						end
 						local username = info.username
-						p[ source ] = { userID = info.userID, username = username, groups = { } }
+						p[ source ] = { userID = info.userID, username = username, mtasalt = info.salts }
 						
 						-- check for admin rights
-						local shouldHaveAccount = false
-						local account = getAccount( username )
-						local groupinfo = exports.sql:query_assoc( "SELECT groupID FROM wcf1_user_to_groups WHERE userID = " .. info.userID )
-						if groupinfo then
-							local saveAcl = false
-							
-							-- loop through all retrieved groups
-							for key, group in ipairs( groupinfo ) do
-								for key2, group2 in ipairs( groups ) do
-									-- we have a acl group of interest
-									if group.groupID == group2.groupID then
-										-- mark as person to have an account
-										shouldHaveAccount = true
-										
-										-- add an account if it doesn't exist
-										if not account then
-											account = addAccount( username, info.salts ) -- due to MTA's limitations, the password can't be longer than 30 chars
-											if not account then
-												outputDebugString( "Account Error for " .. username .. " - addAccount failed.", 1 )
-											else
-												outputDebugString( "Added account " .. username, 3 )
-											end
-										end
-										
-										if account then
-											-- if the player has a different account password, change it
-											if not getAccount( username, info.salts ) then
-												setAccountPassword( account, info.salts )
-											end
-											
-											if isGuestAccount( getPlayerAccount( source ) ) and not logIn( source, account, info.salts) then
-												-- something went wrong here
-												outputDebugString( "Account Error for " .. username .. " - login failed.", 1 )
-											else
-												-- show him a message
-												table.insert( p[ source ].groups, group2 )
-												outputChatBox( "You are now logged in as " .. group2.displayName .. ".", source, 0, 255, 0 )
-												if aclGroupAddObject( aclGetGroup( group2.aclGroup ), "user." .. username ) then
-													saveAcl = true
-													outputDebugString( "Added account " .. username .. " to " .. group2.aclGroup .. " ACL", 3 )
-												end
-											end
-										end
-									end
-								end
-							end
-							
-							-- save the acl if it was changed
-							if saveAcl then
-								aclSave( )
-							end
-						end
-						if not shouldHaveAccount and account then
-							-- remove account from all ACL groups we use
-							local saveAcl = false
-							for key, value in ipairs( groups ) do
-								if aclGroupRemoveObject( aclGetGroup( value.aclGroup ), "user." .. username ) then
-									saveAcl = true
-									outputDebugString( "Removed account " .. username .. " from " .. value.aclGroup .. " ACL", 3 )
-								end
-							end
-							
-							-- save the acl if it was changed
-							if saveAcl then
-								aclSave( )
-							end
-							
-							-- remove the account
-							removeAccount( account )
-							outputDebugString( "Removed account " .. username, 3 )
-						end
+						aclUpdate( source, true )
 						
 						-- show characters
 						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID .. " ORDER BY lastLogin DESC" )
@@ -461,15 +533,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					end
 					setPlayerName( source, mtaCharName )
 					setPlayerNametagText( source, "[" .. getID( source ) .. "] " .. char.characterName )
-					local nametagColor = { 255, 255, 255, priority = 0 }
-					for key, value in ipairs( p[ source ].groups ) do
-						if value.nametagColor then
-							if value.nametagColor.priority > nametagColor.priority then
-								nametagColor = value.nametagColor
-							end
-						end
-					end
-					setPlayerNametagColor( source, unpack( nametagColor ) )
+					updateNametagColor( source )
 					
 					-- spawn the player, as it's a valid char
 					spawnPlayer( source, char.x, char.y, char.z, char.rotation, char.skin, char.interior, char.dimension )

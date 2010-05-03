@@ -8,8 +8,8 @@
         <acl name="Admin" />
         <acl name="Moderator" />
         <acl name="RPC" />
-        <object name="user.mabako" />
         <object name="resource.admin" />
+        <object name="user.mabako" />
     </group>
     <group name="Moderator">
         <acl name="Moderator" />
