@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,12 +13,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<info author="mabako" version="1.0"/>
-	
-	<script src="water.lua"/>
+]]
 
-	<file src="txd/bus-stop.txd"/>
-	<script src="txds.lua" type="client"/>
-</meta>
+addEventHandler( "onClientResourceStart", resourceRoot,
+	function( )
+		engineImportTXD( engineLoadTXD( "txd/bus-stop.txd" ), 1257 )
+	end
+)
