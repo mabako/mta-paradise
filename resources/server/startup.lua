@@ -25,6 +25,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		setRuleValue( "source", "http://github.com/marcusbauer/mta-paradise" )
 		setRuleValue( "git-url", "git://github.com/marcusbauer/mta-paradise.git" )
 		setRuleValue( "version", getVersion( ) )
+		setMapName( "San Fierro" )
 		
 		setTimer( 
 			function( )
