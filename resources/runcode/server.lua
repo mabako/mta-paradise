@@ -1,5 +1,5 @@
 local rootElement = getRootElement()
-
+local _set, _get = set, get
 function runString (commandstring, outputTo, source)
 	local sourceName
 	if source then
@@ -17,8 +17,8 @@ function runString (commandstring, outputTo, source)
 	car = c(source)
 	res = getResourceFromName
 	rr = getResourceRootElement
-	settingsSet = set
-	settingsGet = get
+	settingsSet = _set
+	settingsGet = _get
 	set = setElementData
 	get = getElementData
 	
