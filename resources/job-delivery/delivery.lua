@@ -124,7 +124,7 @@ addEventHandler( "job-delivery:complete", root,
 			local vehicle = getPedOccupiedVehicle( source )
 			if vehicle and p[ source ] and p[ source ].dropOff and isDeliveryVehicle( vehicle ) and getPedOccupiedVehicleSeat( source ) == 0 then
 				-- distance check
-				if getDistanceBetweenPoints3D( p[ source ].x, p[ source ].y, p[ source ].z, getElementPosition( vehicle ) ) < 22.5 then
+				if getDistanceBetweenPoints2D( p[ source ].x, p[ source ].y, getElementPosition( vehicle ) ) < 22.5 then
 					local health = math.min( 1000, getElementHealth( vehicle ) )
 					if health <= 350 then
 						outputChatBox( "Fix your truck!", player, 255, 0, 0 )
