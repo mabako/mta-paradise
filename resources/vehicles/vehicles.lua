@@ -550,7 +550,7 @@ addCommandHandler( "toggleengine",
 	function( player, commandName )
 		if exports.players:isLoggedIn( player ) then
 			local vehicle = getPedOccupiedVehicle( player )
-			if vehicle then
+			if vehicle and getVehicleOccupant( vehicle ) == player then
 				local data = vehicles[ vehicle ]
 				if data then
 					if exports.sql:query_free( "UPDATE vehicles SET engineState = 1 - engineState WHERE vehicleID = " .. data.vehicleID ) then
@@ -567,7 +567,7 @@ addCommandHandler( "togglelights",
 	function( player, commandName )
 		if exports.players:isLoggedIn( player ) then
 			local vehicle = getPedOccupiedVehicle( player )
-			if vehicle then
+			if vehicle and getVehicleOccupant( vehicle ) == player then
 				local data = vehicles[ vehicle ]
 				if data then
 					if exports.sql:query_free( "UPDATE vehicles SET lightsState = 1 - lightsState WHERE vehicleID = " .. data.vehicleID ) then
