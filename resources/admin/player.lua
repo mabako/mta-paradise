@@ -15,6 +15,29 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+-- addCommandHandler supporting arrays as command names (multiple commands with the same function)
+local addCommandHandler_ = addCommandHandler
+      addCommandHandler  = function( commandName, fn, restricted, caseSensitive )
+	-- add the default command handlers
+	if type( commandName ) ~= "table" then
+		commandName = { commandName }
+	end
+	for key, value in ipairs( commandName ) do
+		if key == 1 then
+			addCommandHandler_( value, fn, restricted, caseSensitive )
+		else
+			addCommandHandler_( value,
+				function( player, ... )
+					-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
+					if hasObjectPermissionTo( player, "command." .. commandName[ 1 ], not restricted ) then
+						fn( player, ... )
+					end
+				end
+			)
+		end
+	end
+end
+
 addCommandHandler( "setskin",
 	function( player, commandName, otherPlayer, skin )
 		skin = tonumber( skin )
@@ -84,12 +107,12 @@ addCommandHandler( "goto",
 	true
 )
 
-addCommandHandler( "freeze",
+addCommandHandler( { "freeze", "unfreeze" },
 	function( player, commandName, otherPlayer )
 		if otherPlayer then
 			local other, name = exports.players:getFromName( player, otherPlayer )
 			if other then
-				if player == other or hasObjectPermissionTo( other, "command.freeze" ) then
+				if player == other or not hasObjectPermissionTo( other, "command.freeze" ) then
 					local frozen = isPedFrozen( other )
 					if frozen then
 						outputChatBox( "You've unfrozen " .. name .. ".", player, 0, 255, 153 )
