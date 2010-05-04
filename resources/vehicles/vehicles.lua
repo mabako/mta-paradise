@@ -202,7 +202,7 @@ addCommandHandler( { "deletevehicle", "delvehicle" },
 		if vehicleID then
 			local vehicle = vehicleIDs[ vehicleID ]
 			if vehicle then
-				if exports.sql:query_free( "DELETE FROM vehicles WHERE vehicleID = " .. vehicleID ) then
+				if vehicleID < 0 or exports.sql:query_free( "DELETE FROM vehicles WHERE vehicleID = " .. vehicleID ) then
 					outputChatBox( "You deleted vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
 					
 					-- remove from vehicles list
@@ -264,8 +264,12 @@ addCommandHandler( "respawnvehicle",
 		if vehicleID then
 			local vehicle = vehicleIDs[ vehicleID ]
 			if vehicle then
-				respawnVehicle( vehicle )
-				saveVehicle( vehicle )
+				if vehicleID < 0 then
+					fixVehicle( vehicle )
+				else
+					respawnVehicle( vehicle )
+					saveVehicle( vehicle )
+				end
 				outputChatBox( "You respawned vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
 			else
 				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
@@ -279,9 +283,17 @@ addCommandHandler( "respawnvehicle",
 
 addCommandHandler( "respawnvehicles",
 	function( player, commandName )
-		for vehicle in pairs( vehicles ) do
+		for vehicle, data in pairs( vehicles ) do
 			if isVehicleEmpty( vehicle ) then
-				respawnVehicle( vehicle )
+				if data.vehicleID < 0 then
+					-- delete empty temp. vehicles
+					vehicleIDs[ data.vehicleID ] = nil
+					vehicles[ vehicle ] = nil
+					
+					destroyElement( vehicle )
+				else
+					respawnVehicle( vehicle )
+				end
 			end
 		end
 		outputChatBox( "*** " .. getPlayerName( player ):gsub( "_", " " ) .. " respawned all vehicles. ***", root, 0, 255, 153 )
@@ -295,7 +307,9 @@ addCommandHandler( "park",
 		if vehicle then
 			local data = vehicles[ vehicle ]
 			if data then
-				if exports.players:getCharacterID( player ) == data.characterID or hasObjectPermissionTo( player, "command.createvehicle", false ) then
+				if data.vehicleID < 0 then
+					outputChatBox( "Your temporary vehicle " .. data.vehicleID .. " (" .. getVehicleName( vehicle ) .. ") can't be parked.", player, 255, 0, 0 )
+				elseif exports.players:getCharacterID( player ) == data.characterID or hasObjectPermissionTo( player, "command.createvehicle", false ) then
 					local x, y, z = getElementPosition( vehicle )
 					local rx, ry, rz = getVehicleRotation( vehicle )
 					local success, error = exports.sql:query_free( "UPDATE vehicles SET respawnPosX = " .. x .. ", respawnPosY = " .. y .. ", respawnPosZ = " .. z .. ", respawnRotX = " .. rx .. ", respawnRotY = " .. ry .. ", respawnRotZ = " .. rz .. ", respawnInterior = " .. getElementInterior( vehicle ) .. ", respawnDimension = " .. getElementDimension( vehicle ) .. " WHERE vehicleID = " .. data.vehicleID )			
@@ -332,7 +346,9 @@ addCommandHandler( "getvehicle",
 				outputChatBox( "You teleported vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ") to you.", player, 0, 255, 153 )
 				
 				-- save the vehicle delayed since it might fall down/position might be adjusted to ground position
-				setTimer( saveVehicle, 2000, 1, vehicle )
+				if vehicleID > 0 then
+					setTimer( saveVehicle, 2000, 1, vehicle )
+				end
 			else
 				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
 			end
@@ -355,7 +371,9 @@ addCommandHandler( "gotovehicle",
 				outputChatBox( "You teleported to vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
 				
 				-- save the vehicle delayed since it might fall down/position might be adjusted to ground position
-				setTimer( saveVehicle, 2000, 1, vehicle )
+				if vehicleID > 0 then
+					setTimer( saveVehicle, 2000, 1, vehicle )
+				end
 			else
 				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
 			end
@@ -396,7 +414,7 @@ addCommandHandler( "setwindowstinted",
 							state = 0
 						end
 						
-						if exports.sql:query_free( "UPDATE vehicles SET tintedWindows = '%s' WHERE vehicleID = " .. data.vehicleID, state ) then
+						if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET tintedWindows = '%s' WHERE vehicleID = " .. data.vehicleID, state ) then
 							data.tintedWindows = state == 1
 							outputChatBox( "Tinted windows are now " .. ( data.tintedWindows and "enabled" or "disabled" ) .. ".", player, 0, 255, 0 )
 							
@@ -428,7 +446,7 @@ addCommandHandler( "setwindowstinted",
 function saveVehicle( vehicle )
 	if vehicle then
 		local data = vehicles[ vehicle ]
-		if data then
+		if data and data.vehicleID > 0 then
 			local x, y, z = getElementPosition( vehicle )
 			local rx, ry, rz = getVehicleRotation( vehicle )
 			local success, error = exports.sql:query_free( "UPDATE vehicles SET posX = " .. x .. ", posY = " .. y .. ", posZ = " .. z .. ", rotX = " .. rx .. ", rotY = " .. ry .. ", rotZ = " .. rz .. ", health = " .. math.min( 1000, math.ceil( getElementHealth( vehicle ) ) ) .. ", interior = " .. getElementInterior( vehicle ) .. ", dimension = " .. getElementDimension( vehicle ) .. " WHERE vehicleID = " .. data.vehicleID )			
@@ -484,7 +502,7 @@ addEventHandler( "onResourceStop", resourceRoot,
 addEventHandler( "onVehicleRespawn", resourceRoot,
 	function( )
 		local data = vehicles[ source ]
-		if data then
+		if data and data.vehicleID > 0 then
 			setElementInterior( source, data.respawnInterior )
 			setElementDimension( source, data.respawnDimension )
 			saveVehicle( source )
@@ -549,7 +567,7 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 
 local function lockVehicle( player, vehicle, driver )
 	local vehicleID = vehicles[ vehicle ].vehicleID
-	if exports.sql:query_free( "UPDATE vehicles SET locked = 1 - locked WHERE vehicleID = " .. vehicleID ) then
+	if vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET locked = 1 - locked WHERE vehicleID = " .. vehicleID ) then
 		if driver then
 			exports.chat:me( player, ( isVehicleLocked( vehicle ) and "un" or "" ) .. "locks the vehicle doors." )
 		else
@@ -605,7 +623,7 @@ addCommandHandler( "toggleengine",
 			if vehicle and getVehicleOccupant( vehicle ) == player then
 				local data = vehicles[ vehicle ]
 				if data then
-					if exports.sql:query_free( "UPDATE vehicles SET engineState = 1 - engineState WHERE vehicleID = " .. data.vehicleID ) then
+					if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET engineState = 1 - engineState WHERE vehicleID = " .. data.vehicleID ) then
 						setVehicleEngineState( vehicle, not data.engineState )
 						data.engineState = not data.engineState
 					end
@@ -622,7 +640,7 @@ addCommandHandler( "togglelights",
 			if vehicle and getVehicleOccupant( vehicle ) == player then
 				local data = vehicles[ vehicle ]
 				if data then
-					if exports.sql:query_free( "UPDATE vehicles SET lightsState = 1 - lightsState WHERE vehicleID = " .. data.vehicleID ) then
+					if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET lightsState = 1 - lightsState WHERE vehicleID = " .. data.vehicleID ) then
 						setVehicleOverrideLights( vehicle, getVehicleOverrideLights( vehicle ) == 2 and 1 or 2 )
 					end
 				end
@@ -641,3 +659,39 @@ end
 function hasTintedWindows( vehicle )
 	return vehicles[ vehicle ] and vehicles[ vehicle ].tintedWindows or false
 end
+
+--
+local tempIDCounter = 0
+addCommandHandler( { "temporaryvehicle", "tempvehicle", "vehicle" },
+	function( player, commandName, ... )
+		model = table.concat( { ... }, " " )
+		model = getVehicleModelFromName( model ) or tonumber( model )
+		if model then
+			local x, y, z, rz = getPositionInFrontOf( player )
+			
+			local vehicle = createVehicle( model, x, y, z, 0, 0, rz )
+			if vehicle then
+				tempIDCounter = tempIDCounter - 1
+				local vehicleID = tempIDCounter
+				
+				-- tables for ID -> vehicle and vehicle -> data
+				vehicleIDs[ vehicleID ] = vehicle
+				vehicles[ vehicle ] = { vehicleID = vehicleID, characterID = 0, engineState = true, tintedWindows = false }
+				
+				-- some properties
+				setElementInterior( vehicle, getElementInterior( player ) )
+				setElementDimension( vehicle, getElementDimension( player ) )
+				setVehicleEngineState( vehicle, true )
+				setVehicleOverrideLights( vehicle, 1 )
+				
+				-- success message
+				outputChatBox( "Created " .. getVehicleName( vehicle ) .. " (ID " .. vehicleID .. ")", player, 0, 255, 0 )
+			else
+				outputChatBox( "Invalid Vehicle Model.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [model]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)

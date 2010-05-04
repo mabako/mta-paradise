@@ -145,6 +145,7 @@
         <right name="command.respawnvehicles" access="true" />
         <right name="command.getvehicle" access="true" />
         <right name="command.gotovehicle" access="true" />
+        <right name="command.temporaryvehicle" access="true" />
         <right name="command.setskin" access="true" />
         <right name="command.get" access="true" />
         <right name="command.goto" access="true" />
