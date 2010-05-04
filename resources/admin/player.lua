@@ -112,3 +112,57 @@ addCommandHandler( "kick",
 	end,
 	true
 )
+
+--
+
+local function contains( t, s )
+	for key, value in pairs( t ) do
+		if value.displayName == s then
+			return true
+		end
+	end
+	return false
+end
+
+addCommandHandler( "admins",
+	function( player, commandName, ... )
+		if exports.players:isLoggedIn( player ) then
+			outputChatBox( "Admins: ", player, 255, 255, 91 )
+			local count = 0
+			for key, value in ipairs( getElementsByType( "player" ) ) do
+				local groups = exports.players:getGroups( value )
+				if groups and #groups >= 1 then
+					if contains( groups, "Administrator" ) then
+						outputChatBox( "  Admin " .. getPlayerName( value ):gsub( "_", " " ), player, 255, 255, 91 )
+						count = count + 1
+					end
+				end
+			end
+			
+			if count == 0 then
+				outputChatBox( "  None.", player, 255, 255, 91 )
+			end
+		end
+	end
+)
+addCommandHandler( "mods",
+	function( player, commandName, ... )
+		if exports.players:isLoggedIn( player ) then
+			outputChatBox( "Moderators: ", player, 255, 255, 191 )
+			local count = 0
+			for key, value in ipairs( getElementsByType( "player" ) ) do
+				local groups = exports.players:getGroups( value )
+				if groups and #groups >= 1 then
+					if contains( groups, "Moderator" ) then
+						outputChatBox( "  Moderator " .. getPlayerName( value ):gsub( "_", " " ), player, 255, 255, 191 )
+						count = count + 1
+					end
+				end
+			end
+			
+			if count == 0 then
+				outputChatBox( "  None.", player, 255, 255, 191 )
+			end
+		end
+	end
+)
