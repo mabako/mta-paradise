@@ -300,7 +300,7 @@ addEventHandler( "onClientRender", root,
 						else
 							key = key - 1
 						end
-						show( changeableWindows[ key ], false, false, showMouse )
+						show( changeableWindows[ key ] )
 					end
 					
 					dxDrawRectangle( x + width + 5, screenY / 2 - 15, 30, 30, tocolor( 0, 0, 0, 127 ) )
@@ -311,7 +311,7 @@ addEventHandler( "onClientRender", root,
 						else
 							key = key + 1
 						end
-						show( changeableWindows[ key ], false, false, showMouse )
+						show( changeableWindows[ key ] )
 					end
 				end
 			end
