@@ -32,6 +32,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="windows/characters.lua" type="client"/>
 	<export function="updateCharacters" type="client"/>
 	
+	<script src="windows/inventory.lua" type="client"/>
+	<export function="updateInventory" type="client"/>
+	
 	<script src="gui_c.lua" type="client"/>
 	<export function="show" type="client"/>
 	<export function="hide" type="client"/>

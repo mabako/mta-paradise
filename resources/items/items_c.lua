@@ -22,6 +22,9 @@ addEvent( "syncItems", true )
 addEventHandler( "syncItems", root,
 	function( item_table )
 		items[ source ] = item_table
+		if source == getLocalPlayer( ) then
+			exports.gui:updateInventory( )
+		end
 	end
 )
 

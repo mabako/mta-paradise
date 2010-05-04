@@ -119,7 +119,7 @@ local function cache( window )
 		else
 			window.cachedpanes = panes
 		end
-		return lines * 70
+		return math.min( lines, math.max( 1, math.ceil( #panes / max_vpanes ) ) ) * 70
 	end
 	
 	for k, v in ipairs( window ) do
@@ -339,7 +339,7 @@ local function draw( window, y )
 	return y
 end
 
-local changeableWindows = { 'scoreboard', 'characters' }
+local changeableWindows = { 'scoreboard', 'characters', 'inventory' }
 local function isChangeableWindow( windowName )
 	for key, value in ipairs( changeableWindows ) do
 		if value == windowName then
@@ -412,6 +412,18 @@ bindKey( 'tab', 'both',
 				if getTickCount( ) - scoreboardTick > 200 then
 					hide( )
 				end
+			end
+		end
+	end
+)
+
+bindKey( 'i', 'down',
+	function( )
+		if not forcedWindow then
+			if window == windows.inventory then
+				hide( )
+			else
+				show( 'inventory', false, true, true )
 			end
 		end
 	end

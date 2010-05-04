@@ -21,6 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="getName" type="client"/>
 	<export function="getDescription"/>
 	<export function="getDescription" type="client"/>
+	<export function="getImage" type="client"/>
 	
 	<script src="items.lua"/>
 	<export function="get"/>
@@ -31,6 +32,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="items_c.lua" type="client"/>
 	<export function="get" type="client"/>
 	<export function="has" type="client"/>
+	
+	<file src="images/1.png"/>
+	<file src="images/2.png"/>
+	<file src="images/3.png"/>
+	<file src="images/4.png"/>
+	<file src="images/cluckin1.png"/>
+	<file src="images/cluckin2.png"/>
+	<file src="images/cluckin3.png"/>
+	<file src="images/ramen.png"/>
+	<file src="images/salad.png"/>
+	<file src="images/sprunk.png"/>
 	
 	<include resource="sql"/>
 	<include resource="players"/>

@@ -54,7 +54,7 @@ function updateShopContent( content, name )
 		local description = value.description or exports.items:getDescription( value.itemID )
 		table.insert( windows.shop[2].panes,
 			{
-				image = ":players/images/skins/-1.png",
+				image = exports.items:getImage( value.itemID, value.itemValue, value.name ) or ":players/images/skins/-1.png",
 				title = value.name or exports.items:getName( value.itemID ),
 				text = "Costs $" .. value.price .. ( description and description ~= "" and ( " - " .. description ) or "" ),
 				onHover = function( cursor, pos )

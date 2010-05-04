@@ -130,12 +130,12 @@ function take( element, slot )
 	-- we need a base to work on
 	if load( element ) then
 		-- check for existance of the slot
-		if data[ elements ].items[ key ] then
+		if data[ element ].items[ slot ] then
 			-- only continue if we could delete it
-			local success, error = exports.sql:query_free( "DELETE FROM items WHERE `index` = " .. data[ elements ].items[ key ].index )
+			local success, error = exports.sql:query_free( "DELETE FROM items WHERE `index` = " .. data[ element ].items[ slot ].index )
 			if success then
 				-- remove it from the table, shift following items to pos=pos-1
-				table.remove( data[ elements ].items, key )
+				table.remove( data[ element ].items, slot )
 				
 				-- tell everyone who wants to know
 				notify( element )
@@ -254,17 +254,35 @@ addEventHandler( "onResourceStart", resourceRoot,
 
 --
 
-addCommandHandler( "showitems",
-	-- TODO: remove this once we have an inventory
-	function( player )
-		local items = get( player )
-		if items then
-			for key, value in ipairs( items ) do
-				outputChatBox( "Item " .. tostring( item_list[ value.item ].name ) .. " - " .. tostring( value.value ) .. " - " .. tostring( value.name ), player )
+addEvent( "items:use", true )
+addEventHandler( "items:use", root,
+	function( slot )
+		if source == client then
+			if exports.players:isLoggedIn( source ) then
+				local item = get( source )[ slot ]
+				if item then
+					local id = item.item
+					local value = item.value
+					local name = item.name or getName( id )
+					
+					if id == 3 then
+						take( source, slot )
+						if value > 0 then -- we will only give health, not take it.
+							setElementHealth( source, math.max( 100, getElementHealth( source ) + value ) )
+						end
+						exports.chat:me( source, "eats a " .. name .. "." )
+					elseif id == 4 then
+						take( source, slot )
+						if value > 0 then -- we will only give health, not take it.
+							setElementHealth( source, math.max( 100, getElementHealth( source ) + value ) )
+						end
+						exports.chat:me( source, "drinks a " .. name .. "." )
+					else
+						-- the original idea was to have the items run ("The wild Vehicle key ran away.") away yet I could convince myself players would like it that much
+						exports.chat:me( source, "looks at the " .. name .. ". Nothing happens..." )
+					end
+				end
 			end
-		else
-			outputChatBox( "Unable to load your items...", player )
 		end
-	end,
-	true
+	end
 )
