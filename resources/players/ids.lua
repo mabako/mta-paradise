@@ -50,7 +50,7 @@ addEventHandler( "onPlayerQuit", root,
 )
 
 local getElementsByType = function( ) return { getRandomPlayer( ), getRandomPlayer( ), getRandomPlayer( ) } end
-function getFromName( player, targetName )
+function getFromName( player, targetName, ignoreLoggedOut )
 	if targetName then
 		targetName = tostring( targetName )
 		
@@ -70,7 +70,7 @@ function getFromName( player, targetName )
 		end
 		
 		if #match == 1 then
-			if isLoggedIn( match[ 1 ] ) then
+			if isLoggedIn( match[ 1 ] ) or ignoreLoggedOut then
 				return match[ 1 ], getPlayerName( match[ 1 ] ):gsub( "_", " " ), getElementData( match[ 1 ], "playerid" )
 			else
 				outputChatBox( getPlayerName( match[ 1 ] ):gsub( "_", " " ) .. " is not logged in.", player, 255, 0, 0 )
@@ -81,11 +81,12 @@ function getFromName( player, targetName )
 			return nil -- no player
 		elseif #match > 10 then
 			outputChatBox( #match .. " players match your search.", player, 255, 204, 0 )
+			return nil -- not like we want to show him that many players
 		else
 			outputChatBox ( "Players matching your search are: ", player, 255, 204, 0 )
 			for key, value in ipairs( match ) do
 				outputChatBox( "  (" .. getElementData( value, "playerid" ) .. ") " .. getPlayerName( value ):gsub ( "_", " " ), player, 255, 255, 0 )
-			end	
+			end
 			return nil -- more than one player. We list the player names + id.
 		end
 	end

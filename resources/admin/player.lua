@@ -132,7 +132,7 @@ addEventHandler( "onPlayerQuit", root,
 addCommandHandler( "kick",
 	function( player, commandName, otherPlayer, ... )
 		if otherPlayer then
-			local other, name = exports.players:getFromName( player, otherPlayer )
+			local other, name = exports.players:getFromName( player, otherPlayer, true )
 			if other then
 				if not hasObjectPermissionTo( other, "command.kick" ) then
 					local reason = table.concat( { ... }, " " )
