@@ -21,6 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<include resource="vehicles"/>
 	<include resource="shops"/>
 	<include resource="interiors"/>
+	<include resource="vehicle-nodes"/>
 	
 	<settings>
 		<!-- (Civilian) Vehicles you can use for the delivery job -->

@@ -69,9 +69,9 @@ local function showDropOff( )
 	
 	if position then
 		-- in lack of a more detailed close-location (aka we use the entrance), use large markers
-		marker = createMarker( position.x, position.y, position.z, "checkpoint", 17.5, 0, 255, 0, 63 )
+		marker = createMarker( position.x, position.y, position.z, "checkpoint", 4, 0, 255, 0, 63 )
 		if marker then
-			blip = createBlipAttachedTo( marker, 0, 3, 0, 255, 0, 255 )
+			blip = createBlipAttachedTo( marker, 0, 2, 0, 255, 0, 255 )
 		end
 	end
 end

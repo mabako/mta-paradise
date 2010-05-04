@@ -46,7 +46,8 @@ local function getNextDropOffPoint( current )
 	local result = exports.sql:query_assoc_single( "SELECT interiorID, outsideX, outsideY, outsideZ, interiorName FROM shops s LEFT JOIN interiors i ON dimension = interiorID WHERE outsideDimension = 0 AND (characterID != 0 OR interiorType = 0)" .. ( current and ( " AND interiorID != " .. tonumber( current ) ) or "" ) .. " GROUP BY interiorID ORDER BY RAND() LIMIT 1" )
 	if result then
 		-- it would probably help if we used the position to calculate some position on the street or sidewalk
-		return result.interiorID, result.outsideX, result.outsideY, result.outsideZ, result.interiorName
+		local x, y, z = exports['vehicle-nodes']:findClosest( result.outsideX, result.outsideY, result.outsideZ )
+		return result.interiorID, ( result.outsideX + x ) / 2, ( result.outsideY + y ) / 2, ( result.outsideZ + z ) / 2, result.interiorName
 	end
 end
 
@@ -127,7 +128,7 @@ addEventHandler( "job-delivery:complete", root,
 			local vehicle = getPedOccupiedVehicle( source )
 			if p[ source ] and p[ source ].dropOff and isDeliveryVehicle( vehicle ) and getPedOccupiedVehicleSeat( source ) == 0 then
 				-- distance check
-				if getDistanceBetweenPoints2D( p[ source ].x, p[ source ].y, getElementPosition( vehicle ) ) < 22.5 then
+				if getDistanceBetweenPoints2D( p[ source ].x, p[ source ].y, getElementPosition( vehicle ) ) < 5 then
 					local health = math.min( 1000, getElementHealth( vehicle ) )
 					if health > 350 then
 						-- calculate earnings based on vehicle health

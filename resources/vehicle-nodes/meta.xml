@@ -1,0 +1,9 @@
+<!-- based on 'traffic' by lil_toady and Flobu
+  -- from http://flobu.fl.funpic.de/MTA/traffic.rar
+  -->
+<meta>
+	<script src="unlinked.lua" />
+	<script src="closestnode.lua" />
+	
+	<export function="findClosest"/><!-- findClosest(x,y,z) returns x,y,z -->
+</meta>
