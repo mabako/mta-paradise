@@ -36,7 +36,7 @@ addEventHandler( "onClientRender", getRootElement( ),
 			if getElementDimension( colshape ) == dimension then
 				local px, py, pz = getElementPosition( colshape )
 				local distance = getDistanceBetweenPoints3D( px, py, pz, cx, cy, cz )
-				if distance < 10 then
+				if distance <= 17.5 then
 					-- pickup to it
 					local type = getElementData( colshape, "type" )
 					if pickups[ colshape ] and pickups[ colshape ].type ~= type then
