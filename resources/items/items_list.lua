@@ -17,11 +17,20 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local foodMap =
 {
+	mookidsmeal = "bs1",
+	beeftowermeal = "bs2",
+	meatstackmeal = "bs3",
 	cluckinlittlemeal = "cluckin1",
 	cluckinbigmeal = "cluckin2",
 	cluckinhugemeal = "cluckin3",
 	saladmeal = "salad",
+	largesaladmeal = "salad",
 	ramen = "ramen",
+	buster = "pizza1",
+	doubledluxe = "pizza2",
+	fullrack = "pizza3",
+	hotdog = "hotdog",
+	icecreamstick = "icecream",
 }
 
 local drinkMap =
@@ -37,7 +46,7 @@ end
 
 local function getFoodImage( value, name )
 	if name then
-		name = name:lower( ):gsub( "'", " " ):gsub( " ", "" )
+		name = name:lower( ):gsub( "'", " " ):gsub( " ", "" ):gsub( "-", "" )
 		return img( foodMap[ name ] or 3 )
 	end
 	return img( 3 )
@@ -45,7 +54,7 @@ end
 
 local function getDrinkImage( value, name )
 	if name then
-		name = name:lower( ):gsub( "'", " " ):gsub( " ", "" )
+		name = name:lower( ):gsub( "'", " " ):gsub( " ", "" ):gsub( "-", "" )
 		return img( drinkMap[ name ] or 4 )
 	end
 	return img( 4 )
