@@ -312,6 +312,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<file src="images/skins/287.png"/>
 	<file src="images/skins/288.png"/>
 	
+	<script src="skins.lua"/>
+	<script src="skins.lua" type="client"/>
+	<export function="getSkins"/>
+	<export function="getSkins" type="client"/>
+	<export function="isValidSkin"/>
+	<export function="isValidSkin" type="client"/>
+	<export function="getSkinDetails"/>
+	<export function="getSkinDetails" type="client"/>
+	
 	<script src="respawn.lua"/>
 	<script src="respawn_c.lua" type="client"/>
 </meta>

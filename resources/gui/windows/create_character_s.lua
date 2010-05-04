@@ -17,11 +17,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 addEvent( "gui:createCharacter", true )
 addEventHandler( "gui:createCharacter", root,
-	function( name )
-		if source == client then
-			local error = verifyCharacterName( name )
+	function( name, skin )
+		if source == client and type( skin ) == 'number' then
+			local error = verifyCharacterName( name ) or verifySkin( skin )
 			if not error then
-				exports.players:createCharacter( source, name )
+				exports.players:createCharacter( source, name, skin )
 			end
 		end
 	end

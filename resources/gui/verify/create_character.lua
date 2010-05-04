@@ -66,3 +66,11 @@ function verifyCharacterName( name )
 		end
 	end
 end
+
+function verifySkin( skin )
+	if not skin then
+		return "No Skin set."
+	elseif not exports.players:isValidSkin( skin ) then
+		return "Skin is invalid."
+	end
+end

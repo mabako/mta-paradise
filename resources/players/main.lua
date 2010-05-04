@@ -667,11 +667,11 @@ function updateCharacters( player )
 	return false
 end
 
-function createCharacter( player, name )
+function createCharacter( player, name, skin )
 	if player and p[ player ].userID then
 		if exports.sql:query_assoc_single( "SELECT characterID FROM characters WHERE characterName = '%s'", name ) then
 			triggerClientEvent( player, "players:characterCreationResult", player, 1 )
-		elseif exports.sql:query_free( "INSERT INTO characters (characterName, userID, x, y, z, interior, dimension, skin, rotation) VALUES ('%s', " .. p[ player ].userID .. ", -1984.5, 138, 27.7, 0, 0, 0, 90)", name ) then
+		elseif exports.sql:query_free( "INSERT INTO characters (characterName, userID, x, y, z, interior, dimension, skin, rotation) VALUES ('%s', " .. p[ player ].userID .. ", -1984.5, 138, 27.7, 0, 0, " .. tonumber( skin ) .. ", 90)", name ) then
 			updateCharacters( player )
 			triggerClientEvent( player, "players:characterCreationResult", player, 0 )
 		end

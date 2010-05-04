@@ -24,6 +24,7 @@ local line_height = 16
 local max_lines = 31
 local max_height = line_height * max_lines
 local max_panes = math.floor( max_height / 66 )
+local max_vpanes = math.floor( width / 70 )
 local clicked = { }
 destroy = { }
 
@@ -92,6 +93,33 @@ local function cache( window )
 		end
 		
 		size = size + ( #window.cachedpanes * 66 )
+	elseif window.type == "vpane" then
+		local lines = window.lines or max_panes
+		local panes = window.panes
+		
+		-- let's see how far we can go
+		if #panes > lines * max_vpanes then
+			if not window.scrollpos then
+				window.scrollpos = 1
+			else
+				-- use up/down scrolling
+				if clicked.mouse_wheel_up then
+					window.scrollpos = math.max( 1, window.scrollpos - max_vpanes * math.ceil( lines / 2 ) )
+				elseif clicked.mouse_wheel_down then
+					window.scrollpos = math.min( max_vpanes * ( math.ceil( #panes / max_vpanes ) - lines ) + 1, window.scrollpos + max_vpanes * math.ceil( lines / 2 ) )
+				end
+			end
+			
+			window.cachedpanes = { }
+			for i = window.scrollpos, math.min( #panes, window.scrollpos + lines * max_vpanes - 1 ) do
+				if panes[i] then
+					table.insert( window.cachedpanes, panes[i] )
+				end
+			end
+		else
+			window.cachedpanes = panes
+		end
+		return lines * 70
 	end
 	
 	for k, v in ipairs( window ) do
@@ -124,6 +152,9 @@ local function draw( window, y )
 		-- draw the content
 		for key, value in ipairs( window.cachedcontent ) do
 			-- check for hover/click
+			if value.onRender then
+				value.onRender( { x, y, x + width, y + line_height } )
+			end
 			if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY <= y + line_height then
 				if value.onHover then
 					value.onHover( { cursorX, cursorY }, { x, y, x + width, y + line_height } )
@@ -230,6 +261,9 @@ local function draw( window, y )
 			y = y + 1
 			
 			-- check for hover/click
+			if value.onRender then
+				value.onRender( { x, y, x + width, y + 64 } )
+			end
 			if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY <= y + 64 then
 				if value.onHover then
 					value.onHover( { cursorX, cursorY }, { x, y, x + width, y + 64 } )
@@ -251,6 +285,50 @@ local function draw( window, y )
 			dxDrawText( tostring( type( value.text ) == "function" and value.text( ) or value.text ), x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, value.wordBreak or false, true )
 			y = y + 65
 		end
+	elseif window.type == "vpane" then
+		if not window.scrollpane then
+			window.scrollpane = guiCreateButton( x, y, width, 70 * ( window.lines or max_panes ), "", false )
+			guiSetAlpha( window.scrollpane, 0 )
+			addEventHandler( "onClientElementDestroy", window.scrollpane, function( ) window.scrollpane = nil end, false )
+			
+			table.insert( destroy, window.scrollpane )
+		end
+		y = y + 5
+		local px = false
+		for key, value in ipairs( window.cachedpanes ) do
+			if not px or ( ( key - 1 ) % max_vpanes == 0 ) then
+				-- new line
+				if px then
+					y = y + 70
+				end
+				px = x + width / 2 - math.min( #window.cachedpanes - key + 1, max_vpanes ) * 35
+			end
+			
+			px = px + 5
+			
+			-- check for hover/click
+			if value.onRender then
+				value.onRender( { px, y, px + 64, y + 64 } )
+			end
+			if cursorX >= px and cursorX <= px + 64 and cursorY >= y and cursorY <= y + 64 then
+				if value.onHover then
+					value.onHover( { cursorX, cursorY }, { px, y, px + 64, y + 64 } )
+				end
+				
+				if value.onClick then
+					if clicked.mouse1 then
+						value.onClick( 1, { cursorX, cursorY }, { px, y, px + 64, y + 64 } )
+					end
+					if clicked.mouse2 then
+						value.onClick( 2, { cursorX, cursorY }, { px, y, px + 64, y + 64 } )
+					end
+				end
+			end
+			
+			dxDrawImage( px, y, 64, 64, value.image, 0, 0, 0, tocolor( 255, 255, 255, 255 ), true )
+			px = px + 65
+		end
+		y = y + 65
 	end
 	
 	-- run all child drawings
@@ -341,7 +419,6 @@ bindKey( 'tab', 'both',
 
 addEventHandler( "onClientMouseWheel", root,
 	function( direction )
-		outputChatBox( tostring( direction ) )
 		if direction > 0 then
 			clicked.mouse_wheel_up = true
 		else
@@ -396,6 +473,10 @@ function show( name, forced, dontEnableInput, mouse )
 		elseif mouse then
 			showCursor( true )
 			showMouse = true
+		end
+		
+		if window.onCreate then
+			window.onCreate( )
 		end
 	end
 end

@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local selectedSkin = false
 local messageTimer
 local messageCount = 0
 local function setMessage( text )
@@ -38,9 +39,9 @@ end
 
 local function tryCreate( key )
 	local name = destroy["g:createcharacter:name"] and guiGetText( destroy["g:createcharacter:name"] )
-	local error = verifyCharacterName( name )
+	local error = verifyCharacterName( name ) or verifySkin( selectedSkin )
 	if not error then
-		triggerServerEvent( "gui:createCharacter", getLocalPlayer( ), name )
+		triggerServerEvent( "gui:createCharacter", getLocalPlayer( ), name, selectedSkin )
 	else
 		setMessage( error )
 	end
@@ -56,6 +57,10 @@ end
 
 windows.create_character =
 {
+	onCreate = function( )
+			selectedSkin = false
+			windows.create_character[4].text = "Please select a skin."
+		end,
 	{
 		type = "label",
 		text = "New Character",
@@ -67,6 +72,16 @@ windows.create_character =
 		text = "Name:",
 		id = "g:createcharacter:name",
 		onAccepted = tryCreate,
+	},
+	{
+		type = "vpane",
+		lines = 5,
+		panes = { }
+	},
+	{
+		type = "label",
+		text = "Please select a skin.",
+		alignX = "center",
 	},
 	{
 		type = "button",
@@ -84,6 +99,32 @@ windows.create_character =
 		alignX = "center",
 	}
 }
+
+setTimer(
+	function( )
+		for k, skin in ipairs( exports.players:getSkins( ) ) do
+			table.insert( windows.create_character[3].panes,
+				{
+					image = ":players/images/skins/" .. skin .. ".png",
+					onHover = function( cursor, pos )
+							dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( { 255, 255, 0, 63 } ) ) )
+						end,
+					onClick = function( )
+							selectedSkin = skin
+							windows.create_character[4].text = "Selected Skin #" .. skin .. "."
+						end,
+					onRender = function( pos )
+							if selectedSkin == skin then
+								dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( { 0, 255, 0, 63 } ) ) )
+							end
+						end
+				}
+			)
+		end
+	end,
+	500,
+	1
+)
 
 addEvent( "players:characterCreationResult", true )
 addEventHandler( "players:characterCreationResult", getLocalPlayer( ),
