@@ -84,6 +84,41 @@ addCommandHandler( "goto",
 	true
 )
 
+addCommandHandler( "freeze",
+	function( player, commandName, otherPlayer )
+		if otherPlayer then
+			local other, name = exports.players:getFromName( player, otherPlayer )
+			if other then
+				if player == other or hasObjectPermissionTo( other, "command.freeze" ) then
+					local frozen = isPedFrozen( other )
+					if frozen then
+						outputChatBox( "You've unfrozen " .. name .. ".", player, 0, 255, 153 )
+						if player ~= other then
+							outputChatBox( "You have been unfrozen by " .. getPlayerName( player ) .. ".", other, 0, 255, 153 )
+						end
+					else
+						outputChatBox( "You froze " .. name .. ".", player, 0, 255, 153 )
+						if player ~= other then
+							outputChatBox( "You have been frozen by " .. getPlayerName( player ) .. ".", other, 0, 255, 153 )
+						end
+					end
+					toggleAllControls( other, frozen, true, false )
+					setPedFrozen( other, not frozen )
+					local vehicle = getPedOccupiedVehicle( other )
+					if vehicle then
+						setVehicleFrozen( vehicle, not frozen )
+					end
+				else
+					outputChatBox( "You can't freeze this player.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
 addEventHandler( "onPlayerQuit", root,
 	function( type, reason, player )
 		if player and getElementType( player ) == "player" then

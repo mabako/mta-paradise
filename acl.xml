@@ -153,6 +153,7 @@
         <right name="command.createshop" access="true" />
         <right name="command.deleteshop" access="true" />
         <right name="command.kick" access="true" />
+        <right name="command.freeze" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />
