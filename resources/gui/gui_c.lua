@@ -119,7 +119,8 @@ local function cache( window )
 		else
 			window.cachedpanes = panes
 		end
-		return math.min( lines, math.max( 1, math.ceil( #panes / max_vpanes ) ) ) * 70
+		window.cachedlines = math.min( lines, math.max( 1, math.ceil( #panes / max_vpanes ) ) )
+		return window.cachedlines * 70
 	end
 	
 	for k, v in ipairs( window ) do
@@ -287,11 +288,21 @@ local function draw( window, y )
 		end
 	elseif window.type == "vpane" then
 		if not window.scrollpane then
-			window.scrollpane = guiCreateButton( x, y, width, 70 * ( window.lines or max_panes ), "", false )
+			window.scrollpane = guiCreateButton( x, y, width, 70 * window.cachedlines, "", false )
 			guiSetAlpha( window.scrollpane, 0 )
 			addEventHandler( "onClientElementDestroy", window.scrollpane, function( ) window.scrollpane = nil end, false )
 			
 			table.insert( destroy, window.scrollpane )
+		else
+			local bx, by = guiGetSize( window.scrollpane, false )
+			if by ~= window.cachedlines * 70 then
+				guiSetSize( window.scrollpane, bx, window.cachedlines * 70, false )
+			end
+			
+			local bx, by = guiGetPosition( window.scrollpane, false )
+			if x ~= bx or y ~= by then
+				guiSetPosition( window.scrollpane, x, y, false )
+			end
 		end
 		y = y + 5
 		local px = false
