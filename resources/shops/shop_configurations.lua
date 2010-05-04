@@ -62,4 +62,10 @@ shop_configurations =
 		skin = 168,
 		{ itemID = 3, itemValue = 20, name = "Ramen", description = "A Japanese noodle soup.", price = 2 },
 	},
+	icecream =
+	{
+		name = "Ice Cream Vendor",
+		skin = 168,
+		{ itemID = 3, itemValue = 10, name = "Ice cream stick", description = "Delicious choccolate ice cream.", price = 1 },
+	},
 }
