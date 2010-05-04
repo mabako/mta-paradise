@@ -38,6 +38,8 @@ local addCommandHandler_ = addCommandHandler
 	end
 end
 
+--
+
 addCommandHandler( "setskin",
 	function( player, commandName, otherPlayer, skin )
 		skin = tonumber( skin )
@@ -50,7 +52,7 @@ addCommandHandler( "setskin",
 					outputChatBox( name .. " is already using that skin.", player, 255, 255, 0 )
 				elseif characterID and setElementModel( other, skin ) then
 					if exports.sql:query_free( "UPDATE characters SET skin = " .. skin .. " WHERE characterID = " .. characterID ) then
-						outputChatBox( "Set " .. name .. "'s skin to " .. skin, player, 0, 255, 0 )
+						outputChatBox( "Set " .. name .. "'s skin to " .. skin, player, 0, 255, 153 )
 						exports.players:updateCharacters( other )
 					else
 						outputChatBox( "Failed to save skin.", player, 255, 0, 0 )
@@ -112,7 +114,7 @@ addCommandHandler( { "freeze", "unfreeze" },
 		if otherPlayer then
 			local other, name = exports.players:getFromName( player, otherPlayer )
 			if other then
-				if player == other or not hasObjectPermissionTo( other, "command.freeze" ) then
+				if player == other or not hasObjectPermissionTo( other, "command.freeze", false ) then
 					local frozen = isPedFrozen( other )
 					if frozen then
 						outputChatBox( "You've unfrozen " .. name .. ".", player, 0, 255, 153 )
@@ -142,6 +144,32 @@ addCommandHandler( { "freeze", "unfreeze" },
 	true
 )
 
+addCommandHandler( { "sethealth", "sethp" },
+	function( player, commandName, otherPlayer, health )
+		local health = tonumber( health )
+		if otherPlayer and health and health >= 0 and health <= 100 then
+			local other, name = exports.players:getFromName( player, otherPlayer )
+			if other then
+				local oldHealth = getElementHealth( other )
+				if player == other or oldHealth < health or not hasObjectPermissionTo( other, "command.sethealth", false ) then
+					if health < 1 then
+						if killPed( other ) then
+							outputChatBox( "You've killed " .. name .. ".", player, 0, 255, 153 )
+						end
+					elseif setElementHealth( other, health ) then
+						outputChatBox( "You've set " .. name .. "'s health to " .. health .. ".", player, 0, 255, 153 )
+					end
+				else
+					outputChatBox( "You can't change this player's health to a smaller value.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [health]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
 addEventHandler( "onPlayerQuit", root,
 	function( type, reason, player )
 		if player and getElementType( player ) == "player" then
@@ -157,7 +185,7 @@ addCommandHandler( "kick",
 		if otherPlayer then
 			local other, name = exports.players:getFromName( player, otherPlayer, true )
 			if other then
-				if not hasObjectPermissionTo( other, "command.kick" ) then
+				if not hasObjectPermissionTo( other, "command.kick", false ) then
 					local reason = table.concat( { ... }, " " )
 					kickPlayer( other, player, #reason > 0 and reason )
 				else
