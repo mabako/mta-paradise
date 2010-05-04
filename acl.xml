@@ -176,6 +176,7 @@
         <right name="command.setinteriorprice" access="true" />
         <right name="command.createvehicle" access="true" />
         <right name="command.deletevehicle" access="true" />
+        <right name="command.setwindowstinted" access="true" />
         <right name="command.reloadpermissions" access="true" />
         <right name="command.adminchat" access="true" />
         <right name="function.executeCommandHandler" access="true" />

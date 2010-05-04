@@ -91,6 +91,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 			{ name = 'locked', type = 'tinyint(3) unsigned', default = 0 },
 			{ name = 'engineState', type = 'tinyint(3) unsigned', default = 0 },
 			{ name = 'lightsState', type = 'tinyint(3) unsigned', default = 0 },
+			{ name = 'tintedWindows', type = 'tinyint(3) unsigned', default = 0 },
 		} ) then cancelEvent( ) return end
 		
 		-- load all vehicles
@@ -101,7 +102,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				
 				-- tables for ID -> vehicle and vehicle -> data
 				vehicleIDs[ data.vehicleID ] = vehicle
-				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension, characterID = data.characterID, engineState = data.engineState == 1 }
+				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension, characterID = data.characterID, engineState = data.engineState == 1, tintedWindows = data.tintedWindows == 1 }
 				
 				-- some properties
 				setElementHealth( vehicle, data.health )
@@ -138,7 +139,7 @@ addCommandHandler( { "createvehicle", "makevehicle" },
 				if vehicleID then
 					-- tables for ID -> vehicle and vehicle -> data
 					vehicleIDs[ vehicleID ] = vehicle
-					vehicles[ vehicle ] = { vehicleID = vehicleID, respawnInterior = getElementInterior( player ), respawnDimension = getElementDimension( player ), characterID = 0, engineState = false }
+					vehicles[ vehicle ] = { vehicleID = vehicleID, respawnInterior = getElementInterior( player ), respawnDimension = getElementDimension( player ), characterID = 0, engineState = false, tintedWindows = false }
 					
 					-- some properties
 					setElementInterior( vehicle, getElementInterior( player ) )
@@ -179,7 +180,7 @@ function create( player, vehicle )
 				
 				-- tables for ID -> vehicle and vehicle -> data
 				vehicleIDs[ vehicleID ] = newVehicle
-				vehicles[ newVehicle ] = { vehicleID = vehicleID, respawnInterior = interior, respawnDimension = dimension, characterID = characterID, engineState = false }
+				vehicles[ newVehicle ] = { vehicleID = vehicleID, respawnInterior = interior, respawnDimension = dimension, characterID = characterID, engineState = false, tintedWindows = false }
 				
 				-- some properties
 				setVehicleColor( newVehicle, color1, color2, color1, color2 ) -- most vehicles don't use second/third color anyway
@@ -381,6 +382,49 @@ addCommandHandler( { "vehicleid", "thisvehicle" },
 	end
 )
 
+addCommandHandler( "setwindowstinted",
+	function( player, commandName, other, state )
+		local state = tonumber( state )
+		if other and state then
+			local other, name = exports.players:getFromName( player, other )
+			if other then
+				local vehicle = getPedOccupiedVehicle( player )
+				if vehicle then
+					local data = vehicles[ vehicle ]
+					if data then
+						if state ~= 1 then
+							state = 0
+						end
+						
+						if exports.sql:query_free( "UPDATE vehicles SET tintedWindows = '%s'", state ) then
+							data.tintedWindows = state == 1
+							outputChatBox( "Tinted windows are now " .. ( data.tintedWindows and "enabled" or "disabled" ) .. ".", player, 0, 255, 0 )
+							
+							for i = 0, getVehicleMaxPassengers( vehicle ) do
+								local p = getVehicleOccupant( vehicle, i )
+								if p then
+									exports.players:updateNametag( p )
+								end
+							end
+						else
+							outputChatBox( "MySQL Query failed.", player, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "Vehicle Error.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( name .. " isn't driving a vehicle.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [1 = on, 0 = off]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+--
+
 function saveVehicle( vehicle )
 	if vehicle then
 		local data = vehicles[ vehicle ]
@@ -396,8 +440,12 @@ function saveVehicle( vehicle )
 end
 
 addEventHandler( "onVehicleExit", root,
-	function( )
+	function( player )
 		saveVehicle( source )
+		
+		if hasTintedWindows( source ) then
+			exports.players:updateNametag( player )
+		end
 	end
 )
 
@@ -488,6 +536,10 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 				end
 				
 				setVehicleEngineState( source, data.engineState )
+				
+				if hasTintedWindows( source ) then
+					exports.players:updateNametag( player )
+				end
 			end
 		end
 	end
@@ -584,4 +636,8 @@ function getOwner( vehicle )
 		local owner = vehicles[ vehicle ].characterID
 		return owner ~= 0 and owner or false -- false is in that case civilian
 	end
+end
+
+function hasTintedWindows( vehicle )
+	return vehicles[ vehicle ] and vehicles[ vehicle ].tintedWindows or false
 end

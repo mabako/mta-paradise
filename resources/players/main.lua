@@ -546,7 +546,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 						kickPlayer( otherPlayer )
 					end
 					setPlayerName( source, mtaCharName )
-					setPlayerNametagText( source, "[" .. getID( source ) .. "] " .. char.characterName )
+					updateNametag( source )
 					updateNametagColor( source )
 					
 					-- spawn the player, as it's a valid char
@@ -566,6 +566,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					setPlayerMoney( source, char.money )
 					
 					p[ source ].charID = tonumber( charID )
+					p[ source ].characterName = characterName
 					
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
 					triggerEvent( "onCharacterLogin", source )
@@ -659,5 +660,21 @@ function createCharacter( player, name )
 			updateCharacters( player )
 			triggerClientEvent( player, "players:characterCreationResult", player, 0 )
 		end
+	end
+end
+
+--
+
+function updateNametag( player )
+	if player then
+		local text = "[" .. getID( player ) .. "] "
+		local vehicle = getPedOccupiedVehicle( player )
+		if vehicle and exports.vehicles:hasTintedWindows( vehicle ) then
+			text = text .. "? (Tinted Windows)"
+		else
+			text = text .. ( p[ player ].characterName or getPlayerName( player ):gsub( "_", " " ) )
+		end
+		
+		setPlayerNametagText( player, tostring( text ) )
 	end
 end
