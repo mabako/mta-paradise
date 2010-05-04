@@ -396,7 +396,7 @@ addCommandHandler( "setwindowstinted",
 							state = 0
 						end
 						
-						if exports.sql:query_free( "UPDATE vehicles SET tintedWindows = '%s'", state ) then
+						if exports.sql:query_free( "UPDATE vehicles SET tintedWindows = '%s' WHERE vehicleID = " .. data.vehicleID, state ) then
 							data.tintedWindows = state == 1
 							outputChatBox( "Tinted windows are now " .. ( data.tintedWindows and "enabled" or "disabled" ) .. ".", player, 0, 255, 0 )
 							
