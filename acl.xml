@@ -32,8 +32,8 @@
         <acl name="manageAccounts" />
         <object name="resource.players" />
     </group>
-    <group name="kickable">
-        <acl name="kickable" />
+    <group name="kickban">
+        <acl name="kickban" />
         <object name="resource.players" />
     </group>
     <group name="Developer">
@@ -270,7 +270,9 @@
         <right name="function.removeAccount" access="true" />
         <right name="function.getClientIP" access="true" />
     </acl>
-    <acl name="kickable">
+    <acl name="kickban">
         <right name="function.kickPlayer" access="true" />
+        <right name="function.addBan" access="true" />
+        <right name="function.banPlayer" access="true" />
     </acl>
 </acl>

@@ -388,6 +388,8 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 
 --
 
+local loginAttempts = { }
+
 local function getPlayerHash( player )
 	local ip = getPlayerIP( player ) or "255.255.255.0"
 	return ip:sub(ip:find("%d+%.%d+%.")) .. ( getPlayerSerial( player ) or "R0FLR0FLR0FLR0FLR0FLR0FLR0FLR0FL" )
@@ -402,7 +404,19 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 				p[ source ] = nil
 				if not info then
 					triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 1 ) -- Wrong username/password
+					loginAttempts[ source ] = ( loginAttempts[ source ] or 0 ) + 1
+					if loginAttempts[ source ] >= 5 then
+						-- ban for 15 minutes
+						local ip = getPlayerIP( source )
+						local serial = getPlayerSerial( source )
+						
+						banPlayer( source, true, false, false, root, "Too many login attempts.", 900 )
+						if serial then
+							addBan( nil, nil, serial, root, "Too many login attempts.", 900 )
+						end
+					end
 				else
+					loginAttempts[ source ] = nil
 					performLogin( source, info.token, true )
 				end
 			end
@@ -519,6 +533,7 @@ addEventHandler( "onPlayerQuit", root,
 				triggerEvent( "onCharacterLogout", source )
 			end
 			p[ source ] = nil
+			loginAttempts[ source ] = nil
 		end
 	end
 )
