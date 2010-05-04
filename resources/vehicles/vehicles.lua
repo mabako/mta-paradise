@@ -312,7 +312,7 @@ addCommandHandler( "park",
 				elseif exports.players:getCharacterID( player ) == data.characterID or hasObjectPermissionTo( player, "command.createvehicle", false ) then
 					local x, y, z = getElementPosition( vehicle )
 					local rx, ry, rz = getVehicleRotation( vehicle )
-					local success, error = exports.sql:query_free( "UPDATE vehicles SET respawnPosX = " .. x .. ", respawnPosY = " .. y .. ", respawnPosZ = " .. z .. ", respawnRotX = " .. rx .. ", respawnRotY = " .. ry .. ", respawnRotZ = " .. rz .. ", respawnInterior = " .. getElementInterior( vehicle ) .. ", respawnDimension = " .. getElementDimension( vehicle ) .. " WHERE vehicleID = " .. data.vehicleID )			
+					local success, error = exports.sql:query_free( "UPDATE vehicles SET respawnPosX = " .. x .. ", respawnPosY = " .. y .. ", respawnPosZ = " .. z .. ", respawnRotX = " .. rx .. ", respawnRotY = " .. ry .. ", respawnRotZ = " .. rz .. ", respawnInterior = " .. getElementInterior( vehicle ) .. ", respawnDimension = " .. getElementDimension( vehicle ) .. " WHERE vehicleID = " .. data.vehicleID )
 					if success then
 						setVehicleRespawnPosition( vehicle, x, y, z, rx, ry, rz )
 						data.respawnInterior = getElementInterior( vehicle )
