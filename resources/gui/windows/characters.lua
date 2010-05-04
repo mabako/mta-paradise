@@ -41,7 +41,8 @@ function updateCharacters( characters )
 						if key == 1 then
 							exports.players:selectCharacter( characterID, title )
 						end
-					end
+					end,
+				wordBreak = true
 			}
 		)
 	end
@@ -51,7 +52,7 @@ function updateCharacters( characters )
 	end
 	
 	-- add new char & logout
-	add( "New Character", "Select this option to create a new\ncharacter.", -1, -1 )
-	add( "Logout", "Logs you out.\nYou will be prompted to login again\nbefore you can continue playing.", -2, -2 )
+	add( "New Character", "Select this option to create a new character.", -1, -1 )
+	add( "Logout", "Logs you out.\nYou will be prompted to login again before you can continue playing.", -2, -2 )
 end
 

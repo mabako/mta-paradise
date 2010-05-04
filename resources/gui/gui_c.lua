@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local screenX, screenY = guiGetScreenSize( )
 local cursorX, cursorY = -1, -1
-local width = 300
+local width = 360
 local height = 0
 local x = ( screenX - width ) / 2
 local line_height = 16
