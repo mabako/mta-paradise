@@ -343,7 +343,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 )
 --
 
-local function showLoginScreen( player, screenX, screenY, token )
+local function showLoginScreen( player, screenX, screenY, token, ip )
 	-- we need at least 800x600 for proper display of all GUI
 	if screenX and screenY then
 		if screenX < 800 or screenY < 600 then
@@ -373,7 +373,7 @@ local function showLoginScreen( player, screenX, screenY, token )
 	
 	triggerClientEvent( player, getResourceName( resource ) .. ":spawnscreen", player )
 	if token and #token > 0 then
-		performLogin( source, token )
+		performLogin( source, token, false, ip )
 	end
 end
 
@@ -390,8 +390,11 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 
 local loginAttempts = { }
 
-local function getPlayerHash( player )
+local function getPlayerHash( player, remoteIP )
 	local ip = getPlayerIP( player ) or "255.255.255.0"
+	if ip == "127.0.0.1" and remoteIP then -- we don't really care about a provided ip unless we want to connect from localhost
+		ip = exports.sql:escape_string( remoteIP )
+	end
 	return ip:sub(ip:find("%d+%.%d+%.")) .. ( getPlayerSerial( player ) or "R0FLR0FLR0FLR0FLR0FLR0FLR0FLR0FL" )
 end
 
@@ -424,11 +427,11 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 	end
 )
 
-function performLogin( source, token, isPasswordAuth )
+function performLogin( source, token, isPasswordAuth, ip )
 	if source then
 		if token then
 			if #token == 80 then
-				local info = exports.sql:query_assoc_single( "SELECT userID, username, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salts FROM wcf1_user WHERE CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) = '%s' LIMIT 1", getPlayerHash( source ), getPlayerHash( source ), token )
+				local info = exports.sql:query_assoc_single( "SELECT userID, username, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salts FROM wcf1_user WHERE CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) = '%s' LIMIT 1", getPlayerHash( source, ip ), getPlayerHash( source, ip ), token )
 				p[ source ] = nil
 				if not info then
 					if isPasswordAuth then
@@ -460,7 +463,7 @@ function performLogin( source, token, isPasswordAuth )
 						-- show characters
 						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID .. " ORDER BY lastLogin DESC" )
 						if isPasswordAuth then
-							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true, token )
+							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true, token, getPlayerIP( source ) ~= "127.0.0.1" and getPlayerIP( source ) )
 						else
 							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
 						end
