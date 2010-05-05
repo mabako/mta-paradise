@@ -62,7 +62,7 @@ end
 local interiors = { }
 local colspheres = { }
 
-local function getInterior( x, y, z, interior )
+local function getInteriorIDAt( x, y, z, interior )
 	for name, i in pairs( interiorPositions ) do
 		if interior == i.interior and getDistanceBetweenPoints3D( x, y, z, i.x, i.y, i.z ) < 15 then
 			return name, i
@@ -74,7 +74,7 @@ local function createBlipEx( outside, inside )
 	local interior = getElementInterior( inside )
 	local x, y, z = getElementPosition( inside )
 	
-	local name, i = getInterior( x, y, z, interior )
+	local name, i = getInteriorIDAt( x, y, z, interior )
 	if i and i.blip then
 		return createBlipAttachedTo( outside, i.blip, 2, 255, 255, 255, 255, 0, 300 )
 	end
@@ -309,7 +309,7 @@ addCommandHandler( "getinterior",
 				local interior = getElementInterior( int.inside )
 				local x, y, z = getElementPosition( int.inside )
 				
-				local name, i = getInterior( x, y, z, interior )
+				local name, i = getInteriorIDAt( x, y, z, interior )
 				
 				-- check if he has permissions to view each of the props
 				outputChatBox( "-- Interior " .. getElementDimension( player ) .. " --", player, 255, 255, 255 )
@@ -446,3 +446,9 @@ addEventHandler( "onVehicleStartEnter", root,
 		end
 	end
 )
+
+--
+
+function getInterior( id )
+	return interiors[ id ]
+end

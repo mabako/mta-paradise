@@ -23,6 +23,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<include resource="interiors"/>
 	<include resource="vehicle-nodes"/>
 	
+	<export function="addDropOff"/><!-- ( dimension ) -->
+	<export function="removeDropOff"/><!-- ( dimension ) -->
+	
 	<settings>
 		<!-- (Civilian) Vehicles you can use for the delivery job -->
 		<setting name="#vehicles" value="[['Mule', 'Yankee']]" />

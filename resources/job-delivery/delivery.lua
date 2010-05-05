@@ -38,16 +38,86 @@ end
 
 --
 
+local dropOffs = { }
+local markedToAdd = { }
+
+function addDropOff( dimension )
+	if getResourceState( getResourceFromName( "interiors" ) ) == "running" then
+		markedToAdd[ dimension ] = nil
+		for k, v in ipairs( dropOffs ) do
+			if v.dimension == dimension then
+				return
+			end
+		end
+		
+		local interior = exports.interiors:getInterior( dimension )
+		if interior then
+			if getElementDimension( interior.outside ) == 0 then
+				local x, y, z = getElementPosition( interior.outside )
+				
+				local cx, cy, cz = exports['vehicle-nodes']:findClosest( x, y, z )
+				if cx then
+					x = ( 1.3 * x + cx ) / 2.3
+					y = ( 1.3 * y + cy ) / 2.3
+					z = ( 1.3 * z + cz ) / 2.3
+				end
+				table.insert( dropOffs, { x = x, y = y, z = z, dimension = dimension, name = interior.name } )
+			end
+		end
+	else
+		markedToAdd[ dimension ] = true
+	end
+end
+
+function removeDropOff( dimension )
+	for i = #dropOffs, 1, -1 do
+		if dropOffs[ i ].dimension == dimension then
+			table.remove( dropOffs, i )
+		end
+	end
+end
+
+addEventHandler( "onResourceStart", root,
+	function( res )
+		if getResourceName( res ) == "interiors" then
+			for dimension in pairs( markedToAdd ) do
+				addDropOff( dimension )
+			end
+			markedToAdd = { }
+		end
+	end
+)
+
+addEventHandler( "onResourceStop", root,
+	function( res )
+		if getResourceName( res ) == "shops" then
+			dropOffs = { }
+		elseif getResourceName( res ) == "interiors" then
+			for key, value in ipairs( dropOffs ) do
+				markedToAdd[ value.dimension ] = true
+			end
+			dropOffs = { }
+		end
+	end
+)
+
+--
+
 local p = { }
 
 -- this would ideally be done depending on what shops order supplies/which government owned shops are even low on supplies
 local function getNextDropOffPoint( current )
 	-- select a random dropoff point as in an interior with a shop in it.
-	local result = exports.sql:query_assoc_single( "SELECT interiorID, outsideX, outsideY, outsideZ, interiorName FROM shops s LEFT JOIN interiors i ON dimension = interiorID WHERE outsideDimension = 0 AND (characterID != 0 OR interiorType = 0)" .. ( current and ( " AND interiorID != " .. tonumber( current ) ) or "" ) .. " GROUP BY interiorID ORDER BY RAND() LIMIT 1" )
-	if result then
-		-- it would probably help if we used the position to calculate some position on the street or sidewalk
-		local x, y, z = exports['vehicle-nodes']:findClosest( result.outsideX, result.outsideY, result.outsideZ )
-		return result.interiorID, ( result.outsideX + x ) / 2, ( result.outsideY + y ) / 2, ( result.outsideZ + z ) / 2, result.interiorName
+	if #dropOffs > 0 then
+		if #dropOffs > 1 then
+			local old = current
+			while old == current do
+				current = math.random( 1, #dropOffs )
+			end
+		end
+		
+		local dropOff = dropOffs[ current ]
+		return current, dropOff.x, dropOff.y, dropOff.z, dropOff.name
 	end
 end
 
@@ -105,6 +175,13 @@ addEventHandler( "onResourceStart", resourceRoot,
 				end
 			end, 10000, 1
 		)
+		
+		if getResourceState( getResourceFromName( "shops" ) ) == "running" then
+			local dimensions = exports.shops:getAllDimensions( )
+			for dimension in pairs( dimensions ) do
+				addDropOff( dimension )
+			end
+		end
 	end
 )
 
