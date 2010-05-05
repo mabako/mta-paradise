@@ -59,7 +59,7 @@ windows.create_character =
 {
 	onCreate = function( )
 			selectedSkin = false
-			windows.create_character[4].text = "Please select a skin."
+			windows.create_character[4].text = "Scroll up/down to see more skins."
 		end,
 	{
 		type = "label",
@@ -80,7 +80,7 @@ windows.create_character =
 	},
 	{
 		type = "label",
-		text = "Please select a skin.",
+		text = "Scroll up/down to see more skins.",
 		alignX = "center",
 	},
 	{
