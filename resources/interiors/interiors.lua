@@ -178,6 +178,7 @@ addCommandHandler( { "deleteinterior", "delinterior" },
 							setElementDimension( value, getElementDimension( interior.outside ) )
 						end
 					end
+					
 					-- cleanup now unused shops
 					exports.shops:clearDimension( interiorID )
 					
@@ -330,6 +331,55 @@ addCommandHandler( "getinterior",
 				end
 			else
 				outputChatBox( "Your Interior: " .. getElementDimension( player ), player ,255, 255, 255 )
+			end
+		else
+			outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
+		end
+	end
+)
+
+addCommandHandler( { "sellinterior", "sellproperty" },
+	function( player, ... )
+		local interiorID = getElementDimension( player )
+		local interior = interiors[ interiorID ]
+		if interior then
+			-- we can only sell owned houses
+			if interior.type > 0 and interior.characterID == exports.players:getCharacterID( player ) then
+				-- update the sql before anything else
+				if exports.sql:query_free( "UPDATE interiors SET characterID = 0 WHERE interiorID = " .. interiorID ) then
+					interiors.characterID = 0
+					exports.players:giveMoney( player, math.floor( interior.price / 2 ) )
+					
+					-- restore the element data which shows it as not sold
+					setElementData( interior.outside, "type", interior.type )
+					setElementData( interior.outside, "price", interior.price )
+					
+					-- TODO: destroy all house keys
+					-- for now: destroy the person's key
+					exports.items:take( player, 2, interior.id )
+					
+					-- destroy a blip if there was one
+					if isElement( interior.blip ) then
+						destroyElement( interior.blip )
+						interior.blip = nil
+					end
+					
+					-- teleport all players who're inside to the exit
+					for key, value in ipairs( getElementsByType( "player" ) ) do
+						if exports.players:isLoggedIn( value ) and getElementDimension( value ) == interiorID then
+							setElementPosition( value, getElementPosition( interior.outside ) )
+							setElementInterior( value, getElementInterior( interior.outside ) )
+							setElementDimension( value, getElementDimension( interior.outside ) )
+						end
+					end
+					
+					-- show a message
+					outputChatBox( "You sold this house for $" .. math.floor( interior.price / 2 ) .. ".", player, 0, 255, 0 )
+				else
+					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "This is not your house.", player, 255, 0, 0 )
 			end
 		else
 			outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
