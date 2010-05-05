@@ -329,6 +329,11 @@ addCommandHandler( "respawnvehicles",
 				end
 			end
 		end
+		if getResourceState( getResourceFromName( "vehicle-shop" ) ) == "running" then
+			for key, value in ipairs( getElementsByType( "vehicle", getResourceRootElement( getResourceFromName( "vehicle-shop" ) ) ) ) do
+				respawnVehicle( value )
+			end
+		end
 		outputChatBox( "*** " .. getPlayerName( player ):gsub( "_", " " ) .. " respawned all vehicles. ***", root, 0, 255, 153 )
 	end,
 	true
