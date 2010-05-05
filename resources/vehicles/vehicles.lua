@@ -442,9 +442,9 @@ addCommandHandler( "setwindowstinted",
 							state = 0
 						end
 						
-						if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET tintedWindows = '%s' WHERE vehicleID = " .. data.vehicleID, state ) then
+						if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET tintedWindows = " .. state .. " WHERE vehicleID = " .. data.vehicleID ) then
 							data.tintedWindows = state == 1
-							outputChatBox( "Tinted windows are now " .. ( data.tintedWindows and "enabled" or "disabled" ) .. ".", player, 0, 255, 0 )
+							outputChatBox( "Tinted windows are now " .. ( data.tintedWindows and "enabled" or "disabled" ) .. ".", player, 0, 255, 153 )
 							
 							for i = 0, getVehicleMaxPassengers( vehicle ) do
 								local p = getVehicleOccupant( vehicle, i )
@@ -464,6 +464,37 @@ addCommandHandler( "setwindowstinted",
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [player] [1 = on, 0 = off]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+addCommandHandler( { "setvehiclecolor", "setcolor" },
+	function( player, commandName, other, color1, color2 )
+		local color1 = tonumber( color1 )
+		local color2 = tonumber( color2 ) or color1
+		if other and color1 and color2 and color1 >= 0 and color1 <= 255 and color2 >= 0 and color2 <= 255 then
+			local other, name = exports.players:getFromName( player, other )
+			if other then
+				local vehicle = getPedOccupiedVehicle( player )
+				if vehicle then
+					local data = vehicles[ vehicle ]
+					if data then
+						if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET color1 = " .. color1 .. ", color2 = " .. color2 .. " WHERE vehicleID = " .. data.vehicleID, state ) then
+							setVehicleColor( vehicle, color1, color2, color1, color2 )
+							outputChatBox( "Changed the color of " .. name .. "'s " .. getVehicleName( vehicle ) .. ".", player, 0, 255, 153 )
+						else
+							outputChatBox( "MySQL Query failed.", player, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "Vehicle Error.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( name .. " isn't driving a vehicle.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [color 1] [color 2]", player, 255, 255, 255 )
 		end
 	end,
 	true

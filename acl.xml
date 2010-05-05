@@ -159,6 +159,7 @@
         <right name="command.kick" access="true" />
         <right name="command.freeze" access="true" />
         <right name="command.sethealth" access="true" />
+        <right name="command.setvehiclecolor" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />
