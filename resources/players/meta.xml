@@ -24,6 +24,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="getCharacterName"/>
 	<export function="isLoggedIn"/>
 	<export function="isLoggedIn" type="client"/>
+	<export function="getUserID"/>
 	<export function="setMoney"/>
 	<export function="giveMoney"/>
 	<export function="takeMoney"/>
