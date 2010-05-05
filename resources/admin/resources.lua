@@ -20,13 +20,13 @@ addCommandHandler( "restartall",
 		for index, resource in ipairs ( getResources ( ) ) do
 			if ( getResourceState ( resource ) == "running" ) then
 				if not restartResource ( resource ) then
-					outputServerLog( "[Error] An unknown error has occured while attempted to restart resource '" .. getResourceName ( resource ) .. "' . Try starting it again. If error persists, restarting the server is recommended." )
+					outputServerLog( "restartall: Failed to restart '" .. getResourceName ( resource ) .. "' . Try starting it manually. If error persists, restarting the server is recommended." )
 				end
 			end
 		end
-		outputServerLog( "restartall: An attempt to restart all running resources has been executed. " .. " (Requested by " .. ( not player and "Console" or getAccountName( getPlayerAccount( player ) ) or getPlayerName(player) ) .. ")" )
+		outputServerLog( "restartall: Restarting all resources" .. " (Requested by " .. ( not player and "Console" or getAccountName( getPlayerAccount( player ) ) or getPlayerName(player) ) .. ")" )
 		if ( player ) then
-			outputChatBox ( "An attempt to restart all running resources has been executed." )
+			outputChatBox ( "All resources have been restarted." )
 		end
 	end,
 	true
@@ -37,13 +37,13 @@ addCommandHandler( "startall",
 		for index, resource in ipairs ( getResources ( ) ) do
 			if ( getResourceState ( resource ) == "loaded" ) then
 				if not startResource ( resource ) then
-					outputServerLog( "[Error] An unknown error has occured while attempted to start resource '" .. getResourceName ( resource ) .. "' . Try starting it again. If error persists, restarting the server is recommended." )
+					outputServerLog( "startall: Failed to start resource '" .. getResourceName ( resource ) .. "' . Try starting it manually. If error persists, restarting the server is recommended." )
 				end
 			end
 		end
-		outputServerLog( "startall: An attempt to start all loaded resources has been executed. " .. " (Requested by " .. ( not player and "Console" or getAccountName( getPlayerAccount( player ) ) or getPlayerName(player) ) .. ")" )
+		outputServerLog( "startall: Starting all resources. " .. " (Requested by " .. ( not player and "Console" or getAccountName( getPlayerAccount( player ) ) or getPlayerName(player) ) .. ")" )
 		if ( player ) then
-			outputChatBox ( "An attempt to start all loaded resources has been executed." )
+			outputChatBox ( "All resources have been started." )
 		end
 	end,
 	true
