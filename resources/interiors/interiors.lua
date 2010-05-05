@@ -62,7 +62,7 @@ end
 local interiors = { }
 local colspheres = { }
 
-local function getInterior( x, y, z, interior )
+local function getInteriorIDAt( x, y, z, interior )
 	for name, i in pairs( interiorPositions ) do
 		if interior == i.interior and getDistanceBetweenPoints3D( x, y, z, i.x, i.y, i.z ) < 15 then
 			return name, i
@@ -74,13 +74,13 @@ local function createBlipEx( outside, inside )
 	local interior = getElementInterior( inside )
 	local x, y, z = getElementPosition( inside )
 	
-	local name, i = getInterior( x, y, z, interior )
+	local name, i = getInteriorIDAt( x, y, z, interior )
 	if i and i.blip then
 		return createBlipAttachedTo( outside, i.blip, 2, 255, 255, 255, 255, 0, 300 )
 	end
 end
 
-local function loadInterior( id, outsideX, outsideY, outsideZ, outsideInterior, outsideDimension, insideX, insideY, insideZ, insideInterior, interiorName, interiorPrice, interiorType, characterID, locked )
+local function loadInterior( id, outsideX, outsideY, outsideZ, outsideInterior, outsideDimension, insideX, insideY, insideZ, insideInterior, interiorName, interiorPrice, interiorType, characterID, locked, dropoff )
 	local outside = createColSphere( outsideX, outsideY, outsideZ, 1 )
 	setElementInterior( outside, outsideInterior )
 	setElementDimension( outside, outsideDimension )
@@ -98,7 +98,7 @@ local function loadInterior( id, outsideX, outsideY, outsideZ, outsideInterior, 
 	
 	colspheres[ outside ] = { id = id, other = inside }
 	colspheres[ inside ] = { id = id, other = outside }
-	interiors[ id ] = { inside = inside, outside = outside, name = interiorName, type = interiorType, price = interiorPrice, characterID = characterID, locked = locked, blip = not locked and outsideDimension == 0 and not getElementData( outside, "price" ) and createBlipEx( outside, inside ) }
+	interiors[ id ] = { inside = inside, outside = outside, name = interiorName, type = interiorType, price = interiorPrice, characterID = characterID, locked = locked, blip = not locked and outsideDimension == 0 and not getElementData( outside, "price" ) and createBlipEx( outside, inside ), dropoff = dropoff }
 end
 
 addEventHandler( "onResourceStart", resourceRoot,
@@ -121,6 +121,9 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'interiorPrice', type = 'int(10) unsigned' },
 				{ name = 'characterID', type = 'int(10) unsigned', default = 0 },
 				{ name = 'locked', type = 'tinyint(3)', default = 0 },
+				{ name = 'dropoffX', type = 'float', null = true },
+				{ name = 'dropoffY', type = 'float', null = true },
+				{ name = 'dropoffZ', type = 'float', null = true },
 			} ) then cancelEvent( ) return end
 		
 		--
@@ -128,7 +131,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		local result = exports.sql:query_assoc( "SELECT * FROM interiors ORDER BY interiorID ASC" )
 		if result then
 			for key, data in ipairs( result ) do
-				loadInterior( data.interiorID, data.outsideX, data.outsideY, data.outsideZ, data.outsideInterior, data.outsideDimension, data.insideX, data.insideY, data.insideZ, data.insideInterior, data.interiorName, data.interiorPrice, data.interiorType, data.characterID, data.locked == 1 )
+				loadInterior( data.interiorID, data.outsideX, data.outsideY, data.outsideZ, data.outsideInterior, data.outsideDimension, data.insideX, data.insideY, data.insideZ, data.insideInterior, data.interiorName, data.interiorPrice, data.interiorType, data.characterID, data.locked == 1, data.dropoffX and data.dropoffY and data.dropoffZ and { data.dropoffX, data.dropoffY, data.dropoffZ } or nil )
 			end
 		end
 	end
@@ -303,13 +306,13 @@ addCommandHandler( "setinteriorname",
 addCommandHandler( "getinterior",
 	function( player, ... )
 		-- check if he has permissions to see at least one prop
-		if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.deleteinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorprice", false ) then
-			local int = interiors[ getElementDimension( player ) ]
-			if int then
+		local int = interiors[ getElementDimension( player ) ]
+		if int then
+			if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.deleteinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorprice", false ) then
 				local interior = getElementInterior( int.inside )
 				local x, y, z = getElementPosition( int.inside )
 				
-				local name, i = getInterior( x, y, z, interior )
+				local name, i = getInteriorIDAt( x, y, z, interior )
 				
 				-- check if he has permissions to view each of the props
 				outputChatBox( "-- Interior " .. getElementDimension( player ) .. " --", player, 255, 255, 255 )
@@ -326,8 +329,10 @@ addCommandHandler( "getinterior",
 					outputChatBox( "price: " .. int.price, player, 255, 255, 255 )
 				end
 			else
-				outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
+				outputChatBox( "Your Interior: " .. getElementDimension( player ), player ,255, 255, 255 )
 			end
+		else
+			outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
 		end
 	end
 )
@@ -446,3 +451,18 @@ addEventHandler( "onVehicleStartEnter", root,
 		end
 	end
 )
+
+--
+
+function getInterior( id )
+	return interiors[ id ]
+end
+
+function setDropOff( id, x, y, z )
+	if interiors[ id ] and type( x ) == "number" and type( y ) == "number" and type( z ) == "number" then
+		if exports.sql:query_free( "UPDATE interiors SET dropoffX = " .. x .. ", dropoffY = " .. y .. ", dropoffZ = " .. z .. " WHERE interiorID = " .. id ) then
+			interiors[ id ].dropoff = { x, y, z }
+			return true
+		end
+	end
+end

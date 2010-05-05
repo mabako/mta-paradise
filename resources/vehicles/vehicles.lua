@@ -15,6 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local vehiclesIgnoringLocked =
+{
+	[448] = true, [461] = true, [462] = true, [463] = true, [481] = true, [509] = true, [510] = true, [521] = true, [522] = true, [581] = true, [586] = true, -- bikes
+	[430] = true, [446] = true, [452] = true, [453] = true, [454] = true, [472] = true, [473] = true, [484] = true, [493] = true, [595] = true, -- boats
+	[424] = true, [457] = true, [471] = true, [539] = true, [568] = true, [571] = true -- recreational vehicles
+}
+
+--
+
 local addCommandHandler_ = addCommandHandler
       addCommandHandler  = function( commandName, fn, restricted, caseSensitive )
 	-- add the default command handlers
@@ -56,6 +65,25 @@ local addCommandHandler_ = addCommandHandler
 		end
 	end
 end
+
+--
+
+local p = { }
+
+local getPedOccupiedVehicle_ = getPedOccupiedVehicle
+      getPedOccupiedVehicle = function( ped )
+	local vehicle = isPedInVehicle( ped ) and getPedOccupiedVehicle_( ped )
+	if vehicle and ( p[ ped ] == vehicle or getElementParent( vehicle ) ~= getResourceDynamicElementRoot( resource ) ) then
+		return vehicle
+	end
+	return false
+end
+
+local function isPedEnteringVehicle( ped )
+	return getPedOccupiedVehicle_( ped ) and not getPedOccupiedVehicle( ped )
+end
+
+--
 
 local vehicleIDs = { }
 local vehicles = { }
@@ -524,6 +552,8 @@ addEventHandler( "onPlayerQuit", root,
 		if vehicle then
 			saveVehicle( vehicle )
 		end
+		
+		p[ source ] = nil
 	end
 )
 
@@ -537,10 +567,21 @@ addEventHandler( "onElementDestroy", resourceRoot,
 	end
 )
 
+addEventHandler( "onVehicleStartEnter", resourceRoot,
+	function( player )
+		if isVehicleLocked( source ) and vehiclesIgnoringLocked[ getElementModel( source ) ] then
+			cancelEvent( )
+			outputChatBox( "(( This " .. getVehicleName( source ) .. " is locked. ))", player, 255, 0, 0 )
+		end
+	end
+)
+
 addEventHandler( "onVehicleEnter", resourceRoot,
 	function( player )
 		if isVehicleLocked( source ) then
 			cancelEvent( )
+			removePedFromVehicle( player )
+			outputChatBox( "(( This " .. getVehicleName( source ) .. " is locked. ))", player, 255, 0, 0 )
 		else
 			local data = vehicles[ source ]
 			if data then
@@ -553,6 +594,8 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 					end
 				end
 				
+				p[ player ] = source
+				
 				setVehicleEngineState( source, data.engineState )
 				
 				if hasTintedWindows( source ) then
@@ -560,6 +603,29 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 				end
 			end
 		end
+	end
+)
+
+addEventHandler( "onVehicleStartExit", resourceRoot,
+	function( player )
+		if isVehicleLocked( source ) then
+			cancelEvent( )
+			outputChatBox( "(( The door is locked. ))", player, 255, 0, 0 )
+		else
+			p[ player ] = nil
+		end
+	end
+)
+
+addEventHandler( "onVehicleExit", resourceRoot,
+	function( player )
+		p[ player ] = nil
+	end
+)
+
+addEventHandler( "onPlayerWasted", root,
+	function( )
+		p[ source ] = nil
 	end
 )
 
@@ -581,6 +647,10 @@ addCommandHandler( "lockvehicle",
 	function( player, commandName )
 		if exports.players:isLoggedIn( player ) then
 			if getElementData( player, "interiorMarker" ) then
+				return
+			end
+			
+			if isPedEnteringVehicle( player ) then
 				return
 			end
 			

@@ -155,6 +155,7 @@
         <right name="command.modchat" access="true" />
         <right name="command.createshop" access="true" />
         <right name="command.deleteshop" access="true" />
+        <right name="command.setdropoff" access="true" />
         <right name="command.kick" access="true" />
         <right name="command.freeze" access="true" />
         <right name="command.sethealth" access="true" />
