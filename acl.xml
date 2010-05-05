@@ -189,6 +189,9 @@
         <right name="command.setwindowstinted" access="true" />
         <right name="command.reloadpermissions" access="true" />
         <right name="command.adminchat" access="true" />
+        <right name="command.addmap" access="true" />
+        <right name="command.removemap" access="true" />
+        <right name="command.setmapdimension" access="true" />
         <right name="function.executeCommandHandler" access="true" />
         <right name="function.setPlayerMuted" access="true" />
         <right name="function.addAccount" access="true" />
