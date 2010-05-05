@@ -303,9 +303,9 @@ addCommandHandler( "setinteriorname",
 addCommandHandler( "getinterior",
 	function( player, ... )
 		-- check if he has permissions to see at least one prop
-		if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.deleteinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorprice", false ) then
-			local int = interiors[ getElementDimension( player ) ]
-			if int then
+		local int = interiors[ getElementDimension( player ) ]
+		if int then
+			if hasObjectPermissionTo( player, "command.createinterior", false ) or hasObjectPermissionTo( player, "command.deleteinterior", false ) or hasObjectPermissionTo( player, "command.setinterior", false ) or hasObjectPermissionTo( player, "command.setinteriorprice", false ) then
 				local interior = getElementInterior( int.inside )
 				local x, y, z = getElementPosition( int.inside )
 				
@@ -326,8 +326,10 @@ addCommandHandler( "getinterior",
 					outputChatBox( "price: " .. int.price, player, 255, 255, 255 )
 				end
 			else
-				outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
+				outputChatBox( "Your Interior: " .. getElementDimension( player ), player ,255, 255, 255 )
 			end
+		else
+			outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
 		end
 	end
 )
