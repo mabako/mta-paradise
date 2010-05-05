@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 addCommandHandler( "restartall",
 	function( player )
 		for index, resource in ipairs ( getResources ( ) ) do
-			if ( getResourceState ( resource ) == "running" and getResourceName ( resource ) ~= "admin") then
+			if ( getResourceState ( resource ) == "running" and getResourceName ( resource ) ~= getThisResource ( ) ) then
 				if not restartResource ( resource ) then
 					outputServerLog( "restartall: Failed to restart '" .. getResourceName ( resource ) .. "' . Try starting it manually. If error persists, restarting the server is recommended." )
 				end
