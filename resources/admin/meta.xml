@@ -19,4 +19,5 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<script src="acl.lua"/>
 	<script src="player.lua"/>
+	<script src="resources.lua"/>
 </meta>
