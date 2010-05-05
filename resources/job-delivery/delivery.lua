@@ -53,13 +53,18 @@ function addDropOff( dimension )
 		local interior = exports.interiors:getInterior( dimension )
 		if interior then
 			if getElementDimension( interior.outside ) == 0 then
-				local x, y, z = getElementPosition( interior.outside )
-				
-				local cx, cy, cz = exports['vehicle-nodes']:findClosest( x, y, z )
-				if cx then
-					x = ( 1.3 * x + cx ) / 2.3
-					y = ( 1.3 * y + cy ) / 2.3
-					z = ( 1.3 * z + cz ) / 2.3
+				local x, y, z
+				if interior.dropoff then
+					x, y, z = unpack( interior.dropoff )
+				else
+					x, y, z = getElementPosition( interior.outside )
+					
+					local cx, cy, cz = exports['vehicle-nodes']:findClosest( x, y, z )
+					if cx then
+						x = ( 1.3 * x + cx ) / 2.3
+						y = ( 1.3 * y + cy ) / 2.3
+						z = ( 1.3 * z + cz ) / 2.3
+					end
 				end
 				table.insert( dropOffs, { x = x, y = y, z = z, dimension = dimension, name = interior.name } )
 			end
@@ -234,4 +239,46 @@ addEventHandler( "onPlayerQuit", root,
 	function( )
 		p[ source ] = nil
 	end
+)
+
+--
+
+addCommandHandler( "setdropoff",
+	function( player, commandName, dimension )
+		dimension = tonumber( dimension )
+		if dimension then
+			local index = false
+			for key, value in ipairs( dropOffs ) do
+				if value.dimension == dimension then
+					index = key
+				end
+			end
+			
+			if index then
+				local x, y, z = getElementPosition( player )
+				local interior = exports.interiors:getInterior( dimension )
+				if interior then
+					if getDistanceBetweenPoints3D( x, y, z, getElementPosition( interior.outside ) ) < 50 then
+						if exports.interiors:setDropOff( dimension, x, y, z ) then
+							dropOffs[ index ].x = x
+							dropOffs[ index ].y = y
+							dropOffs[ index ].z = z
+							outputChatBox( "Drop-Off for " .. interior.name .. " was updated.", player, 0, 255, 0 )
+						else
+							outputChatBox( "Failed.", player, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "You are too far away from the entrance.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( "This interior does not exist", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "There are no shops in dimension " .. dimension .. ".", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [dimension] - sets the drop-off for all shops in that dimension.", player, 255, 255, 255 )
+		end
+	end,
+	true
 )
