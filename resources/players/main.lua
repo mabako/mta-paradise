@@ -21,6 +21,7 @@ addEvent( "onCharacterLogout", false )
 
 --
 
+local team = createTeam( "MTA: Paradise" ) -- this is used as a dummy team. We need this for faction chat to work.
 local p = { }
 
 -- Import Groups
@@ -508,6 +509,7 @@ addEventHandler( getResourceName( resource ) .. ":logout", root,
 			savePlayer( source )
 			if p[ source ].charID then
 				triggerEvent( "onCharacterLogout", source )
+				setPlayerTeam( source, nil )
 			end
 			p[ source ] = nil
 			showLoginScreen( source )
@@ -531,6 +533,7 @@ addEventHandler( "onPlayerQuit", root,
 			savePlayer( source )
 			if p[ source ].charID then
 				triggerEvent( "onCharacterLogout", source )
+				setPlayerTeam( source, nil )
 			end
 			p[ source ] = nil
 			loginAttempts[ source ] = nil
@@ -548,6 +551,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 				savePlayer( source )
 				if p[ source ].charID then
 					triggerEvent( "onCharacterLogout", source )
+					setPlayerTeam( source, nil )
 					p[ source ].charID = nil
 					p[ source ].money = nil
 				end
@@ -583,6 +587,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					p[ source ].charID = tonumber( charID )
 					p[ source ].characterName = characterName
 					
+					setPlayerTeam( source, team )
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
 					triggerEvent( "onCharacterLogin", source )
 					

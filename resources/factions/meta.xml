@@ -18,6 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="factions.lua"/>
 	
 	<include resource="players"/>
+
+	<export function="getFactionName"/>
+	<export function="getFactionTag"/>
 	
 	<export function="getPlayerFactions"/>
 	<export function="sendMessageToFaction"/>

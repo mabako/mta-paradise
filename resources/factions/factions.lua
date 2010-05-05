@@ -18,8 +18,23 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 local p = { }
 local factions = { }
 
-local function loadFaction( factionID, name, factionType )
-	factions[ factionID ] = { name = name, factionType = factionType }
+local function loadFaction( factionID, name, type, tag )
+	if not tag or #tag == 0 then
+		-- create a tag from the first letter of each word
+		local i = 0
+		repeat
+			i = i + 1
+			local token = gettok( name, i, string.byte( ' ' ) )
+			
+			if not token then
+				break
+			else
+				tag = tag .. token:sub( 1, 1 )
+			end
+		until false
+	end
+	
+	factions[ factionID ] = { name = name, type = type, tag = tag }
 end
 
 local function loadPlayer( player )
@@ -32,7 +47,7 @@ local function loadPlayer( player )
 			if factions[ factionID ] then
 				table.insert( p[ player ].factions, factionID )
 				p[ player ].rfactions[ factionID ] = true
-				p[ player ].types[ factions[ factionID ].factionType ] = true
+				p[ player ].types[ factions[ factionID ].type ] = true
 				outputDebugString( "Set " .. getPlayerName( player ):gsub( "_", " " ) .. " to " .. factions[ factionID ].name )
 			else
 				outputDebugString( "Faction " .. factionID .. " does not exist, removing players from it." )
@@ -49,6 +64,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'factionID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
 				{ name = 'groupID', type = 'int(10) unsigned' }, -- see wcf1_group
 				{ name = 'factionType', type = 'tinyint(3) unsigned' }, -- we do NOT have hardcoded factions or names of those.
+				{ name = 'factionTag', type = 'varchar(10)' },
 			} ) then cancelEvent( ) return end
 		
 		if not exports.sql:create_table( 'character_to_factions',
@@ -62,7 +78,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		local result = exports.sql:query_assoc( "SELECT f.*, g.groupName FROM factions f LEFT JOIN wcf1_group g ON f.groupID = g.groupID" )
 		for key, value in ipairs( result ) do
 			if value.groupName then
-				loadFaction( value.factionID, value.groupName, value.factionType )
+				loadFaction( value.factionID, value.groupName, value.factionType, value.factionTag )
 			else
 				outputDebugString( "Faction " .. value.factionID .. " has no valid group. Ignoring..." )
 			end
@@ -95,6 +111,16 @@ addEventHandler( "onPlayerQuit", root,
 		p[ source ] = nil
 	end
 )
+
+--
+
+function getFactionName( factionID )
+	return factions[ factionID ] and factions[ factionID ].name
+end
+
+function getFactionTag( factionID )
+	return factions[ factionID ] and factions[ factionID ].tag
+end
 
 --
 
