@@ -294,9 +294,9 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'userID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
 				{ name = 'username', type = 'varchar(255)' },
 				{ name = 'password', type = 'varchar(40)' },
-				{ name = 'salt',  type = 'varchar(40)' },
-				{ name = 'banned',  type = 'tinyint(1) unsigned', default = 0 },
-				{ name = 'activationCode',  type = 'int(10) unsigned', default = 0 },
+				{ name = 'salt', type = 'varchar(40)' },
+				{ name = 'banned', type = 'tinyint(1) unsigned', default = 0 },
+				{ name = 'activationCode', type = 'int(10) unsigned', default = 0 },
 			} ) then cancelEvent( ) return end
 		
 		local success, didCreateTable = exports.sql:create_table( 'wcf1_group',
