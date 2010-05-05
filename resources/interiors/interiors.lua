@@ -361,6 +361,9 @@ local function enterInterior( player, key, state, colShape )
 						-- give him the house key
 						exports.items:give( player, 2, data.id )
 						
+						-- stick a blip to it
+						interior.blip = not interior.locked and interior.outsideDimension == 0 and createBlipEx( interior.outside, interior.inside )
+						
 						-- message to the player
 						outputChatBox( "Congratulations! You've bought " .. interior.name .. " for $" .. interior.price .. "!", player, 0, 255, 0 )
 					else
