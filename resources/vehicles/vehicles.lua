@@ -226,29 +226,34 @@ end
 
 addCommandHandler( { "deletevehicle", "delvehicle" },
 	function( player, commandName, vehicleID )
-		vehicleID = tonumber( vehicleID )
-		if vehicleID then
-			local vehicle = vehicleIDs[ vehicleID ]
-			if vehicle then
-				if vehicleID < 0 or exports.sql:query_free( "DELETE FROM vehicles WHERE vehicleID = " .. vehicleID ) then
-					outputChatBox( "You deleted vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
-					
-					-- remove from vehicles list
-					vehicleIDs[ vehicleID ] = nil
-					vehicles[ vehicle ] = nil
-					
-					destroyElement( vehicle )
+		if hasObjectPermissionTo( player, "command.createvehicle", false ) or hasObjectPermissionTo( player, "command.temporaryvehicle", false ) then
+			vehicleID = tonumber( vehicleID )
+			if vehicleID and vehicleID ~= 0 then
+				if ( vehicleID >= 0 and not hasObjectPermissionTo( player, "command.createvehicle", false ) ) or ( vehicleID < 0 and not hasObjectPermissionTo( player, "command.temporaryvehicle", false ) ) then
+					outputChatBox( "You can not delete this vehicle.", player, 255, 0, 0 )
 				else
-					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+					local vehicle = vehicleIDs[ vehicleID ]
+					if vehicle then
+						if vehicleID < 0 or exports.sql:query_free( "DELETE FROM vehicles WHERE vehicleID = " .. vehicleID ) then
+							outputChatBox( "You deleted vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
+							
+							-- remove from vehicles list
+							vehicleIDs[ vehicleID ] = nil
+							vehicles[ vehicle ] = nil
+							
+							destroyElement( vehicle )
+						else
+							outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
+					end
 				end
 			else
-				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
+				outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
 			end
-		else
-			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
 		end
-	end,
-	true
+	end
 )
 
 addCommandHandler( { "repairvehicle", "fixvehicle" },
