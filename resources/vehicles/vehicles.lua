@@ -601,7 +601,7 @@ addEventHandler( "onPlayerQuit", root,
 addEventHandler( "onElementDestroy", resourceRoot,
 	function( )
 		if vehicles[ source ] then
-			outputDebugString( "Deleted vehicle ID " .. vehicles[ source ].vehicleID .. " (" .. getVehicleName( source ) .. ", even though it's still referenced. Removing references...", 2 )
+			outputDebugString( "Deleted vehicle ID " .. vehicles[ source ].vehicleID .. " (" .. getVehicleName( source ) .. "), even though it's still referenced. Removing references...", 2 )
 			vehicleIDs[ vehicles[ source ].vehicleID ] = nil
 			vehicles[ source ] = nil
 		end
