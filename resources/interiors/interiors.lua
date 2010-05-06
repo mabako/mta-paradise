@@ -183,11 +183,16 @@ addCommandHandler( { "deleteinterior", "delinterior" },
 					exports.shops:clearDimension( interiorID )
 					
 					-- delete the markers
+					colspheres[ interior.outside ] = nil
 					destroyElement( interior.outside )
+					colspheres[ interior.inside ] = nil
 					destroyElement( interior.inside )
 					if interior.blip then
 						destroyElement( interior.blip )
 					end
+					
+					-- remove the reference
+					interiors[ interiorID ] = nil
 				else
 					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 				end
