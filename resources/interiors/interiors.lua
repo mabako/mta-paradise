@@ -40,7 +40,7 @@ local addCommandHandler_ = addCommandHandler
 	for k, v in ipairs( commandName ) do
 		if v:find( "interior" ) then
 			for key, value in pairs( { "int" } ) do
-				local newCommand = v:gsub( "vehicle", value )
+				local newCommand = v:gsub( "interior", value )
 				if newCommand ~= v then
 					-- add a second (replaced) command handler
 					addCommandHandler_( newCommand,
