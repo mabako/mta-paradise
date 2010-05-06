@@ -39,8 +39,6 @@ local function setAnim( player, anim )
 	end
 end
 
---
-
 -- play an animation sequence
 local function playAnim( player, anim )
 	-- time spent on all anims till now
