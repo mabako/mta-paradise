@@ -193,6 +193,26 @@ addCommandHandler( { "deleteteleport", "delteleport" },
 	true
 )
 
+addCommandHandler( "nearbyteleports",
+	function( player, commandName )
+		if hasObjectPermissionTo( player, "command.createteleport", false ) or hasObjectPermissionTo( player, "command.deleteteleport", false ) then
+			local x, y, z = getElementPosition( player )
+			local dimension = getElementDimension( player )
+			local interior = getElementInterior( player )
+			
+			outputChatBox( "Nearby Teleports:", player, 255, 255, 0 )
+			for key, value in pairs( colspheres ) do
+				if getElementDimension( key ) == dimension and getElementInterior( key ) == interior then
+					local distance = getDistanceBetweenPoints3D( x, y, z, getElementPosition( key ) )
+					if distance < 20 then
+						outputChatBox( "  Teleport " .. value.id .. ".", player, 255, 255, 0 )
+					end
+				end
+			end
+		end
+	end
+)
+
 --
 
 local function useTeleport( player, key, state, colShape )
