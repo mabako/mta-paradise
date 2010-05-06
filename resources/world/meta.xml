@@ -21,4 +21,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 	<file src="txd/bus-stop.txd"/>
 	<script src="txds.lua" type="client"/>
+	
+	<file src="col/ggbrig_02_sfw.col" />
+	<file src="col/ggbrig_03_sfw.col" />
+	<file src="col/ggbrig_04_sfw.col" />
+	<file src="col/ggbrig_05_sfw.col" />
+	<file src="col/ggbrig_07_sfw.col" />
+	<script src="cols.lua" type="client" />
 </meta>
