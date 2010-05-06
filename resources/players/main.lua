@@ -389,6 +389,7 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 --
 
 local loginAttempts = { }
+local triedTokenAuth = { }
 
 local function getPlayerHash( player, remoteIP )
 	local ip = getPlayerIP( player ) or "255.255.255.0"
@@ -402,6 +403,7 @@ addEvent( getResourceName( resource ) .. ":login", true )
 addEventHandler( getResourceName( resource ) .. ":login", root,
 	function( username, password )
 		if source == client then
+			triedTokenAuth[ source ] = true
 			if username and password and #username > 0 and #password > 0 then
 				local info = exports.sql:query_assoc_single( "SELECT CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) AS token FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, " .. ( sha1 and ( "'" .. sha1(password) .. "'" ) or "SHA1('%s')" ) .. "))))", getPlayerHash( source ), getPlayerHash( source ), username, not sha1 and password )
 				p[ source ] = nil
@@ -428,7 +430,8 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 )
 
 function performLogin( source, token, isPasswordAuth, ip )
-	if source then
+	if source and ( isPasswordAuth or not triedTokenAuth[ source ] ) then
+		triedTokenAuth[ source ] = true
 		if token then
 			if #token == 80 then
 				local info = exports.sql:query_assoc_single( "SELECT userID, username, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salts FROM wcf1_user WHERE CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) = '%s' LIMIT 1", getPlayerHash( source, ip ), getPlayerHash( source, ip ), token )
@@ -436,9 +439,8 @@ function performLogin( source, token, isPasswordAuth, ip )
 				if not info then
 					if isPasswordAuth then
 						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 1 ) -- Wrong username/password
-					else
-						return false
 					end
+					return false
 				else
 					if info.banned == 1 then
 						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 2 ) -- Banned
@@ -537,6 +539,7 @@ addEventHandler( "onPlayerQuit", root,
 			end
 			p[ source ] = nil
 			loginAttempts[ source ] = nil
+			triedTokenAuth[ source ] = nil
 		end
 	end
 )
