@@ -184,6 +184,7 @@
         <right name="command.createinterior" access="true" />
         <right name="command.deleteinterior" access="true" />
         <right name="command.setinterior" access="true" />
+        <right name="command.setinteriorinside" access="true" />
         <right name="command.setinteriorname" access="true" />
         <right name="command.setinteriorprice" access="true" />
         <right name="command.createvehicle" access="true" />

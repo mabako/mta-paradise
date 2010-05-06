@@ -252,6 +252,44 @@ addCommandHandler( "setinterior",
 	true
 )
 
+addCommandHandler( "setinteriorinside",
+	function( player, commandName, id )
+		local int = interiors[ getElementDimension( player ) ]
+		if int then
+			local x, y, z = getElementPosition( player )
+			local interior = getElementInterior( player )
+			if exports.sql:query_free( "UPDATE interiors SET insideX = " .. x .. ", insideY = " .. y .. ", insideZ = " .. z .. " , insideInterior = " .. interior .. " WHERE interiorID = " .. getElementDimension( player ) ) then
+				-- move the colshape
+				setElementPosition( int.inside, x, y, z )
+				setElementInterior( int.inside, interior )
+				
+				-- teleport all players to the new point
+				for key, value in ipairs( getElementsByType( "player" ) ) do
+					if exports.players:isLoggedIn( value ) and getElementDimension( value ) == getElementDimension( player ) then
+						setElementPosition( value, x, y, z )
+						setElementInterior( value, interior )
+					end
+				end
+				
+				-- create a blip if used
+				if int.blip then
+					destroyElement( int.blip )
+					int.blip = nil
+				end
+				int.blip = not int.locked and getElementDimension( int.outside ) == 0 and not getElementData( int.outside, "price" ) and createBlipEx( int.outside, int.inside )
+				
+				-- show a message
+				outputChatBox( "Interior updated.", player, 0, 255, 0 )
+			else
+				outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
+		end
+	end,
+	true
+)
+
 addCommandHandler( "setinteriorprice",
 	function( player, commandName, price )
 		price = math.ceil( tonumber( price ) or -1 )
