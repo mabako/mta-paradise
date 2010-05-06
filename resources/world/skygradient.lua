@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,23 +13,27 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<info author="mabako" version="1.0"/>
-	
-	<script src="water.lua"/>
-	
-	<script src="time.lua"/>
-	
-	<script src="skygradient.lua" type="client"/>
-	
-	<file src="txd/bus-stop.txd"/>
-	<script src="txds.lua" type="client"/>
-	
-	<file src="col/ggbrig_02_sfw.col" />
-	<file src="col/ggbrig_03_sfw.col" />
-	<file src="col/ggbrig_04_sfw.col" />
-	<file src="col/ggbrig_05_sfw.col" />
-	<file src="col/ggbrig_07_sfw.col" />
-	<script src="cols.lua" type="client" />
-</meta>
+]]
+
+local inside = false
+local localPlayer = getLocalPlayer( )
+
+addEventHandler( "onClientRender", root,
+	function( )
+		if not inside and getElementInterior( localPlayer ) > 0 then
+			inside = true
+			setSkyGradient( 0, 0, 0, 0, 0, 0 )
+		elseif inside and getElementInterior( localPlayer ) == 0 then
+			inside = false
+			resetSkyGradient( )
+		end
+	end
+)
+
+addEventHandler( "onClientResourceStop", resourceRoot,
+	function( )
+		if inside then
+			resetSkyGradient( )
+		end
+	end
+)
