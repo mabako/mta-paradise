@@ -168,7 +168,6 @@ addCommandHandler( "addmap",
 							outputDebugString( "loading map: " .. mapName .. " has an unsupported element: " .. xmlNodeGetName( value ), 2 )
 						end
 					end
-					xmlUnloadFile( map )
 					
 					if #objects > 0 then
 						local mapID = exports.sql:query_insertid( "INSERT INTO maps (mapName) VALUES ('%s')", mapName )
@@ -209,6 +208,7 @@ addCommandHandler( "addmap",
 				else
 					outputChatBox( "Map '" .. mapName .. "' already exists.", player, 255, 0, 0 )
 				end
+				xmlUnloadFile( map )
 			else
 				outputChatBox( "Unable to load map '" .. mapName .. "'.", player, 255, 0, 0 )
 			end
