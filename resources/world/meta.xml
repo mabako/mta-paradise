@@ -18,7 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<info author="mabako" version="1.0"/>
 	
 	<script src="water.lua"/>
-
+	
+	<script src="time.lua"/>
+	
 	<file src="txd/bus-stop.txd"/>
 	<script src="txds.lua" type="client"/>
 	
