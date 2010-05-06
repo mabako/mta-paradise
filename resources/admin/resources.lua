@@ -18,15 +18,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 addCommandHandler( "restartall",
 	function( player )
 		for index, resource in ipairs ( getResources ( ) ) do
-			if ( getResourceState ( resource ) == "running" and getResourceName ( resource ) ~= getThisResource ( ) ) then
+			if getResourceState ( resource ) == "running" and getResourceName ( resource ) ~= getThisResource ( ) then
 				if not restartResource ( resource ) then
 					outputServerLog( "restartall: Failed to restart '" .. getResourceName ( resource ) .. "' . Try starting it manually. If error persists, restarting the server is recommended." )
 				end
 			end
 		end
 		outputServerLog( "restartall: Restarting all resources" .. " (Requested by " .. ( not player and "Console" or getAccountName( getPlayerAccount( player ) ) or getPlayerName(player) ) .. ")" )
-		if ( player ) then
-			outputChatBox ( "All resources have been restarted." )
+		if player then
+			outputChatBox( "All resources have been restarted.", player, 0, 255, 153 )
 		end
 	end,
 	true
@@ -35,15 +35,15 @@ addCommandHandler( "restartall",
 addCommandHandler( "startall",
 	function( player )
 		for index, resource in ipairs ( getResources ( ) ) do
-			if ( getResourceState ( resource ) == "loaded" ) then
+			if getResourceState ( resource ) == "loaded" then
 				if not startResource ( resource ) then
 					outputServerLog( "startall: Failed to start resource '" .. getResourceName ( resource ) .. "' . Try starting it manually. If error persists, restarting the server is recommended." )
 				end
 			end
 		end
 		outputServerLog( "startall: Starting all resources. " .. " (Requested by " .. ( not player and "Console" or getAccountName( getPlayerAccount( player ) ) or getPlayerName(player) ) .. ")" )
-		if ( player ) then
-			outputChatBox ( "All resources have been started." )
+		if player then
+			outputChatBox ( "All resources have been started.", player, 0, 255, 153 )
 		end
 	end,
 	true
