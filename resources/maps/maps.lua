@@ -258,28 +258,32 @@ addCommandHandler( "setmapdimension",
 				local mapName = table.concat( arguments, " " )
 				local map = maps[ mapName:lower( ) ]
 				if map then
-					local oldDimension = -1
-					for object in pairs( map.objects ) do
-						oldDimension = getElementDimension( object )
-						if oldDimension == dimension then
-							outputChatBox( "Map '" .. mapName .. "' is already in that dimension.", player, 255, 0, 0 )
-							return
-						elseif not setElementDimension( object, dimension ) then
-							outputChatBox( "Invalid dimension.", player, 255, 0, 0 )
-							return
-						end
-					end
-					
-					-- update the database
-					if exports.sql:query_free( "UPDATE maps SET mapDimension = " .. dimension .. " WHERE mapID = " .. map.id ) then
-						map.dimension = dimension
-						outputChatBox( "Map '" .. mapName .. "' was set to dimension " .. dimension .. ".", player, 0, 255, 153 )
-					else
-						-- revert our update as we failed at querying
-						outputChatBox( "Map '" .. mapName .. "' could not be set to dimension " .. dimension .. ".", player, 255, 0, 0 )
+					if not map.protected then
+						local oldDimension = -1
 						for object in pairs( map.objects ) do
-							setElementDimension( object, oldDimension )
+							oldDimension = getElementDimension( object )
+							if oldDimension == dimension then
+								outputChatBox( "Map '" .. mapName .. "' is already in that dimension.", player, 255, 0, 0 )
+								return
+							elseif not setElementDimension( object, dimension ) then
+								outputChatBox( "Invalid dimension.", player, 255, 0, 0 )
+								return
+							end
 						end
+						
+						-- update the database
+						if exports.sql:query_free( "UPDATE maps SET mapDimension = " .. dimension .. " WHERE mapID = " .. map.id ) then
+							map.dimension = dimension
+							outputChatBox( "Map '" .. mapName .. "' was set to dimension " .. dimension .. ".", player, 0, 255, 153 )
+						else
+							-- revert our update as we failed at querying
+							outputChatBox( "Map '" .. mapName .. "' could not be set to dimension " .. dimension .. ".", player, 255, 0, 0 )
+							for object in pairs( map.objects ) do
+								setElementDimension( object, oldDimension )
+							end
+						end
+					else
+						outputChatBox( "Map '" .. mapName .. "' is marked as protected.", player, 255, 0, 0 )
 					end
 				else
 					outputChatBox( "Map '" .. mapName .. "' does not exist.", player, 255, 0, 0 )
