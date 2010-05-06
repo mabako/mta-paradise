@@ -45,9 +45,11 @@
         <right name="general.ModifyOtherObjects" access="false" />
         <right name="general.http" access="false" />
         <right name="command.start" access="false" />
+        <right name="command.startall" access="false" />
         <right name="command.stop" access="false" />
         <right name="command.stopall" access="false" />
         <right name="command.restart" access="false" />
+        <right name="command.restartall" access="false" />
         <right name="command.refresh" access="false" />
         <right name="command.refreshall" access="false" />
         <right name="command.addaccount" access="false" />
@@ -153,17 +155,22 @@
         <right name="command.modchat" access="true" />
         <right name="command.createshop" access="true" />
         <right name="command.deleteshop" access="true" />
+        <right name="command.setdropoff" access="true" />
         <right name="command.kick" access="true" />
         <right name="command.freeze" access="true" />
         <right name="command.sethealth" access="true" />
+        <right name="command.setvehiclecolor" access="true" />
+        <right name="command.giveitem" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />
         <right name="general.http" access="true" />
         <right name="command.start" access="true" />
+        <right name="command.startall" access="true" />
         <right name="command.stop" access="true" />
         <right name="command.stopall" access="true" />
         <right name="command.restart" access="true" />
+        <right name="command.restartall" access="true" />
         <right name="command.refresh" access="true" />
         <right name="command.refreshall" access="true" />
         <right name="command.addaccount" access="true" />
@@ -180,7 +187,6 @@
         <right name="command.setinteriorname" access="true" />
         <right name="command.setinteriorprice" access="true" />
         <right name="command.createvehicle" access="true" />
-        <right name="command.deletevehicle" access="true" />
         <right name="command.setwindowstinted" access="true" />
         <right name="command.reloadpermissions" access="true" />
         <right name="command.adminchat" access="true" />
@@ -232,6 +238,9 @@
         <right name="command.debugscript" access="true" />
         <right name="command.reloadacl" access="true" />
         <right name="command.reloadpermissions" access="true" />
+        <right name="command.addmap" access="true" />
+        <right name="command.removemap" access="true" />
+        <right name="command.setmapdimension" access="true" />
     </acl>
     <acl name="RPC">
         <right name="function.callRemote" access="true" />

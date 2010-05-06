@@ -286,3 +286,57 @@ addEventHandler( "items:use", root,
 		end
 	end
 )
+
+--
+
+addCommandHandler( "giveitem",
+	function( player, commandName, other, id, ... )
+		local id = tonumber( id )
+		if other and id and ( ... ) then
+			local other, pname = exports.players:getFromName( player, other )
+			if other then
+				-- check if it's a valid item id
+				if id >= 0 and id < #item_list then
+					-- we need to split our name and value apart
+					local arguments = { ... }
+					local value = { }
+					local name
+					for k, v in ipairs( arguments ) do
+						if not name then
+							if v == "--" then
+								name = { }
+							else
+								table.insert( value, v )
+							end
+						else
+							table.insert( name, v )
+						end
+					end
+					
+					-- get nicer values
+					value = table.concat( value, " " )
+					value = tonumber( value ) or value
+					if name then
+						name = table.concat( name, " " )
+						if #name == 0 then
+							name = nil
+						end
+					end
+					
+					-- give the item
+					if give( other, id, value, name ) then
+						outputChatBox( "You gave " .. pname .. " item " .. id .. " with value=" .. value .. ( name and ( " (name = " .. name .. ")" ) or "" ) .. ".", player, 0, 255, 153 )
+					else
+						outputChatBox( "Failed to give item.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( "Invalid item.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [id] [value]", player, 255, 255, 255 )
+			outputChatBox( "       or /" .. commandName .. " [player] [id] [value] -- [description]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)

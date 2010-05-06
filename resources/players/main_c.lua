@@ -19,6 +19,7 @@ local localPlayer = getLocalPlayer( )
 local loggedIn = false
 local screenX, screenY = guiGetScreenSize( )
 local characters = false
+local localIP = nil
 
 addEvent( getResourceName( resource ) .. ":spawnscreen", true )
 addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
@@ -48,13 +49,16 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 addEventHandler( "onClientResourceStart", getResourceRootElement( ),
 	function( )
 		local token = nil
+		local ip = nil
 		local xml = xmlLoadFile( "login.xml" )
 		if xml then
 			token = xmlNodeGetValue( xml )
+			ip = xmlNodeGetAttribute( xml, "ip" )
+			localIP = ip
 			xmlUnloadFile( xml )
 			xml = nil
 		end
-		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer, screenX, screenY, token and #token > 0 and token )
+		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer, screenX, screenY, token and #token > 0 and token, ip and #ip > 0 and ip )
 	end
 )
 
@@ -94,7 +98,7 @@ end
 
 addEvent( getResourceName( resource ) .. ":characters", true )
 addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
-	function( chars, spawn, token )
+	function( chars, spawn, token, ip )
 		characters = chars
 		exports.gui:updateCharacters( chars )
 		isSpawnScreen = spawn
@@ -111,6 +115,12 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 			local xml = xmlCreateFile( "login.xml", "login" )
 			if xml then
 				xmlNodeSetValue( xml, token )
+				if ip then
+					xmlNodeSetAttribute( xml, "ip", ip )
+					localIP = ip
+				else
+					xmlNodeSetAttribute( xml, "ip", localIP )
+				end
 				xmlSaveFile( xml )
 				xmlUnloadFile( xml )
 				xml = nil

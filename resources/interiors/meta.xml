@@ -20,6 +20,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="interiors.lua"/>
 	<script src="interiors_c.lua" type="client"/>
 	
+	<export function="getInterior"/>
+	<export function="setDropOff"/>
+	
 	<script src="map_fixes.lua" type="client"/>
 	<script src="blips.lua"/>
 	

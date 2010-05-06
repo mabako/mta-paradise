@@ -41,6 +41,7 @@ end
 
 local p = { }
 local shops = { }
+local dimensions = { }
 
 local function createShopPed( shopID )
 	local shop = shops[ shopID ]
@@ -114,6 +115,11 @@ addEventHandler( "onResourceStart", resourceRoot,
 		if result then
 			for key, data in ipairs( result ) do
 				loadShop( data.shopID, data.x, data.y, data.z, data.rotation, data.interior, data.dimension, data.configuration, data.skin )
+				
+				dimensions[ data.dimension ] = true
+				if exports['job-delivery'] then
+					exports['job-delivery']:addDropOff( data.dimension )
+				end
 			end
 		end
 		
@@ -148,6 +154,7 @@ addCommandHandler( "createshop",
 					loadShop( shopID, x, y, z, rotation, interior, dimension, config, 0 )
 					
 					outputChatBox( "Created new shop with ID " .. shopID .. ", type is " .. config .. ".", player, 0, 255, 0 )
+					exports['job-delivery']:addDropOff( dimension )
 				else
 					outputChatBox( "Shop creation failed (SQL-Error).", player, 255, 0, 0 )
 				end
@@ -180,6 +187,20 @@ local function deleteShop( shopID )
 		
 		-- unset
 		shops[ shopID ] = nil
+		
+		-- check if we still have any shops in this dimension
+		local stillHasAShop = false
+		for key, value in pairs( shops ) do
+			if value.dimension == shop.dimension then
+				stillHasAShop = true
+				break
+			end
+		end
+		
+		if not stillHasAShop and exports['job-delivery'] then
+			dimensions[ shop.dimension ] = nil
+			exports['job-delivery']:removeDropOff( shop.dimension )
+		end
 	end
 end
 
@@ -293,4 +314,8 @@ function clearDimension( dimension )
 			end
 		end
 	end
+end
+
+function getAllDimensions( )
+	return dimensions
 end

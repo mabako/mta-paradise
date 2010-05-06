@@ -295,9 +295,9 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'userID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
 				{ name = 'username', type = 'varchar(255)' },
 				{ name = 'password', type = 'varchar(40)' },
-				{ name = 'salt',  type = 'varchar(40)' },
-				{ name = 'banned',  type = 'tinyint(1) unsigned', default = 0 },
-				{ name = 'activationCode',  type = 'int(10) unsigned', default = 0 },
+				{ name = 'salt', type = 'varchar(40)' },
+				{ name = 'banned', type = 'tinyint(1) unsigned', default = 0 },
+				{ name = 'activationCode', type = 'int(10) unsigned', default = 0 },
 			} ) then cancelEvent( ) return end
 		
 		local success, didCreateTable = exports.sql:create_table( 'wcf1_group',
@@ -344,7 +344,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 )
 --
 
-local function showLoginScreen( player, screenX, screenY, token )
+local function showLoginScreen( player, screenX, screenY, token, ip )
 	-- we need at least 800x600 for proper display of all GUI
 	if screenX and screenY then
 		if screenX < 800 or screenY < 600 then
@@ -374,7 +374,7 @@ local function showLoginScreen( player, screenX, screenY, token )
 	
 	triggerClientEvent( player, getResourceName( resource ) .. ":spawnscreen", player )
 	if token and #token > 0 then
-		performLogin( source, token )
+		performLogin( source, token, false, ip )
 	end
 end
 
@@ -390,9 +390,13 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 --
 
 local loginAttempts = { }
+local triedTokenAuth = { }
 
-local function getPlayerHash( player )
+local function getPlayerHash( player, remoteIP )
 	local ip = getPlayerIP( player ) or "255.255.255.0"
+	if ip == "127.0.0.1" and remoteIP then -- we don't really care about a provided ip unless we want to connect from localhost
+		ip = exports.sql:escape_string( remoteIP )
+	end
 	return ip:sub(ip:find("%d+%.%d+%.")) .. ( getPlayerSerial( player ) or "R0FLR0FLR0FLR0FLR0FLR0FLR0FLR0FL" )
 end
 
@@ -400,6 +404,7 @@ addEvent( getResourceName( resource ) .. ":login", true )
 addEventHandler( getResourceName( resource ) .. ":login", root,
 	function( username, password )
 		if source == client then
+			triedTokenAuth[ source ] = true
 			if username and password and #username > 0 and #password > 0 then
 				local info = exports.sql:query_assoc_single( "SELECT CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) AS token FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, " .. ( sha1 and ( "'" .. sha1(password) .. "'" ) or "SHA1('%s')" ) .. "))))", getPlayerHash( source ), getPlayerHash( source ), username, not sha1 and password )
 				p[ source ] = nil
@@ -425,18 +430,18 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 	end
 )
 
-function performLogin( source, token, isPasswordAuth )
-	if source then
+function performLogin( source, token, isPasswordAuth, ip )
+	if source and ( isPasswordAuth or not triedTokenAuth[ source ] ) then
+		triedTokenAuth[ source ] = true
 		if token then
 			if #token == 80 then
-				local info = exports.sql:query_assoc_single( "SELECT userID, username, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salts FROM wcf1_user WHERE CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) = '%s' LIMIT 1", getPlayerHash( source ), getPlayerHash( source ), token )
+				local info = exports.sql:query_assoc_single( "SELECT userID, username, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salts FROM wcf1_user WHERE CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) = '%s' LIMIT 1", getPlayerHash( source, ip ), getPlayerHash( source, ip ), token )
 				p[ source ] = nil
 				if not info then
 					if isPasswordAuth then
 						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 1 ) -- Wrong username/password
-					else
-						return false
 					end
+					return false
 				else
 					if info.banned == 1 then
 						triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 2 ) -- Banned
@@ -461,7 +466,7 @@ function performLogin( source, token, isPasswordAuth )
 						-- show characters
 						local chars = exports.sql:query_assoc( "SELECT characterID, characterName, skin FROM characters WHERE userID = " .. info.userID .. " ORDER BY lastLogin DESC" )
 						if isPasswordAuth then
-							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true, token )
+							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true, token, getPlayerIP( source ) ~= "127.0.0.1" and getPlayerIP( source ) )
 						else
 							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
 						end
@@ -537,6 +542,7 @@ addEventHandler( "onPlayerQuit", root,
 			end
 			p[ source ] = nil
 			loginAttempts[ source ] = nil
+			triedTokenAuth[ source ] = nil
 		end
 	end
 )

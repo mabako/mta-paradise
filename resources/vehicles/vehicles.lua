@@ -15,6 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local vehiclesIgnoringLocked =
+{
+	[448] = true, [461] = true, [462] = true, [463] = true, [481] = true, [509] = true, [510] = true, [521] = true, [522] = true, [581] = true, [586] = true, -- bikes
+	[430] = true, [446] = true, [452] = true, [453] = true, [454] = true, [472] = true, [473] = true, [484] = true, [493] = true, [595] = true, -- boats
+	[424] = true, [457] = true, [471] = true, [539] = true, [568] = true, [571] = true -- recreational vehicles
+}
+
+--
+
 local addCommandHandler_ = addCommandHandler
       addCommandHandler  = function( commandName, fn, restricted, caseSensitive )
 	-- add the default command handlers
@@ -56,6 +65,25 @@ local addCommandHandler_ = addCommandHandler
 		end
 	end
 end
+
+--
+
+local p = { }
+
+local getPedOccupiedVehicle_ = getPedOccupiedVehicle
+      getPedOccupiedVehicle = function( ped )
+	local vehicle = isPedInVehicle( ped ) and getPedOccupiedVehicle_( ped )
+	if vehicle and ( p[ ped ] == vehicle or getElementParent( vehicle ) ~= getResourceDynamicElementRoot( resource ) ) then
+		return vehicle
+	end
+	return false
+end
+
+local function isPedEnteringVehicle( ped )
+	return getPedOccupiedVehicle_( ped ) and not getPedOccupiedVehicle( ped )
+end
+
+--
 
 local vehicleIDs = { }
 local vehicles = { }
@@ -198,29 +226,34 @@ end
 
 addCommandHandler( { "deletevehicle", "delvehicle" },
 	function( player, commandName, vehicleID )
-		vehicleID = tonumber( vehicleID )
-		if vehicleID then
-			local vehicle = vehicleIDs[ vehicleID ]
-			if vehicle then
-				if vehicleID < 0 or exports.sql:query_free( "DELETE FROM vehicles WHERE vehicleID = " .. vehicleID ) then
-					outputChatBox( "You deleted vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
-					
-					-- remove from vehicles list
-					vehicleIDs[ vehicleID ] = nil
-					vehicles[ vehicle ] = nil
-					
-					destroyElement( vehicle )
+		if hasObjectPermissionTo( player, "command.createvehicle", false ) or hasObjectPermissionTo( player, "command.temporaryvehicle", false ) then
+			vehicleID = tonumber( vehicleID )
+			if vehicleID and vehicleID ~= 0 then
+				if ( vehicleID >= 0 and not hasObjectPermissionTo( player, "command.createvehicle", false ) ) or ( vehicleID < 0 and not hasObjectPermissionTo( player, "command.temporaryvehicle", false ) ) then
+					outputChatBox( "You can not delete this vehicle.", player, 255, 0, 0 )
 				else
-					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+					local vehicle = vehicleIDs[ vehicleID ]
+					if vehicle then
+						if vehicleID < 0 or exports.sql:query_free( "DELETE FROM vehicles WHERE vehicleID = " .. vehicleID ) then
+							outputChatBox( "You deleted vehicle " .. vehicleID .. " (" .. getVehicleName( vehicle ) .. ").", player, 0, 255, 153 )
+							
+							-- remove from vehicles list
+							vehicleIDs[ vehicleID ] = nil
+							vehicles[ vehicle ] = nil
+							
+							destroyElement( vehicle )
+						else
+							outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
+					end
 				end
 			else
-				outputChatBox( "Vehicle not found.", player, 255, 0, 0 )
+				outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
 			end
-		else
-			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
 		end
-	end,
-	true
+	end
 )
 
 addCommandHandler( { "repairvehicle", "fixvehicle" },
@@ -294,6 +327,11 @@ addCommandHandler( "respawnvehicles",
 				else
 					respawnVehicle( vehicle )
 				end
+			end
+		end
+		if getResourceState( getResourceFromName( "vehicle-shop" ) ) == "running" then
+			for key, value in ipairs( getElementsByType( "vehicle", getResourceRootElement( getResourceFromName( "vehicle-shop" ) ) ) ) do
+				respawnVehicle( value )
 			end
 		end
 		outputChatBox( "*** " .. getPlayerName( player ):gsub( "_", " " ) .. " respawned all vehicles. ***", root, 0, 255, 153 )
@@ -414,9 +452,9 @@ addCommandHandler( "setwindowstinted",
 							state = 0
 						end
 						
-						if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET tintedWindows = '%s' WHERE vehicleID = " .. data.vehicleID, state ) then
+						if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET tintedWindows = " .. state .. " WHERE vehicleID = " .. data.vehicleID ) then
 							data.tintedWindows = state == 1
-							outputChatBox( "Tinted windows are now " .. ( data.tintedWindows and "enabled" or "disabled" ) .. ".", player, 0, 255, 0 )
+							outputChatBox( "Tinted windows are now " .. ( data.tintedWindows and "enabled" or "disabled" ) .. ".", player, 0, 255, 153 )
 							
 							for i = 0, getVehicleMaxPassengers( vehicle ) do
 								local p = getVehicleOccupant( vehicle, i )
@@ -436,6 +474,37 @@ addCommandHandler( "setwindowstinted",
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [player] [1 = on, 0 = off]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+addCommandHandler( { "setvehiclecolor", "setcolor" },
+	function( player, commandName, other, color1, color2 )
+		local color1 = tonumber( color1 )
+		local color2 = tonumber( color2 ) or color1
+		if other and color1 and color2 and color1 >= 0 and color1 <= 255 and color2 >= 0 and color2 <= 255 then
+			local other, name = exports.players:getFromName( player, other )
+			if other then
+				local vehicle = getPedOccupiedVehicle( player )
+				if vehicle then
+					local data = vehicles[ vehicle ]
+					if data then
+						if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET color1 = " .. color1 .. ", color2 = " .. color2 .. " WHERE vehicleID = " .. data.vehicleID, state ) then
+							setVehicleColor( vehicle, color1, color2, color1, color2 )
+							outputChatBox( "Changed the color of " .. name .. "'s " .. getVehicleName( vehicle ) .. ".", player, 0, 255, 153 )
+						else
+							outputChatBox( "MySQL Query failed.", player, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "Vehicle Error.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( name .. " isn't driving a vehicle.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [color 1] [color 2]", player, 255, 255, 255 )
 		end
 	end,
 	true
@@ -524,15 +593,26 @@ addEventHandler( "onPlayerQuit", root,
 		if vehicle then
 			saveVehicle( vehicle )
 		end
+		
+		p[ source ] = nil
 	end
 )
 
 addEventHandler( "onElementDestroy", resourceRoot,
 	function( )
 		if vehicles[ source ] then
-			outputDebugString( "Deleted vehicle ID " .. vehicles[ source ].vehicleID .. " (" .. getVehicleName( source ) .. ", even though it's still referenced. Removing references...", 2 )
+			outputDebugString( "Deleted vehicle ID " .. vehicles[ source ].vehicleID .. " (" .. getVehicleName( source ) .. "), even though it's still referenced. Removing references...", 2 )
 			vehicleIDs[ vehicles[ source ].vehicleID ] = nil
 			vehicles[ source ] = nil
+		end
+	end
+)
+
+addEventHandler( "onVehicleStartEnter", resourceRoot,
+	function( player )
+		if isVehicleLocked( source ) and vehiclesIgnoringLocked[ getElementModel( source ) ] then
+			cancelEvent( )
+			outputChatBox( "(( This " .. getVehicleName( source ) .. " is locked. ))", player, 255, 0, 0 )
 		end
 	end
 )
@@ -541,6 +621,8 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 	function( player )
 		if isVehicleLocked( source ) then
 			cancelEvent( )
+			removePedFromVehicle( player )
+			outputChatBox( "(( This " .. getVehicleName( source ) .. " is locked. ))", player, 255, 0, 0 )
 		else
 			local data = vehicles[ source ]
 			if data then
@@ -553,6 +635,8 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 					end
 				end
 				
+				p[ player ] = source
+				
 				setVehicleEngineState( source, data.engineState )
 				
 				if hasTintedWindows( source ) then
@@ -560,6 +644,29 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 				end
 			end
 		end
+	end
+)
+
+addEventHandler( "onVehicleStartExit", resourceRoot,
+	function( player )
+		if isVehicleLocked( source ) then
+			cancelEvent( )
+			outputChatBox( "(( The door is locked. ))", player, 255, 0, 0 )
+		else
+			p[ player ] = nil
+		end
+	end
+)
+
+addEventHandler( "onVehicleExit", resourceRoot,
+	function( player )
+		p[ player ] = nil
+	end
+)
+
+addEventHandler( "onPlayerWasted", root,
+	function( )
+		p[ source ] = nil
 	end
 )
 
@@ -581,6 +688,10 @@ addCommandHandler( "lockvehicle",
 	function( player, commandName )
 		if exports.players:isLoggedIn( player ) then
 			if getElementData( player, "interiorMarker" ) then
+				return
+			end
+			
+			if isPedEnteringVehicle( player ) then
 				return
 			end
 			

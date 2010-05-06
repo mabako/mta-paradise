@@ -62,12 +62,12 @@ addEventHandler( "onClientRender", getRootElement( ),
 							end
 							
 							-- background
-							local width = dxGetTextWidth( text )
+							local width = dxGetTextWidth( tostring( text ) )
 							local height = ( price and 2 or 1 ) * dxGetFontHeight( )
 							dxDrawRectangle( sx - width / 2 - 5, sy - height / 2 - 5, width + 10, height + 10, tocolor( 0, 0, 0, 200 ) )
 							
 							-- text
-							dxDrawText( text, sx, sy, sx, sy, tocolor( 255, 255, 255, 255 ), 1, "default", "center", "center" )
+							dxDrawText( tostring( text ), sx, sy, sx, sy, tocolor( 255, 255, 255, 255 ), 1, "default", "center", "center" )
 						end
 					end
 				else

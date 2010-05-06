@@ -21,6 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="shop.lua"/>
 	<script src="shop_c.lua" type="client"/>
 	<export function="clearDimension"/>
+	<export function="getAllDimensions"/>
 	
 	<include resource="sql"/>
 	<include resource="items"/>
