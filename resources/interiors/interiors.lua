@@ -192,7 +192,7 @@ addCommandHandler( { "deleteinterior", "delinterior" },
 					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 				end
 			else
-				outputChatBox( "Shop not found.", player, 255, 0, 0 )
+				outputChatBox( "Interior not found.", player, 255, 0, 0 )
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
