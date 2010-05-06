@@ -18,5 +18,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 addEventHandler( "onClientResourceStart", resourceRoot,
 	function( )
 		engineImportTXD( engineLoadTXD( "txd/bus-stop.txd" ), 1257 )
+		engineImportTXD( engineLoadTXD( "txd/sf-gym.txd" ), 14789 )
 	end
 )

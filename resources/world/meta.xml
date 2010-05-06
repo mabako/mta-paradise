@@ -24,6 +24,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="skygradient.lua" type="client"/>
 	
 	<file src="txd/bus-stop.txd"/>
+	<file src="txd/sf-gym.txd"/>
 	<script src="txds.lua" type="client"/>
 	
 	<file src="col/ggbrig_02_sfw.col" />
