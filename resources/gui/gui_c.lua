@@ -374,14 +374,22 @@ addEventHandler( "onClientRender", root,
 			
 			height = math.min( max_height, cache( window ) )
 			local y = ( screenY - height ) / 2
-			dxDrawRectangle( x - 5, y - 5, width + 10, height + 10, tocolor( 0, 0, 0, 127 ) )
+			
+			-- if we have no gui elements, we can draw the background above all gui as well
+			local backgroundPostGui = true
+			for key, value in pairs( destroy ) do
+				backgroundPostGui = false
+				break
+			end
+			
+			dxDrawRectangle( x - 5, y - 5, width + 10, height + 10, tocolor( 0, 0, 0, 127 ), backgroundPostGui )
 			draw( window, y )
 			
 			-- draw left/right if it's the scoreboard/char selection and is not forced
 			if not forcedWindow then
 				local key = isChangeableWindow( windowName )
 				if key then
-					dxDrawRectangle( x - 35, screenY / 2 - 15, 30, 30, tocolor( 0, 0, 0, 127 ) )
+					dxDrawRectangle( x - 35, screenY / 2 - 15, 30, 30, tocolor( 0, 0, 0, 127 ), backgroundPostGui )
 					dxDrawText( "<", x - 35, screenY / 2 - 15, x - 5, screenY / 2 + 15, tocolor( 255, 255, 255, 255 ), 1, "bankgothic", "center", "center", true, false, true )
 					if clicked.mouse1 and cursorX >= x - 35 and cursorX <= x - 5 and cursorY >= screenY / 2 - 15 and cursorY <= screenY / 2 + 15 then
 						if key == 1 then
@@ -392,7 +400,7 @@ addEventHandler( "onClientRender", root,
 						show( changeableWindows[ key ] )
 					end
 					
-					dxDrawRectangle( x + width + 5, screenY / 2 - 15, 30, 30, tocolor( 0, 0, 0, 127 ) )
+					dxDrawRectangle( x + width + 5, screenY / 2 - 15, 30, 30, tocolor( 0, 0, 0, 127 ), backgroundPostGui )
 					dxDrawText( ">", x + width + 5, screenY / 2 - 15, x + width + 35, screenY / 2 + 15, tocolor( 255, 255, 255, 255 ), 1, "bankgothic", "center", "center", true, false, true )
 					if clicked.mouse1 and cursorX >= x + width + 5 and cursorX <= x + width + 35 and cursorY >= screenY / 2 - 15 and cursorY <= screenY / 2 + 15 then
 						if key == #changeableWindows then
