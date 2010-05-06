@@ -166,6 +166,33 @@ addCommandHandler( "createteleport",
 	true
 )
 
+addCommandHandler( { "deleteteleport", "delteleport" },
+	function( player, commandName, teleportID )
+		teleportID = tonumber( teleportID )
+		if teleportID then
+			local teleport = teleports[ teleportID ]
+			if teleport then
+				if exports.sql:query_free( "DELETE FROM teleports WHERE teleportID = " .. teleportID ) then
+					outputChatBox( "You deleted teleport " .. teleportID .. ".", player, 0, 255, 153 )
+					
+					-- delete the markers
+					colspheres[ teleport.a ] = nil
+					destroyElement( teleport.a )
+					colspheres[ teleport.b ] = nil
+					destroyElement( teleport.b )
+				else
+					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "Teleport not found.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
 --
 
 local function useTeleport( player, key, state, colShape )
