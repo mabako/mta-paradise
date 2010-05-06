@@ -31,7 +31,9 @@ local anims =
 
 --
 
+-- plays a single animation from a table (see above)
 local function setAnim( player, anim )
+	-- ignore if the player ain't valid anymore or in a vehicle
 	if isElement( player ) and anim and not isPedInVehicle( player ) then
 		setPedAnimation( player, anim.block, anim.anim, anim.time or -1, anim.loop == nil and anim.time == -1 or anim.loop or false, anim.updatePosition or false, true )
 	end
@@ -39,16 +41,22 @@ end
 
 --
 
+-- play an animation sequence
 local function playAnim( player, anim )
+	-- time spent on all anims till now
 	local time = 0
+	
 	for key, value in ipairs( anim ) do
 		if time == 0 then
+			-- first anim, set it directly
 			setAnim( player, value )
 		else
+			-- set the anim delayed
 			setTimer( setAnim, time, 1, player, value )
 		end
 		
 		if value.time == -1 then
+			-- we got an infinite running anim, no point to check any further
 			time = 0
 			break
 		else
@@ -77,32 +85,35 @@ end
 
 --
 
-addCommandHandler( "stopanim",
-	function( player )
-		if exports.players:isLoggedIn( player ) then
-			setPedAnimation( player )
-		end
+local function stopAnim( player )
+	if exports.players:isLoggedIn( player ) then
+		setPedAnimation( player )
 	end
-)
+end
 
--- run an animation by name
+-- remove a players's animation (equivalent to pressing 'space' on the client)
+addCommandHandler( "stopanim", stopAnim )
 
-addCommandHandler( "runanim",
-	function( player, commandName, block, anim )
-		if exports.players:isLoggedIn( player ) then
-			setPedAnimation( player, block, anim, -1, false, true, true )
+-- triggered when pressing 'space' as client
+addEvent( "anims:reset", true )
+addEventHandler( "anims:reset", root,
+	function( )
+		if client == source then
+			stopAnim( source )
 		end
 	end
 )
 
 --
 
-addEvent( "anims:reset", true )
-addEventHandler( "anims:reset", root,
-	function( )
-		if client == source then
-			if exports.players:isLoggedIn( source ) then
-				setPedAnimation( source )
+-- runs a user-defined animation by block/name
+addCommandHandler( "runanim",
+	function( player, commandName, block, anim )
+		if exports.players:isLoggedIn( player ) then
+			if block and anim then
+				setPedAnimation( player, block, anim, -1, false, true, true )
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [block] [anim]", player, 255, 255, 255 )
 			end
 		end
 	end
