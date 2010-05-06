@@ -147,7 +147,7 @@ addCommandHandler( "createinterior",
 				local insertid = exports.sql:query_insertid( "INSERT INTO interiors (outsideX, outsideY, outsideZ, outsideInterior, outsideDimension, insideX, insideY, insideZ, insideInterior, interiorName, interiorType, interiorPrice) VALUES (" .. table.concat( { x, y, z, getElementInterior( player ), getElementDimension( player ), interior.x, interior.y, interior.z, interior.interior, '"%s"', tonumber( type ), tonumber( price ) }, ", " ) .. ")", name )
 				if insertid then
 					loadInterior( insertid, x, y, z, getElementInterior( player ), getElementDimension( player ), interior.x, interior.y, interior.z, interior.interior, name, tonumber( price ), tonumber( type ), 0, false )
-					outputChatBox( "Interior created (ID " .. insertid .. ")", player, 0, 255, 0 )
+					outputChatBox( "Interior created. (ID " .. insertid .. ")", player, 0, 255, 0 )
 				else
 					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 				end
