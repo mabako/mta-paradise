@@ -39,11 +39,11 @@ addEventHandler( "onClientRender", getRootElement( ),
 				if distance <= 17.5 then
 					-- pickup to it
 					if not pickups[ colshape ] then
-						pickup = createPickup( px, py, pz, 3, type == 1 and 1273 or type == 2 and 1272 or 1318 )
+						pickup = createPickup( px, py, pz, 3, 1318 )
 						setElementInterior( pickup, getElementInterior( localPlayer ) )
 						setElementDimension( pickup, dimension )
 						
-						pickups[ colshape ] = { type = type, pickup = pickup }
+						pickups[ colshape ] = { pickup = pickup }
 					end
 				else
 					destroy( colshape )
