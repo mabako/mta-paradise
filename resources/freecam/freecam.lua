@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,26 +13,15 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<info author="mabako" version="1.0"/>
-	
-	<script src="water.lua"/>
-	
-	<script src="time.lua"/>
-	
-	<script src="skygradient.lua" type="client"/>
-	
-	<script src="collision.lua" type="client"/>
-	
-	<file src="txd/bus-stop.txd"/>
-	<file src="txd/sf-gym.txd"/>
-	<script src="txds.lua" type="client"/>
-	
-	<file src="col/ggbrig_02_sfw.col" />
-	<file src="col/ggbrig_03_sfw.col" />
-	<file src="col/ggbrig_04_sfw.col" />
-	<file src="col/ggbrig_05_sfw.col" />
-	<file src="col/ggbrig_07_sfw.col" />
-	<script src="cols.lua" type="client" />
-</meta>
+]]
+
+addCommandHandler( "freecam",
+	function( player, commandName )
+		if isPlayerFreecamEnabled( player ) then
+			setPlayerFreecamDisabled( player )
+		else
+			setPlayerFreecamEnabled( player )
+		end
+	end,
+	true
+)

@@ -161,6 +161,7 @@
         <right name="command.sethealth" access="true" />
         <right name="command.setvehiclecolor" access="true" />
         <right name="command.giveitem" access="true" />
+        <right name="command.freecam" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />
