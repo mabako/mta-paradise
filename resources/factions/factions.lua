@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 local p = { }
 local factions = { }
 
-local function loadFaction( factionID, name, type, tag )
+local function loadFaction( factionID, name, type, tag, groupID )
 	if not tag or #tag == 0 then
 		-- create a tag from the first letter of each word
 		local i = 0
@@ -34,19 +34,19 @@ local function loadFaction( factionID, name, type, tag )
 		until false
 	end
 	
-	factions[ factionID ] = { name = name, type = type, tag = tag }
+	factions[ factionID ] = { name = name, type = type, tag = tag, group = groupID }
 end
 
 local function loadPlayer( player )
 	local characterID = exports.players:getCharacterID( player )
 	if characterID then
 		p[ player ] = { factions = { }, rfactions = { }, types = { } }
-		local result = exports.sql:query_assoc( "SELECT factionID FROM character_to_factions WHERE characterID = " .. characterID )
+		local result = exports.sql:query_assoc( "SELECT factionID, factionLeader FROM character_to_factions WHERE characterID = " .. characterID )
 		for key, value in ipairs( result ) do
 			local factionID = value.factionID
 			if factions[ factionID ] then
 				table.insert( p[ player ].factions, factionID )
-				p[ player ].rfactions[ factionID ] = true
+				p[ player ].rfactions[ factionID ] = { leader = value.factionLeader }
 				p[ player ].types[ factions[ factionID ].type ] = true
 				outputDebugString( "Set " .. getPlayerName( player ):gsub( "_", " " ) .. " to " .. factions[ factionID ].name )
 			else
@@ -71,6 +71,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		{
 			{ name = 'characterID', type = 'int(10) unsigned', default = 0, primary_key = true },
 			{ name = 'factionID', type = 'int(10) unsigned', default = 0, primary_key = true },
+			{ name = 'factionLeader', type = 'tinyint(3) unsigned', default = 0 },
 			} ) then cancelEvent( ) return end
 		
 		--
@@ -78,7 +79,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		local result = exports.sql:query_assoc( "SELECT f.*, g.groupName FROM factions f LEFT JOIN wcf1_group g ON f.groupID = g.groupID" )
 		for key, value in ipairs( result ) do
 			if value.groupName then
-				loadFaction( value.factionID, value.groupName, value.factionType, value.factionTag )
+				loadFaction( value.factionID, value.groupName, value.factionType, value.factionTag, value.groupID )
 			else
 				outputDebugString( "Faction " .. value.factionID .. " has no valid group. Ignoring..." )
 			end
