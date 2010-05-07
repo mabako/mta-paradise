@@ -23,7 +23,7 @@ addEventHandler( "onClientRender", root,
 		if getPedAnimation( localPlayer ) and exports.players:isLoggedIn( ) and not guiGetInputEnabled( ) then
 			-- draw the text
 			local text = "Press 'space' to stop the animation"
-			dxDrawText( text, 4, 4, screenX, screenY * 0.95, tocolor( 0, 0, 0, 255 ), 1, "pricedown", "center", "bottom", false, false, true )
+			dxDrawText( text, 4, 4, screenX, screenY * 0.95 + 2, tocolor( 0, 0, 0, 255 ), 1, "pricedown", "center", "bottom", false, false, true )
 			dxDrawText( text, 0, 0, screenX, screenY * 0.95, tocolor( 255, 255, 255, 255 ), 1, "pricedown", "center", "bottom", false, false, true )
 		end
 	end
