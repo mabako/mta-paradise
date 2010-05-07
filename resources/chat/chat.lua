@@ -119,6 +119,20 @@ addCommandHandler( "c",
 	end
 )
 
+-- /s(hout)
+addCommandHandler( { "s", "shout" }, 
+	function( thePlayer, commandName, ... )
+		if exports.players:isLoggedIn( thePlayer ) and not isPedDead( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				localMessage( thePlayer, " " .. getPlayerName( thePlayer ) .. " shouts: " .. message .. ( message:sub( #message ) ~= "." and message:sub( #message ) ~= "!" and message:sub( #message ) ~= "?" and "!" or "" ), 255, 255, 255, 40 )
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [local ic text]", thePlayer, 255, 255, 255 )
+			end
+		end
+	end
+)
+
 -- /my
 addCommandHandler( "my", 
 	function( thePlayer, commandName, ... )
