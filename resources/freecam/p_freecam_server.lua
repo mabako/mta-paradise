@@ -35,7 +35,7 @@ end
 
 
 function setPlayerFreecamDisabled(player, dontChangeFixedMode)
-	p[ player ] = false
+	p[ player ] = nil
 	removeElementData(player, "collisionless")
 	setElementAlpha(player, 255)
 	return triggerClientEvent(player,"doSetFreecamDisabled", getRootElement(), dontChangeFixedMode)
@@ -54,5 +54,14 @@ end
 addEventHandler( "onPlayerQuit", root,
 	function( )
 		p[ source ] = nil
+	end
+)
+
+addEventHandler( "onResourceStop", resourceRoot,
+	function( )
+		for player in pairs( p ) do
+			removeElementData(player, "collisionless")
+			setElementAlpha(player, 255)
+		end
 	end
 )

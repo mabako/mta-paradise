@@ -294,6 +294,7 @@ function setFreecamDisabled(dontChangeFixedMode)
 	return true
 end
 
+--[[
 function isFreecamEnabled()
 	return getElementData(localPlayer,"freecam:state")
 end
@@ -310,6 +311,7 @@ function setFreecamOption(theOption, value)
 		return false
 	end
 end
+]]
 
 addEvent("doSetFreecamEnabled", true)
 addEventHandler("doSetFreecamEnabled", rootElement, setFreecamEnabled)
@@ -317,5 +319,9 @@ addEventHandler("doSetFreecamEnabled", rootElement, setFreecamEnabled)
 addEvent("doSetFreecamDisabled", true)
 addEventHandler("doSetFreecamDisabled", rootElement, setFreecamDisabled)
 
+--[[
 addEvent("doSetFreecamOption", true)
 addEventHandler("doSetFreecamOption", rootElement, setFreecamOption)
+]]
+
+addEventHandler( "onClientResourceStop", getResourceRootElement(), function() setFreecamDisabled() end)
