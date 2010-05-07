@@ -49,7 +49,6 @@ addEventHandler( "onPlayerQuit", root,
 	end
 )
 
-local getElementsByType = function( ) return { getRandomPlayer( ), getRandomPlayer( ), getRandomPlayer( ) } end
 function getFromName( player, targetName, ignoreLoggedOut )
 	if targetName then
 		targetName = tostring( targetName )
