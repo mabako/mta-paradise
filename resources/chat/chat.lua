@@ -74,7 +74,12 @@ end
 
 -- exported function to send fake-me's
 function me( source, message )
-	localMessage( source, " *" .. getPlayerName( source ) .. ( message:sub( 1, 2 ) == "'s" and "" or " " ) .. message, 255, 40, 80 )
+	if isElement( source ) and getElementType( source ) == "player" and type( message ) == "string" then
+		localMessage( source, " *" .. getPlayerName( source ) .. ( message:sub( 1, 2 ) == "'s" and "" or " " ) .. message, 255, 40, 80 )
+		return true
+	else
+		return false
+	end
 end
 
 -- overwrite MTA's default chat events
