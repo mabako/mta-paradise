@@ -17,10 +17,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 addCommandHandler( "freecam",
 	function( player, commandName )
-		if isPlayerFreecamEnabled( player ) then
-			setPlayerFreecamDisabled( player )
+		if not isPedInVehicle( player ) then
+			if isPlayerFreecamEnabled( player ) then
+				setPlayerFreecamDisabled( player )
+			else
+				setPlayerFreecamEnabled( player )
+			end
 		else
-			setPlayerFreecamEnabled( player )
+			outputChatBox( "You can't use this in a vehicle.", player, 255, 0, 0 )
 		end
 	end,
 	true
