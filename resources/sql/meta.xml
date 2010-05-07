@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<export function="escape_string"/>
 	
-	<export function="query"/>
+	<!-- <export function="query"/> --><!-- Use the functions below instead -->
 	<export function="query_free"/>
 	<export function="free_result"/>
 	<export function="query_assoc"/>

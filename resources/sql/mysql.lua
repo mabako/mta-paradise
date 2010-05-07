@@ -104,7 +104,7 @@ function escape_string( str )
 	end
 end
 
-function query( str, ... )
+local function query( str, ... )
 	checkConnection( )
 	
 	if ( ... ) then
