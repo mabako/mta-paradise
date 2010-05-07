@@ -497,19 +497,23 @@ function show( name, forced, dontEnableInput, mouse )
 		windowName = name
 		if forced then
 			forcedWindow = true
-			showCursor( true )
 			if not dontEnableInput then
 				guiSetInputEnabled( true )
+				showCursor( true )
+			elseif mouse then
+				showCursor( true )
 			end
 		elseif mouse then
 			showCursor( true )
-			showMouse = true
 		end
 		
 		if window.onCreate then
 			window.onCreate( )
 		end
+		
+		return true
 	end
+	return false
 end
 
 function hide( )
