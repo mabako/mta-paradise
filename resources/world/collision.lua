@@ -15,9 +15,32 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local localPlayer = getLocalPlayer( )
+
 addEventHandler( "onClientResourceStart", resourceRoot,
 	function( )
-		engineImportTXD( engineLoadTXD( "txd/bus-stop.txd" ), 1257 )
-		engineImportTXD( engineLoadTXD( "txd/sf-gym.txd" ), 14789 )
+		for key, value in ipairs( getElementsByType( "player" ) ) do
+			if value ~= localPlayer then
+				setElementCollisionsEnabled( value, not getElementData( value, "collisionless" ) )
+			end
+		end
+	end
+)
+
+addEventHandler( "onClientResourceStop", resourceRoot,
+	function( )
+		for key, value in ipairs( getElementsByType( "player" ) ) do
+			if value ~= localPlayer then
+				setElementCollisionsEnabled( value, true )
+			end
+		end
+	end
+)
+
+addEventHandler( "onClientElementDataChange", resourceRoot,
+	function( name )
+		if source ~= localPlayer and name == "collisionless" then
+				setElementCollisionsEnabled( source, not getElementData( source, name ) )
+		end
 	end
 )

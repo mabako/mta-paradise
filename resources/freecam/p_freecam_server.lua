@@ -1,5 +1,5 @@
-<!--
-runcode by Javier "jbeta" Beta
+--[[
+freecam by Ed "eAi" Lyons, QA Team
   obtained from http://code.google.com/p/mtasa-resources/
 
 Permission is hereby granted, free of charge, to any person
@@ -22,12 +22,46 @@ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
--->
-<meta>
-	<info author="jbeta" name="Scripting console" type="script" version="1.0.1"/>
-	<script src="p_client.lua" type="client"/>
-	<script src="p_client_util.lua" type="client"/>
-	<script src="server.lua" type="server"/>
-	<script src="server_util.lua" type="server"/>
-</meta>
+]]
 
+local p = { }
+
+function setPlayerFreecamEnabled(player, x, y, z, dontChangeFixedMode)
+	p[ player ] = true
+	setElementData(player, "collisionless", true)
+	setElementAlpha(player, 0)
+	return triggerClientEvent(player,"doSetFreecamEnabled", getRootElement(), x, y, z, dontChangeFixedMode)
+end
+
+
+function setPlayerFreecamDisabled(player, dontChangeFixedMode)
+	p[ player ] = nil
+	removeElementData(player, "collisionless")
+	setElementAlpha(player, 255)
+	return triggerClientEvent(player,"doSetFreecamDisabled", getRootElement(), dontChangeFixedMode)
+end
+
+
+function setPlayerFreecamOption(player, theOption, value)
+	return triggerClientEvent(player,"doSetFreecamOption", getRootElement(), theOption, value)
+end
+
+
+function isPlayerFreecamEnabled(player)
+	return p[ player ]
+end
+
+addEventHandler( "onPlayerQuit", root,
+	function( )
+		p[ source ] = nil
+	end
+)
+
+addEventHandler( "onResourceStop", resourceRoot,
+	function( )
+		for player in pairs( p ) do
+			removeElementData(player, "collisionless")
+			setElementAlpha(player, 255)
+		end
+	end
+)

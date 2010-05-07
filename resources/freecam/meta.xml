@@ -1,5 +1,5 @@
 <!--
-runcode by Javier "jbeta" Beta
+freecam by Ed "eAi" Lyons, QA Team
   obtained from http://code.google.com/p/mtasa-resources/
 
 Permission is hereby granted, free of charge, to any person
@@ -24,10 +24,27 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 -->
 <meta>
-	<info author="jbeta" name="Scripting console" type="script" version="1.0.1"/>
-	<script src="p_client.lua" type="client"/>
-	<script src="p_client_util.lua" type="client"/>
-	<script src="server.lua" type="server"/>
-	<script src="server_util.lua" type="server"/>
+	<info author="eAi, QA Team" description="This resource provides a 'free' controllable camera to 'fly' around the map with" version="1.0" />
+	<script src="p_freecam.lua" type="client" />
+	<script src="p_freecam_server.lua" type="server" />
+	
+	<!-- server functions -->
+	<!--
+	<export function="setPlayerFreecamEnabled" />
+	<export function="setPlayerFreecamDisabled" />
+	<export function="isPlayerFreecamEnabled" />
+	<export function="setPlayerFreecamOption" />
+	-->
+	
+	<!-- client functions -->
+	<!--
+	<export function="setFreecamEnabled" type="client" />
+	<export function="setFreecamDisabled" type="client" />
+	<export function="isFreecamEnabled" type="client" />
+	<export function="setFreecamOption" type="client" />
+	<export function="getFreecamOption" type="client" />
+	<export function="getFreecamVelocity" type="client" />
+	-->
+	
+	<script src="freecam.lua" />
 </meta>
-

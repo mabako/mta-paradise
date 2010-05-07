@@ -31,7 +31,7 @@ windows.scoreboard =
 					local name = getPlayerName( value )
 					table.insert( t,
 						{
-							getElementData( value, "playerid" ),
+							getElementData( value, "playerid" ) or 0,
 							name and name:gsub( "_", " " ),
 							getPlayerPing( value ),
 							color = { getPlayerNametagColor( value ) },

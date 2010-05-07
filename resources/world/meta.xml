@@ -18,7 +18,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<info author="mabako" version="1.0"/>
 	
 	<script src="water.lua"/>
-
+	
+	<script src="time.lua"/>
+	
+	<script src="skygradient.lua" type="client"/>
+	
+	<script src="collision.lua" type="client"/>
+	
 	<file src="txd/bus-stop.txd"/>
+	<file src="txd/sf-gym.txd"/>
 	<script src="txds.lua" type="client"/>
+	
+	<file src="col/ggbrig_02_sfw.col" />
+	<file src="col/ggbrig_03_sfw.col" />
+	<file src="col/ggbrig_04_sfw.col" />
+	<file src="col/ggbrig_05_sfw.col" />
+	<file src="col/ggbrig_07_sfw.col" />
+	<script src="cols.lua" type="client" />
 </meta>

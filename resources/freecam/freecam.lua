@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,19 +13,19 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<script src="mysql.lua"/>
-	
-	<export function="escape_string"/>
-	
-	<!-- <export function="query"/> --><!-- Use the functions below instead -->
-	<export function="query_free"/>
-	<export function="free_result"/>
-	<export function="query_assoc"/>
-	<export function="query_assoc_single"/>
-	<export function="query_insertid"/>
+]]
 
-	<script src="layout.lua"/>
-	<export function="create_table"/>
-</meta>
+addCommandHandler( "freecam",
+	function( player, commandName )
+		if not isPedInVehicle( player ) then
+			if isPlayerFreecamEnabled( player ) then
+				setPlayerFreecamDisabled( player )
+			else
+				setPlayerFreecamEnabled( player )
+			end
+		else
+			outputChatBox( "You can't use this in a vehicle.", player, 255, 0, 0 )
+		end
+	end,
+	true
+)

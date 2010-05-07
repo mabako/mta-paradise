@@ -161,6 +161,7 @@
         <right name="command.sethealth" access="true" />
         <right name="command.setvehiclecolor" access="true" />
         <right name="command.giveitem" access="true" />
+        <right name="command.freecam" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />
@@ -184,12 +185,15 @@
         <right name="command.createinterior" access="true" />
         <right name="command.deleteinterior" access="true" />
         <right name="command.setinterior" access="true" />
+        <right name="command.setinteriorinside" access="true" />
         <right name="command.setinteriorname" access="true" />
         <right name="command.setinteriorprice" access="true" />
         <right name="command.createvehicle" access="true" />
         <right name="command.setwindowstinted" access="true" />
         <right name="command.reloadpermissions" access="true" />
         <right name="command.adminchat" access="true" />
+        <right name="command.createteleport" access="true" />
+        <right name="command.deleteteleport" access="true" />
         <right name="function.executeCommandHandler" access="true" />
         <right name="function.setPlayerMuted" access="true" />
         <right name="function.addAccount" access="true" />

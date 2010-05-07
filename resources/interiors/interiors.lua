@@ -40,7 +40,7 @@ local addCommandHandler_ = addCommandHandler
 	for k, v in ipairs( commandName ) do
 		if v:find( "interior" ) then
 			for key, value in pairs( { "int" } ) do
-				local newCommand = v:gsub( "vehicle", value )
+				local newCommand = v:gsub( "interior", value )
 				if newCommand ~= v then
 					-- add a second (replaced) command handler
 					addCommandHandler_( newCommand,
@@ -147,7 +147,7 @@ addCommandHandler( "createinterior",
 				local insertid = exports.sql:query_insertid( "INSERT INTO interiors (outsideX, outsideY, outsideZ, outsideInterior, outsideDimension, insideX, insideY, insideZ, insideInterior, interiorName, interiorType, interiorPrice) VALUES (" .. table.concat( { x, y, z, getElementInterior( player ), getElementDimension( player ), interior.x, interior.y, interior.z, interior.interior, '"%s"', tonumber( type ), tonumber( price ) }, ", " ) .. ")", name )
 				if insertid then
 					loadInterior( insertid, x, y, z, getElementInterior( player ), getElementDimension( player ), interior.x, interior.y, interior.z, interior.interior, name, tonumber( price ), tonumber( type ), 0, false )
-					outputChatBox( "Interior created (ID " .. insertid .. ")", player, 0, 255, 0 )
+					outputChatBox( "Interior created. (ID " .. insertid .. ")", player, 0, 255, 0 )
 				else
 					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 				end
@@ -183,16 +183,21 @@ addCommandHandler( { "deleteinterior", "delinterior" },
 					exports.shops:clearDimension( interiorID )
 					
 					-- delete the markers
+					colspheres[ interior.outside ] = nil
 					destroyElement( interior.outside )
+					colspheres[ interior.inside ] = nil
 					destroyElement( interior.inside )
 					if interior.blip then
 						destroyElement( interior.blip )
 					end
+					
+					-- remove the reference
+					interiors[ interiorID ] = nil
 				else
 					outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 				end
 			else
-				outputChatBox( "Shop not found.", player, 255, 0, 0 )
+				outputChatBox( "Interior not found.", player, 255, 0, 0 )
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
@@ -242,6 +247,44 @@ addCommandHandler( "setinterior",
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+addCommandHandler( "setinteriorinside",
+	function( player, commandName, id )
+		local int = interiors[ getElementDimension( player ) ]
+		if int then
+			local x, y, z = getElementPosition( player )
+			local interior = getElementInterior( player )
+			if exports.sql:query_free( "UPDATE interiors SET insideX = " .. x .. ", insideY = " .. y .. ", insideZ = " .. z .. " , insideInterior = " .. interior .. " WHERE interiorID = " .. getElementDimension( player ) ) then
+				-- move the colshape
+				setElementPosition( int.inside, x, y, z )
+				setElementInterior( int.inside, interior )
+				
+				-- teleport all players to the new point
+				for key, value in ipairs( getElementsByType( "player" ) ) do
+					if exports.players:isLoggedIn( value ) and getElementDimension( value ) == getElementDimension( player ) then
+						setElementPosition( value, x, y, z )
+						setElementInterior( value, interior )
+					end
+				end
+				
+				-- create a blip if used
+				if int.blip then
+					destroyElement( int.blip )
+					int.blip = nil
+				end
+				int.blip = not int.locked and getElementDimension( int.outside ) == 0 and not getElementData( int.outside, "price" ) and createBlipEx( int.outside, int.inside )
+				
+				-- show a message
+				outputChatBox( "Interior updated.", player, 0, 255, 0 )
+			else
+				outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "You are not in an interior.", player, 255, 0, 0 )
 		end
 	end,
 	true

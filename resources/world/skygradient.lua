@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,27 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<script src="time.lua"/>
-</meta>
+]]
+
+local inside = false
+local localPlayer = getLocalPlayer( )
+
+addEventHandler( "onClientRender", root,
+	function( )
+		if not inside and getElementInterior( localPlayer ) > 0 then
+			inside = true
+			setSkyGradient( 0, 0, 0, 0, 0, 0 )
+		elseif inside and getElementInterior( localPlayer ) == 0 then
+			inside = false
+			resetSkyGradient( )
+		end
+	end
+)
+
+addEventHandler( "onClientResourceStop", resourceRoot,
+	function( )
+		if inside then
+			resetSkyGradient( )
+		end
+	end
+)

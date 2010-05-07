@@ -154,8 +154,8 @@ addCommandHandler( "addmap",
 							table.insert( objects,
 								{
 									x = tonumber( xmlNodeGetAttribute( value, "posX" ) ),
-									y = tonumber( xmlNodeGetAttribute( value, "posX" ) ),
-									z = tonumber( xmlNodeGetAttribute( value, "posX" ) ),
+									y = tonumber( xmlNodeGetAttribute( value, "posY" ) ),
+									z = tonumber( xmlNodeGetAttribute( value, "posZ" ) ),
 									rx = tonumber( xmlNodeGetAttribute( value, "rotX" ) ) or 0,
 									ry = tonumber( xmlNodeGetAttribute( value, "rotY" ) ) or 0,
 									rz = tonumber( xmlNodeGetAttribute( value, "rotZ" ) ) or 0,
@@ -168,7 +168,6 @@ addCommandHandler( "addmap",
 							outputDebugString( "loading map: " .. mapName .. " has an unsupported element: " .. xmlNodeGetName( value ), 2 )
 						end
 					end
-					xmlUnloadFile( map )
 					
 					if #objects > 0 then
 						local mapID = exports.sql:query_insertid( "INSERT INTO maps (mapName) VALUES ('%s')", mapName )
@@ -209,6 +208,7 @@ addCommandHandler( "addmap",
 				else
 					outputChatBox( "Map '" .. mapName .. "' already exists.", player, 255, 0, 0 )
 				end
+				xmlUnloadFile( map )
 			else
 				outputChatBox( "Unable to load map '" .. mapName .. "'.", player, 255, 0, 0 )
 			end
@@ -258,28 +258,32 @@ addCommandHandler( "setmapdimension",
 				local mapName = table.concat( arguments, " " )
 				local map = maps[ mapName:lower( ) ]
 				if map then
-					local oldDimension = -1
-					for object in pairs( map.objects ) do
-						oldDimension = getElementDimension( object )
-						if oldDimension == dimension then
-							outputChatBox( "Map '" .. mapName .. "' is already in that dimension.", player, 255, 0, 0 )
-							return
-						elseif not setElementDimension( object, dimension ) then
-							outputChatBox( "Invalid dimension.", player, 255, 0, 0 )
-							return
-						end
-					end
-					
-					-- update the database
-					if exports.sql:query_free( "UPDATE maps SET mapDimension = " .. dimension .. " WHERE mapID = " .. map.id ) then
-						map.dimension = dimension
-						outputChatBox( "Map '" .. mapName .. "' was set to dimension " .. dimension .. ".", player, 0, 255, 153 )
-					else
-						-- revert our update as we failed at querying
-						outputChatBox( "Map '" .. mapName .. "' could not be set to dimension " .. dimension .. ".", player, 255, 0, 0 )
+					if not map.protected then
+						local oldDimension = -1
 						for object in pairs( map.objects ) do
-							setElementDimension( object, oldDimension )
+							oldDimension = getElementDimension( object )
+							if oldDimension == dimension then
+								outputChatBox( "Map '" .. mapName .. "' is already in that dimension.", player, 255, 0, 0 )
+								return
+							elseif not setElementDimension( object, dimension ) then
+								outputChatBox( "Invalid dimension.", player, 255, 0, 0 )
+								return
+							end
 						end
+						
+						-- update the database
+						if exports.sql:query_free( "UPDATE maps SET mapDimension = " .. dimension .. " WHERE mapID = " .. map.id ) then
+							map.dimension = dimension
+							outputChatBox( "Map '" .. mapName .. "' was set to dimension " .. dimension .. ".", player, 0, 255, 153 )
+						else
+							-- revert our update as we failed at querying
+							outputChatBox( "Map '" .. mapName .. "' could not be set to dimension " .. dimension .. ".", player, 255, 0, 0 )
+							for object in pairs( map.objects ) do
+								setElementDimension( object, oldDimension )
+							end
+						end
+					else
+						outputChatBox( "Map '" .. mapName .. "' is marked as protected.", player, 255, 0, 0 )
 					end
 				else
 					outputChatBox( "Map '" .. mapName .. "' does not exist.", player, 255, 0, 0 )
