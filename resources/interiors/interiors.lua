@@ -561,4 +561,5 @@ function setDropOff( id, x, y, z )
 			return true
 		end
 	end
+	return false
 end
