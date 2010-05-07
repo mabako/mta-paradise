@@ -456,6 +456,7 @@ function performLogin( source, token, isPasswordAuth, ip )
 								return false
 							end
 						end
+						
 						local username = info.username
 						p[ source ] = { userID = info.userID, username = username, mtasalt = info.salts }
 						
@@ -469,6 +470,8 @@ function performLogin( source, token, isPasswordAuth, ip )
 						else
 							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
 						end
+						
+						outputServerLog( "PARADISE LOGIN: " .. getPlayerName( source ) .. " logged in as " .. info.username .. " (IP: " .. getPlayerIP( source ) .. ", Serial: " .. getPlayerSerial( source ) .. ")" )
 						return true
 					end
 				end
@@ -587,7 +590,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					setPlayerMoney( source, char.money )
 					
 					p[ source ].charID = tonumber( charID )
-					p[ source ].characterName = characterName
+					p[ source ].characterName = char.characterName
 					
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
 					triggerEvent( "onCharacterLogin", source )
@@ -596,6 +599,8 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					
 					-- set last login to now
 					exports.sql:query_free( "UPDATE characters SET lastLogin = NOW() WHERE characterID = " .. tonumber( charID ) )
+					
+					outputServerLog( "PARADISE CHARACTER: " .. p[ source ].username .. " is now playing as " .. char.characterName )
 				end
 			end
 		end
