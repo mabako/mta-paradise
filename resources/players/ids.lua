@@ -72,19 +72,27 @@ function getFromName( player, targetName, ignoreLoggedOut )
 			if isLoggedIn( match[ 1 ] ) or ignoreLoggedOut then
 				return match[ 1 ], getPlayerName( match[ 1 ] ):gsub( "_", " " ), getElementData( match[ 1 ], "playerid" )
 			else
-				outputChatBox( getPlayerName( match[ 1 ] ):gsub( "_", " " ) .. " is not logged in.", player, 255, 0, 0 )
+				if player then
+					outputChatBox( getPlayerName( match[ 1 ] ):gsub( "_", " " ) .. " is not logged in.", player, 255, 0, 0 )
+				end
 				return nil -- not logged in error
 			end
 		elseif #match == 0 then
-			outputChatBox( "No player matches your search.", player, 255, 0, 0 )
+			if player then
+				outputChatBox( "No player matches your search.", player, 255, 0, 0 )
+			end
 			return nil -- no player
 		elseif #match > 10 then
-			outputChatBox( #match .. " players match your search.", player, 255, 204, 0 )
+			if player then
+				outputChatBox( #match .. " players match your search.", player, 255, 204, 0 )
+			end
 			return nil -- not like we want to show him that many players
 		else
-			outputChatBox ( "Players matching your search are: ", player, 255, 204, 0 )
-			for key, value in ipairs( match ) do
-				outputChatBox( "  (" .. getElementData( value, "playerid" ) .. ") " .. getPlayerName( value ):gsub ( "_", " " ), player, 255, 255, 0 )
+			if player then
+				outputChatBox ( "Players matching your search are: ", player, 255, 204, 0 )
+				for key, value in ipairs( match ) do
+					outputChatBox( "  (" .. getElementData( value, "playerid" ) .. ") " .. getPlayerName( value ):gsub ( "_", " " ), player, 255, 255, 0 )
+				end
 			end
 			return nil -- more than one player. We list the player names + id.
 		end
