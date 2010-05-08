@@ -15,6 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local streamedInVehicles = { }
+
+--
+
 addEventHandler( "onClientResourceStart", resourceRoot,
 	function( )
 		for key, value in ipairs( getElementsByType( "vehicle-shop", resourceRoot ) ) do
@@ -31,6 +35,13 @@ addEventHandler( "onClientResourceStart", resourceRoot,
 					local x, y, z = unpack( shop.position )
 					createBlip( x, y, z, shop.blip, 2, 255, 255, 255, 255, 0, 300 )
 				end
+			end
+		end
+		
+		--
+		for key, value in ipairs( getElementsByType( "vehicle", resourceRoot ) ) do
+			if isElementStreamedIn( value ) then
+				streamedInVehicles[ value ] = true
 			end
 		end
 	end
@@ -91,14 +102,14 @@ addEventHandler( getResourceName( resource ) .. ":buyPopup", resourceRoot,
 
 --
 
-addEventHandler( "onClientRender", getRootElement( ),
+addEventHandler( "onClientRender", root,
 	function( )
 		-- get the camera matrix
 		local cx, cy, cz = getCameraMatrix( )
 		
 		-- loop through all vehicles you can buy
-		for _, vehicle in ipairs ( getElementsByType( "vehicle", resourceRoot ) ) do
-			if isElement( vehicle ) and isElementStreamedIn( vehicle ) then
+		for vehicle in pairs ( streamedInVehicles ) do
+			if isElement( vehicle ) then
 				local px, py, pz = getElementPosition( vehicle )
 				local distance = getDistanceBetweenPoints3D( px, py, pz, cx, cy, cz )
 				if distance < 20 and isElementOnScreen( vehicle ) and isLineOfSightClear( cx, cy, cz, px, py, pz, true, true, false, true, false, false, true, vehicle ) then
@@ -117,7 +128,29 @@ addEventHandler( "onClientRender", getRootElement( ),
 						dxDrawText( text, sx, sy, sx, sy, tocolor( 255, 255, 255, 255 ), 1, "default", "center", "center" )
 					end
 				end
+			else
+				streamedInVehicles[ vehicle ] = nil
 			end
 		end
+	end
+)
+
+addEventHandler( "onClientElementStreamIn", resourceRoot,
+	function( )
+		if getElementType( source ) == "vehicle" then
+			streamedInVehicles[ source ] = true
+		end
+	end
+)
+
+addEventHandler( "onClientElementStreamOut", resourceRoot,
+	function( )
+		streamedInVehicles[ source ] = nil
+	end
+)
+
+addEventHandler( "onClientElementDestroy", resourceRoot,
+	function( )
+		streamedInVehicles[ source ] = nil
 	end
 )
