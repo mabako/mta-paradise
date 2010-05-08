@@ -20,7 +20,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<script src="shop.lua"/>
 	<script src="shop_c.lua" type="client"/>
+	
+	<!-- Removes all shops from a dimension.
+		parameters:
+			(number) dimension - the dimension to remove all shops from.
+	-->
 	<export function="clearDimension"/>
+	
+	<!-- Returns all dimensions with shops.
+		returns:
+			(table) a table of all dimensions with shops ( { dimension1 = true, dimension2 = true, ... } )
+	-->
 	<export function="getAllDimensions"/>
 	
 	<include resource="sql"/>
