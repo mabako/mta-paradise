@@ -617,15 +617,15 @@ addEventHandler( "onPlayerChangeNick", root,
 
 -- exports
 function getCharacterID( player )
-	return player and p[ player ] and p[ player ].charID
+	return player and p[ player ] and p[ player ].charID or false
 end
 
 function isLoggedIn( player )
-	return getCharacterID( player ) and true
+	return getCharacterID( player ) and true or false
 end
 
 function getUserID( player )
-	return player and p[ player ] and p[ player ].userID
+	return player and p[ player ] and p[ player ].userID or false
 end
 
 -- retrieves a character name from the database id
@@ -644,6 +644,7 @@ function getCharacterName( characterID )
 			return data.characterName
 		end
 	end
+	return false
 end
 
 -- money functions
@@ -660,15 +661,15 @@ function setMoney( player, amount )
 end
 
 function giveMoney( player, amount )
-	return isLoggedIn( player ) and setMoney( player, p[ player ].money + amount )
+	return setMoney( player, p[ player ].money + amount )
 end
 
 function takeMoney( player, amount )
-	return isLoggedIn( player ) and setMoney( player, p[ player ].money - amount )
+	return setMoney( player, p[ player ].money - amount )
 end
 
 function getMoney( player, amount )
-	return isLoggedIn( player ) and p[ player ].money
+	return isLoggedIn( player ) and p[ player ].money or 0
 end
 
 --
