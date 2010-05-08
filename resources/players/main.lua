@@ -27,7 +27,7 @@ local p = { }
 local groups = {
 	{ groupName = "MTA Moderators", groupID = false, aclGroup = "Moderator", displayName = "Moderator", nametagColor = { 255, 255, 191 }, priority = 5 },
 	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator", nametagColor = { 255, 255, 91 }, priority = 10, defaultForFirstUser = true },
-	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer", nametagColor = { 191, 255, 191 }, priority = 20 },
+	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer", nametagColor = { 191, 255, 191 }, priority = 20, defaultForFirstUser = true },
 }
 
 local function updateNametagColor( player )
