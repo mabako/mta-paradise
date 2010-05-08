@@ -690,8 +690,10 @@ function createCharacter( player, name, skin )
 		elseif exports.sql:query_free( "INSERT INTO characters (characterName, userID, x, y, z, interior, dimension, skin, rotation) VALUES ('%s', " .. p[ player ].userID .. ", -1984.5, 138, 27.7, 0, 0, " .. tonumber( skin ) .. ", 90)", name ) then
 			updateCharacters( player )
 			triggerClientEvent( player, "players:characterCreationResult", player, 0 )
+			return true
 		end
 	end
+	return false
 end
 
 --
@@ -707,5 +709,8 @@ function updateNametag( player )
 		end
 		
 		setPlayerNametagText( player, tostring( text ) )
+		updateNametagColor( player )
+		return true
 	end
+	return false
 end
