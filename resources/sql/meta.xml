@@ -19,13 +19,64 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<export function="escape_string"/>
 	
-	<!-- <export function="query"/> --><!-- Use the functions below instead -->
-	<export function="query_free"/>
+	<!-- Use the functions below instead
+	<export function="query"/>
 	<export function="free_result"/>
+	-->
+	
+	<!-- Executes a MySQL query.
+		parameters:
+			(string) the query to execute. Can contain format options (%s, etc.)
+			(...) the format options. String will be automatically escaped.
+		returns:
+			(bool) true if successful, false otherwise.
+			(string) the MySQL error message if any error occured, (nil) otherwise.
+	-->
+	<export function="query_free"/>
+	
+	<!-- Executes a MySQL query and returns the result of that query as table.
+		parameters:
+			(string) the query to execute. Can contain format options (%s, etc.)
+			(...) the format options. String will be automatically escaped.
+		returns:
+			(table) table with all columns and rows if successful, false otherwise.
+			(string) the MySQL error message if any error occured, (nil) otherwise.
+	-->
 	<export function="query_assoc"/>
+	
+	<!-- Executes a MySQL query and returns the result of that query as a table, however limited to one row.
+		parameters:
+			(string) the query to execute. Can contain format options (%s, etc.)
+			(...) the format options. String will be automatically escaped.
+		returns:
+			(table) table with all columns if successful, false if there were no rows returned or an error happened.
+			(string) the MySQL error message if any error occured, (nil) otherwise.
+	-->
 	<export function="query_assoc_single"/>
+	
+	<!-- Executes a MySQL query (INSERT) and returns the insert-id of the inserted row.
+		parameters:
+			(string) the query to execute. Can contain format options (%s, etc.)
+			(...) the format options. String will be automatically escaped.
+		returns:
+			(number) the ID of the row being inserted, (bool) false otherwise.
+			(string) the MySQL error message if any error occured, (nil) otherwise.
+	-->
 	<export function="query_insertid"/>
 
 	<script src="layout.lua"/>
+	
+	<!-- Creates or modifies an existing MySQL table in a way that all columns exist with the given definitions.
+		parameters:
+			(string) table name - the name of the MySQL table
+			(table) all columns that should be added, for example:
+				{
+					{ name = 'groupID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
+					{ name = 'groupName', type = 'varchar(255)', default = '' },
+				}
+		returns:
+			(bool) true if successful, false otherwise
+			(bool) true if the table was created, false if it did already exist, (nil) if an error occured (first return being false)
+	-->
 	<export function="create_table"/>
 </meta>

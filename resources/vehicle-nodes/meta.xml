@@ -5,5 +5,15 @@
 	<script src="unlinked.lua" />
 	<script src="closestnode.lua" />
 	
-	<export function="findClosest"/><!-- findClosest(x,y,z) returns x,y,z -->
+	<!-- Returns the closest vehicle path node to a given point.
+		parameters:
+			(number) x-position of the point you want to find a close node to
+			(number) y-position                     "
+			(number) z-position                     "
+		returns:
+			(number) x-position of the nearest node
+			(number) y-position         "
+			(number) z-position         "
+	-->
+	<export function="findClosest"/>
 </meta>
