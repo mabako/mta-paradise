@@ -16,6 +16,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 -- Bind to toggle the cursor from showing
+addCommandHandler( "togglecursor",
+	function( )
+		if exports.players:isLoggedIn( ) then
+			showCursor( not isCursorShowing( ) )
+		end
+	end
+)
 bindKey( "m", "down", "togglecursor" )
 
 -- Local OOC bind
