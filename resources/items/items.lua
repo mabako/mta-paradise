@@ -292,7 +292,7 @@ addEventHandler( "items:use", root,
 								outputChatBox( "(( You can't lock anything nearby with this key. ))", source, 255, 0, 0 )
 							end
 						else
-							outputChatBox( "(( You can't lock anything nearby with this key. ))", source, 255, 0, 0 )
+							outputChatBox( "(( This interior doesn't exist. ))", source, 255, 0, 0 )
 						end
 					elseif id == 3 then
 						take( source, slot )
