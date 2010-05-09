@@ -242,13 +242,14 @@ addEventHandler( "loadItems", root,
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		if not exports.sql:create_table( 'items', {
-			{ name = 'index', type = 'int(10) unsigned', primary_key = true, auto_increment = true },
-			{ name = 'owner', type = 'int(10) unsigned' },
-			{ name = 'item', type = 'int(10) unsigned' },
-			{ name = 'value', type = 'text' },
-			{ name = 'name', type = 'text', null = true },
-		} ) then cancelEvent( ) return end
+		if not exports.sql:create_table( 'items',
+			{
+				{ name = 'index', type = 'int(10) unsigned', primary_key = true, auto_increment = true },
+				{ name = 'owner', type = 'int(10) unsigned' },
+				{ name = 'item', type = 'int(10) unsigned' },
+				{ name = 'value', type = 'text' },
+				{ name = 'name', type = 'text', null = true },
+			} ) then cancelEvent( ) return end
 	end
 )
 
