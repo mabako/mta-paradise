@@ -62,10 +62,15 @@ function create_table( name, columns )
 		-- try to create the missing table
 		local cols = { }
 		local keys = { }
+		local autoIncrementValue = ""
 		
 		for key, value in pairs( columns ) do
 			if value.primary_key then
 				table.insert( keys, "`" .. escape_string( value.name ) .."`" )
+			end
+			
+			if type( value.auto_increment ) == "number" then
+				autoIncrementValue = " AUTO_INCREMENT=" .. value.auto_increment
 			end
 			
 			table.insert( cols, getColumnString( value ) )
@@ -75,7 +80,7 @@ function create_table( name, columns )
 			table.insert( cols, "PRIMARY KEY (" .. table.concat( keys, ", " ) .. ")" )
 		end
 		
-		if query_update( "CREATE TABLE `%s`(\n  " .. table.concat( cols, ",\n  " ) .. "\n) ENGINE=MyISAM", name ) then
+		if query_update( "CREATE TABLE `%s`(\n  " .. table.concat( cols, ",\n  " ) .. "\n) ENGINE=MyISAM" .. autoIncrementValue, name ) then
 			outputDebugString( "Created table " .. name, 3 )
 			return true, true
 		else
