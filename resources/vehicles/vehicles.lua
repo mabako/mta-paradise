@@ -673,15 +673,17 @@ addEventHandler( "onPlayerWasted", root,
 --
 
 local function lockVehicle( player, vehicle, driver )
-	local vehicleID = vehicles[ vehicle ].vehicleID
-	if vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET locked = 1 - locked WHERE vehicleID = " .. vehicleID ) then
+	local vehicleID = vehicles[ vehicle ] and vehicles[ vehicle ].vehicleID
+	if vehicleID and ( vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET locked = 1 - locked WHERE vehicleID = " .. vehicleID ) ) then
 		if driver then
 			exports.chat:me( player, ( isVehicleLocked( vehicle ) and "un" or "" ) .. "locks the vehicle doors." )
 		else
 			exports.chat:me( player, "presses on the key to " .. ( isVehicleLocked( vehicle ) and "un" or "" ) .. "lock the " .. getVehicleName( vehicle ) .. "." )
 		end
 		setVehicleLocked( vehicle, not isVehicleLocked( vehicle ) )
+		return true
 	end
+	return false
 end
 
 addCommandHandler( "lockvehicle",
@@ -760,6 +762,10 @@ addCommandHandler( "togglelights",
 	end
 )
 
+function getVehicle( vehicleID )
+	return vehicleIDs[ vehicleID ] or false
+end
+
 function getOwner( vehicle )
 	if vehicles[ vehicle ] then
 		local owner = vehicles[ vehicle ].characterID
@@ -769,6 +775,10 @@ end
 
 function hasTintedWindows( vehicle )
 	return vehicles[ vehicle ] and vehicles[ vehicle ].tintedWindows or false
+end
+
+function toggleLock( player, vehicle )
+	return getElementType( player ) == "player" and isElement( vehicle ) and lockVehicle( player, vehicle, false ) or false
 end
 
 --

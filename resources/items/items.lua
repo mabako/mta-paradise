@@ -266,6 +266,17 @@ addEventHandler( "items:use", root,
 					local name = item.name or getName( id )
 					
 					if id == 1 then -- vehicle key
+						local vehicle = exports.vehicles:getVehicle( value )
+						if vehicle then
+							local x, y, z = getElementPosition( source )
+							if getElementDimension( source ) == getElementDimension( vehicle ) and getDistanceBetweenPoints3D( x, y, z, getElementPosition( vehicle ) ) < 20 then
+								exports.vehicles:toggleLock( source, vehicle )
+							else
+								outputChatBox( "(( This vehicle is too far away. ))", source, 255, 0, 0 )
+							end
+						else
+							outputChatBox( "(( This vehicle doesn't exist. ))", source, 255, 0, 0 )
+						end
 					elseif id == 2 then -- house key
 						local interior = exports.interiors:getInterior( value )
 						if interior then

@@ -26,6 +26,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="create"/>
 	
+	<!-- Returns the vehicle with that ID (if any was found).
+		parameters:
+			(number) vehicle ID of the car to search for.
+		returns:
+			(vehicle) the vehicle if one was found, (bool) false otherwise.
+	-->
+	<export function="getVehicle"/>
+	
 	<!-- Retrieves the vehicle owner's character ID.
 		parameters:
 			(vehicle) the vehicle to get the owner of.
@@ -41,6 +49,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			(bool) true if the vehicle has tinted windows, false otherwise.
 	-->
 	<export function="hasTintedWindows"/>
+	
+	<!-- Locks or unlocks a vehicle, depending the previous state.
+		parameters:
+			(player) the player who wants to (un)lock the given vehicle.
+			(vehicle) the vehicle to (un)lock.
+		returns:
+			(bool) true if toggling the lock was successful, false otherwise.
+	-->
+	<export function="toggleLock"/>
 	
 	<include resource="sql"/>
 </meta>
