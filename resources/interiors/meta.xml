@@ -34,6 +34,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="setDropOff"/>
 	
+	<!-- Locks or unlocks an interior, depending the previous state.
+		parameters:
+			(player) the player who wants to (un)lock the given interior.
+			(element) either the interior's inside's colshape or the outside's colshape.
+		returns:
+			(bool) true if toggling the lock was successful, false otherwise.
+	-->
+	<export function="toggleLock"/>
+	
 	<script src="map_fixes.lua" type="client"/>
 	<script src="blips.lua"/>
 	

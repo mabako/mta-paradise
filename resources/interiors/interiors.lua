@@ -501,9 +501,11 @@ local function lockInterior( player, key, state, colShape )
 				elseif not interior.locked and getElementDimension( interior.outside ) == 0 and not getElementData( interior.outside, "price" ) then
 					interior.blip = createBlipEx( interior.outside, interior.inside )
 				end
+				return true
 			end
 		end
 	end
+	return false
 end
 
 addEventHandler( "onColShapeHit", resourceRoot,
@@ -562,4 +564,8 @@ function setDropOff( id, x, y, z )
 		end
 	end
 	return false
+end
+
+function toggleLock( player, colShape )
+	return getElementType( player ) == "player" and isElement( colShape ) and lockInterior( player, "k", "down", colShape ) or false
 end

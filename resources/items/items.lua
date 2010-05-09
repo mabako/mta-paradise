@@ -265,7 +265,24 @@ addEventHandler( "items:use", root,
 					local value = item.value
 					local name = item.name or getName( id )
 					
-					if id == 3 then
+					if id == 1 then -- vehicle key
+					elseif id == 2 then -- house key
+						local interior = exports.interiors:getInterior( value )
+						if interior then
+							local dimension = getElementDimension( source )
+							local x, y, z = getElementPosition( source )
+							-- close to the interior or exterior?
+							if dimension == getElementDimension( interior.inside ) and getDistanceBetweenPoints3D( x, y, z, getElementPosition( interior.inside ) ) < 5 then
+								exports.interiors:toggleLock( source, interior.inside )
+							elseif dimension == getElementDimension( interior.outside ) and getDistanceBetweenPoints3D( x, y, z, getElementPosition( interior.outside ) ) then
+								exports.interiors:toggleLock( source, interior.outside )
+							else
+								outputChatBox( "(( You can't lock anything nearby with this key. ))", source, 255, 0, 0 )
+							end
+						else
+							outputChatBox( "(( You can't lock anything nearby with this key. ))", source, 255, 0, 0 )
+						end
+					elseif id == 3 then
 						take( source, slot )
 						if value > 0 then -- we will only give health, not take it.
 							setElementHealth( source, math.max( 100, getElementHealth( source ) + value ) )
