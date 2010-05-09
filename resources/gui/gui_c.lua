@@ -17,7 +17,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local screenX, screenY = guiGetScreenSize( )
 local cursorX, cursorY = -1, -1
-local width = 360
+local defaultWidth = 360
+local width = defaultWidth
 local height = 0
 local x = ( screenX - width ) / 2
 local line_height = 16
@@ -30,6 +31,13 @@ destroy = { }
 
 local window = nil
 local windowName = nil
+
+-- this needs to change all resolution dependant variables.
+local function scaleWidth( newWidth )
+	width = ( newWidth or 1 ) * defaultWidth
+	x = ( screenX - width ) / 2
+	max_vpanes = math.floor( width / 70 )
+end
 
 local function cache( window )
 	local size = 0
@@ -507,6 +515,10 @@ function show( name, forced, dontEnableInput, mouse )
 			showCursor( true )
 		end
 		
+		if window.widthScale then
+			scaleWidth( math.min( 2, math.max( 0.1, window.widthScale ) ) )
+		end
+		
 		if window.onCreate then
 			window.onCreate( )
 		end
@@ -528,10 +540,15 @@ function hide( )
 			guiSetInputEnabled( false )
 		end
 		forcedWindow = nil
+		
+		-- destroy all created gui elements
 		for key, value in pairs( destroy ) do
 			destroyElement( value )
 		end
 		destroy = { }
+		
+		-- reset the width
+		scaleWidth( )
 	end
 end
 
