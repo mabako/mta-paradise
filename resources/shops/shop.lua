@@ -260,6 +260,14 @@ addEventHandler( "onElementClicked", resourceRoot,
 	end
 )
 
+addEventHandler( "onCharacterLogout", root,
+	function( )
+		if p[ source ] then
+			p[ source ].shopID = nil
+		end
+	end
+)
+
 addEventHandler( "onPlayerQuit", root,
 	function( )
 		p[ source ] = nil
