@@ -145,14 +145,21 @@ local cardCache = { }
 
 local function getAccountFromCard( cardID )
 	if not cardCache[ cardID ] then
-		local result = exports.sql:query_assoc_single( "SELECT bankAccountID FROM bank_cards WHERE cardID = " .. cardID )
+		local result = exports.sql:query_assoc_single( "SELECT bankAccountID, pin FROM bank_cards WHERE cardID = " .. cardID )
 		if result then
-			cardCache[ cardID ] = { tick = getTickCount( ), account = result.bankAccountID }
+			cardCache[ cardID ] = { tick = getTickCount( ), account = result.bankAccountID, pin = result.pin }
 		else
 			return false
 		end
 	end
 	return cardCache[ cardID ].account
+end
+
+local function getCardPIN( cardID )
+	if getAccountFromCard( cardID ) then
+		return cardCache[ cardID ].pin
+	end
+	return false
 end
 
 setTimer(
@@ -237,6 +244,8 @@ addEventHandler( "bank:close", root,
 					p[ source ].ignoreUpdate = nil
 				else
 					p[ source ].bankID = nil
+					p[ source ].cards = nil
+					p[ source ].card = nil
 				end
 			end
 		end
@@ -245,11 +254,22 @@ addEventHandler( "bank:close", root,
 
 addEvent( "bank:select", true )
 addEventHandler( "bank:select", root,
-	function( selected )
+	function( selected, pin )
 		if source == client then
 			local bank = p[ source ] and p[ source ].bankID and banks[ p[ source ].bankID ]
 			if bank then
-				if selected == -1 then
+				if pin and p[ source ].card then
+					local cardPin = getCardPIN( p[ source ].card[ 1 ] )
+					if cardPin then
+						if cardPin == pin then
+							outputChatBox( "w2g" )
+						else
+							outputChatBox( "The PIN you entered is incorrect.", source, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "This service is currently not available.", source, 255, 0, 0 )
+					end
+				elseif selected == -1 then
 					-- create a new account, does only work on actual banks
 					if getElementType( bank.bank ) == "ped" then
 						-- check if the player does even need more accounts
@@ -287,8 +307,11 @@ addEventHandler( "bank:select", root,
 							end
 						end
 					end
-				else
-					outputChatBox( "NAW DUD" )
+				elseif type( selected ) == "number" and p[ source ].cards[ selected ] then
+					p[ source ].ignoreUpdate = true
+					p[ source ].card = p[ source ].cards[ selected ]
+						
+					triggerClientEvent( source, "bank:promptPIN", bank.bank )
 				end
 			end
 		end

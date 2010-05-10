@@ -28,3 +28,10 @@ addEventHandler( "bank:open", resourceRoot,
 		exports.gui:show( 'bank_selection' )
 	end
 )
+
+addEvent( "bank:promptPIN", true )
+addEventHandler( "bank:promptPIN", resourceRoot,
+	function( )
+		exports.gui:show( 'bank_prompt_pin', true )
+	end
+)

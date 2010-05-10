@@ -104,3 +104,48 @@ function updateBankSelection( accounts, canOpenAccount, canDeposit )
 	table.insert( windows.bank_selection, closeButton )
 end
 
+--
+
+local function tryPIN( key )
+	if key ~= 2 and destroy and destroy['g:bank:pin'] then
+		local pin = tonumber( guiGetText( destroy['g:bank:pin'] ) )
+		if pin then
+			triggerServerEvent( "bank:select", getLocalPlayer( ), nil, pin )
+		end
+	end
+end
+
+windows.bank_prompt_pin =
+{
+	onClose = function( )
+			triggerServerEvent( "bank:close", getLocalPlayer( ) )
+			windows.bank_selection = { closeButton }
+		end,
+	{
+		type = "label",
+		text = "Bank of San Andreas",
+		font = "bankgothic",
+		alignX = "center",
+	},
+	{
+		type = "label",
+		text = "You need to enter your PIN before you can continue.",
+		alignX = "center",
+	},
+	{
+		type = "edit",
+		text = "PIN:",
+		id = "g:bank:pin",
+		onAccepted = tryPIN,
+	},
+	{
+		type = "button",
+		text = "Continue",
+		onClick = tryPIN,
+	},
+	{
+		type = "button",
+		text = "Cancel",
+		onClick = function( ) hide( ) end,
+	}
+}
