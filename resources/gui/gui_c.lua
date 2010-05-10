@@ -525,7 +525,7 @@ function show( name, forced, dontEnableInput, mouse )
 		end
 		
 		-- automatically close if the resource who opened it stops
-		if sourceResourceRoot then
+		if isElement( sourceResourceRoot ) then
 			openedResource = sourceResourceRoot
 			addEventHandler( "onClientResourceStop", openedResource, hide )
 		end
