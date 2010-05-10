@@ -286,7 +286,7 @@ addEventHandler( "items:use", root,
 							-- close to the interior or exterior?
 							if dimension == getElementDimension( interior.inside ) and getDistanceBetweenPoints3D( x, y, z, getElementPosition( interior.inside ) ) < 5 then
 								exports.interiors:toggleLock( source, interior.inside )
-							elseif dimension == getElementDimension( interior.outside ) and getDistanceBetweenPoints3D( x, y, z, getElementPosition( interior.outside ) ) then
+							elseif dimension == getElementDimension( interior.outside ) and getDistanceBetweenPoints3D( x, y, z, getElementPosition( interior.outside ) ) < 5 then
 								exports.interiors:toggleLock( source, interior.outside )
 							else
 								outputChatBox( "(( You can't lock anything nearby with this key. ))", source, 255, 0, 0 )
