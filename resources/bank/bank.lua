@@ -277,7 +277,25 @@ addEventHandler( "bank:select", root,
 							local bankAccount = exports.sql:query_insertid( "INSERT INTO bank_accounts (characterID) VALUES (" .. exports.players:getCharacterID( source ) .. ")" )
 							if bankAccount then
 								-- generate a PIN needed at ATMs and bank accs.
-								local pin = math.random( 1000, 9999 )
+								local function generatePIN( )
+									local digits = { }
+									while #digits < 4 do
+										local digit = math.random( #digits == 0 and 1 or 0, 9 )
+										local found = false
+										for k, v in ipairs( digits ) do
+											if v == digit then
+												found = true
+												break
+											end
+										end
+										
+										if not found then
+											table.insert( digits, digit )
+										end
+									end
+									return table.concat( digits, "" )
+								end
+								local pin = generatePIN( )
 								
 								local cardID = exports.sql:query_insertid( "INSERT INTO bank_cards (bankAccountID, pin) VALUES (" .. bankAccount .. ", " .. pin .. ")" )
 								if cardID then
