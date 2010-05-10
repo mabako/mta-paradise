@@ -140,6 +140,8 @@ addCommandHandler( "createatm",
 		if bankID then
 			loadBank( bankID, x, y, z, rotation, interior, dimension, -1 )
 			setElementPosition( player, x, y, z + 1 )
+			
+			outputChatBox( "You've created ATM " .. bankID .. ".", player, 0, 255, 153 )
 		else
 			outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 		end
@@ -158,6 +160,8 @@ addCommandHandler( "createbank",
 		if bankID then
 			loadBank( bankID, x, y, z, rotation, interior, dimension, 211 )
 			setElementPosition( player, x + 0.3, y, z )
+			
+			outputChatBox( "You've created Bank " .. bankID .. ".", player, 0, 255, 153 )
 		else
 			outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 		end
@@ -183,6 +187,64 @@ addCommandHandler( { "nearbyatms", "nearbybanks" },
 			end
 		end
 	end
+)
+
+addCommandHandler( { "deletebank", "delbank" },
+	function( player, commandName, bankID )
+		bankID = tonumber( bankID )
+		if bankID then
+			local bank = banks[ bankID ]
+			if bank then
+				if getElementType( bank.bank ) == "ped" then
+					if exports.sql:query_free( "DELETE FROM banks WHERE bankID = " .. bankID ) then
+						outputChatBox( "You deleted bank " .. bankID .. ".", player, 0, 255, 153 )
+						
+						destroyElement( bank.bank )
+						banks[ bankID ] = nil
+						banks[ bank.bank ] = nil
+					else
+						outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( "Bank not found.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "Bank not found.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+addCommandHandler( { "deleteatm", "delatm" },
+	function( player, commandName, bankID )
+		bankID = tonumber( bankID )
+		if bankID then
+			local bank = banks[ bankID ]
+			if bank then
+				if getElementType( bank.bank ) == "object" then
+					if exports.sql:query_free( "DELETE FROM banks WHERE bankID = " .. bankID ) then
+						outputChatBox( "You deleted ATM " .. bankID .. ".", player, 0, 255, 153 )
+						
+						destroyElement( bank.bank )
+						banks[ bankID ] = nil
+						banks[ bank.bank ] = nil
+					else
+						outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( "ATM not found.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "ATM not found.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [id]", player, 255, 255, 255 )
+		end
+	end,
+	true
 )
 
 --

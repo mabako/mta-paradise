@@ -196,6 +196,8 @@
         <right name="command.deleteteleport" access="true" />
         <right name="command.createatm" access="true" />
         <right name="command.createbank" access="true" />
+        <right name="command.deleteatm" access="true" />
+        <right name="command.deletebank" access="true" />
         <right name="function.executeCommandHandler" access="true" />
         <right name="function.setPlayerMuted" access="true" />
         <right name="function.addAccount" access="true" />
