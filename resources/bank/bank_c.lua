@@ -38,9 +38,9 @@ addEventHandler( "bank:promptPIN", resourceRoot,
 
 addEvent( "bank:single", true )
 addEventHandler( "bank:single", resourceRoot,
-	function( balance, canDeposit )
+	function( balance, canDeposit, withdrawFee )
 		exports.gui:hide( )
-		exports.gui:updateBankSingle( balance, canDeposit )
+		exports.gui:updateBankSingle( balance, canDeposit, withdrawFee )
 		exports.gui:show( 'bank_single', true )
 	end
 )

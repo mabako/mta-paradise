@@ -153,6 +153,7 @@ windows.bank_prompt_pin =
 --
 
 local _balance = 0
+local _withdrawFee = 0
 
 local function deposit( key )
 	if key ~= 2 and destroy and destroy['g:bank:amount'] then
@@ -180,18 +181,21 @@ local function withdraw( key )
 			if amount <= 0 then
 				outputChatBox( "Please enter an amount greater than 0.", 255, 0, 0 )
 			elseif amount > _balance then
-				outputChatBox( "You do not have so much money on your account.", 255, 0, 0 )
+				outputChatBox( "You do not enough money on your account.", 255, 0, 0 )
+			elseif amount + _withdrawFee > _balance then
+				outputChatBox( "You do not enough money on your account to pay the fee as well.", 255, 0, 0 )
 			else
 				triggerServerEvent( "bank:updateaccount", getLocalPlayer( ), -amount )
-				_balance = _balance - amount
+				_balance = _balance - amount - _withdrawFee
 				windows.bank_single[2].text = "Your account balance: $" .. _balance .. "."
 			end
 		end
 	end
 end
 
-function updateBankSingle( balance, canDeposit )
+function updateBankSingle( balance, canDeposit, withdrawFee )
 	_balance = balance
+	_withdrawFee = withdrawFee or 0
 	
 	windows.bank_single = {
 		onClose = function( )
@@ -216,7 +220,7 @@ function updateBankSingle( balance, canDeposit )
 		},
 		{
 			type = "button",
-			text = "Withdraw",
+			text = "Withdraw" .. ( _withdrawFee > 0 and ( " (Fee: $" .. withdrawFee .. ")" ) or "" ),
 			onClick = withdraw,
 		}
 	}

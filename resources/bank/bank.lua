@@ -61,7 +61,7 @@ local function loadBank( id, x, y, z, rotation, interior, dimension, skin )
 	setElementInterior( bank, interior )
 	setElementDimension( bank, dimension )
 	
-	banks[ id ] = { bank = bank, canDeposit = skin ~= -1 }
+	banks[ id ] = { bank = bank, canDeposit = skin ~= -1, withdrawFee = skin == -1 and 2 or 0 }
 	banks[ bank ] = id
 end
 
@@ -408,7 +408,7 @@ addEventHandler( "bank:select", root,
 							if balance then
 								p[ source ].enteredPin = true
 								p[ source ].ignoreUpdate = true
-								triggerClientEvent( source, "bank:single", bank.bank, balance, bank.canDeposit )
+								triggerClientEvent( source, "bank:single", bank.bank, balance, bank.canDeposit, bank.withdrawFee )
 							else
 								outputChatBox( "This service is currently not available.", source, 255, 0, 0 )
 							end
@@ -522,10 +522,12 @@ addEventHandler( "bank:updateaccount", root,
 						-- ignore if the amount is too large to be withdrawn
 						if -amount > getAccountBalance( card[2] ) then
 							return
+						elseif -amount + bank.withdrawFee > getAccountBalance( card[2] ) then
+							return
 						end
 					end
 					
-					if modifyAccountBalance( card[2] , amount ) then
+					if modifyAccountBalance( card[2] , amount - ( amount < 0 and bank.withdrawFee or 0 ) ) then
 						if amount < 0 then
 							exports.players:giveMoney( source, -amount )
 						end
