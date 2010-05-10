@@ -69,6 +69,7 @@ item_list =
 	{ name = "Food", image = getFoodImage },
 	{ name = "Drink", image = getDrinkImage },
 	{ name = "Clothes", image = function( value, name ) if value then return ":players/images/skins/" .. value .. ".png" end end },
+	{ name = "Debit Card" },
 }
 
 --

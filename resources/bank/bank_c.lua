@@ -17,3 +17,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 -- we don't want our shops to die, do we?
 addEventHandler( "onClientPedDamage", resourceRoot, cancelEvent )
+
+--
+
+addEvent( "banks:open", true )
+addEventHandler( "banks:open", resourceRoot,
+	function( accounts, canOpenAccount, canDeposit )
+		exports.gui:updateBankSelection( accounts, canOpenAccount, canDeposit )
+		exports.gui:show( 'bank_selection' )
+	end
+)

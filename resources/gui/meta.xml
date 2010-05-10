@@ -46,6 +46,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<!-- Updates the inventory. -->
 	<export function="updateInventory" type="client"/>
 	
+	<script src="windows/bank.lua" type="client"/>
+	<!-- Updates the bank account selection
+		parameters:
+			(table) all available accounts
+	-->
+	<export function="updateBankSelection" type="client"/>
+	
 	<script src="gui_c.lua" type="client"/>
 	
 	<!-- Shows a GUI window.

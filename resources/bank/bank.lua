@@ -15,6 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local maxAccountsPerCharacter = get( 'max_accounts_per_character' ) or 3
+
+--
+
+local p = { }
 local banks = { }
 
 --
@@ -57,6 +62,12 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'accountID', type = 'int(10) unsigned', primary_key = true, auto_increment = 400000 },
 				{ name = 'characterID', type = 'int(10) unsigned' },
 				{ name = 'balance', type = 'bigint(20) unsigned', default = 0 },
+			} ) then cancelEvent( ) return end
+		
+		if not exports.sql:create_table( 'bank_cards',
+			{
+				{ name = 'cardID', type = 'int(10) unsigned', primary_key = true, auto_increment = 200000 },
+				{ name = 'bankAccountID', type = 'int(10) unsigned' },
 			} ) then cancelEvent( ) return end
 		
 		--
@@ -108,3 +119,57 @@ addCommandHandler( "createbank",
 )
 
 --
+
+addEventHandler( "onElementClicked", resourceRoot,
+	function( button, state, player )
+		if button == "left" and state == "up" then
+			local bankID = banks[ source ]
+			if bankID then
+				local bank = banks[ bankID ]
+				if bank then
+					local x, y, z = getElementPosition( player )
+					if getDistanceBetweenPoints3D( x, y, z, getElementPosition( source ) ) < ( getElementType( bank.bank ) == "object" and 1 or 5 ) and getElementDimension( player ) == getElementDimension( source ) then
+						-- no data set yet
+						if not p[ player ] then
+							p[ player ] = { }
+							
+							-- check how many accounts a player has
+							local result = exports.sql:query_assoc_single( "SELECT COUNT(*) AS number FROM bank_accounts WHERE characterID = " .. exports.players:getCharacterID( player ) )
+							if result then
+								p[ player ].accounts = result.number
+							end
+						end
+						
+						p[ player ].bankID = bankID
+						
+						local cards = { }
+						for key, value in ipairs( exports.items:get( player ) ) do
+							if value.item == 6 then
+								table.insert( cards, value.value ) -- this should actually find out the associated card's account
+							end
+						end
+						if getElementType( bank.bank ) == "object" then
+							-- for an ATM: show all of the accounts a player has a credit card for.
+							triggerClientEvent( player, "banks:open", source, cards, nil, false )
+						else
+							-- show all accounts a player has a credit card for or which belongs to him.
+							triggerClientEvent( player, "banks:open", source, cards, p[ player ].accounts < maxAccountsPerCharacter, true )
+						end
+					end
+				end
+			end
+		end
+	end
+)
+
+addEventHandler( "onCharacterLogout", root,
+	function( )
+		p[ source ] = nil
+	end
+)
+
+addEventHandler( "onPlayerQuit", root,
+	function( )
+		p[ source ] = nil
+	end
+)

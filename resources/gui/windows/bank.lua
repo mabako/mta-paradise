@@ -1,0 +1,106 @@
+--[[
+Copyright (c) 2010 MTA: Paradise
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+]]
+
+local closeButton =
+{
+	type = "button",
+	text = "Close",
+	onClick = function( key )
+			if key == 1 then
+				hide( )
+				
+				windows.bank_selection = { closeButton }
+			end
+		end,
+}
+
+windows.bank_selection = { closeButton }
+
+function updateBankSelection( accounts, canOpenAccount, canDeposit )
+	-- scrap what we had before
+	windows.bank_selection = {
+		onClose = function( )
+				triggerServerEvent( "banks:close", getLocalPlayer( ) )
+				windows.bank_selection = { closeButton }
+			end,
+		{
+			type = "label",
+			text = "Bank of San Andreas",
+			font = "bankgothic",
+			alignX = "center",
+		},
+		{
+			type = "pane",
+			panes = { }
+		}
+	}
+	
+	-- let's add all items
+	if #accounts == 0 then
+		if canOpenAccount == nil then -- this is an ATM
+			table.insert( windows.bank_selection[2].panes,
+				{
+					image = ":players/images/skins/-1.png",
+					title = "No account.",
+					text = "You do not have any account.\nHead over to the bank to set one up.",
+					wordBreak = true,
+				}
+			)
+		end
+	else
+		for k, value in ipairs( accounts ) do
+			table.insert( windows.bank_selection[2].panes,
+				{
+					image = ":players/images/skins/-1.png",
+					title = "Credit Card",
+					text = "You can withdraw " .. ( canDeposit and "and deposit from/to" or "from" ) .. " account " .. value .. ".",
+					onHover = function( cursor, pos )
+							dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( { 0, 255, 0, 31 } ) ) )
+						end,
+					onClick = function( key )
+							if key == 1 then
+								triggerServerEvent( "banks:select", getLocalPlayer( ), k )
+							end
+						end,
+					wordBreak = true,
+				}
+			)
+		end
+		if canOpenAccount == true then -- at the bank, can open another account
+			table.insert( windows.bank_selection[2].panes,
+				{
+					image = ":players/images/skins/-1.png",
+					title = "New account.",
+					text = "Set up a new bank account.",
+					onHover = function( cursor, pos )
+							dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( { 255, 255, 0, 31 } ) ) )
+						end,
+					onClick = function( key )
+							if key == 1 then
+								triggerServerEvent( "banks:select", getLocalPlayer( ), -1 )
+							end
+						end,
+					wordBreak = true,
+				}
+			)
+		end
+	end
+	
+	-- add a close button as well
+	table.insert( windows.bank_selection, closeButton )
+end
+

@@ -22,4 +22,5 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<include resource="sql"/>
 	<include resource="players"/>
+	<include resource="items"/>
 </meta>
