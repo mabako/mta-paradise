@@ -88,6 +88,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 			{
 				{ name = 'cardID', type = 'int(10) unsigned', primary_key = true, auto_increment = 200000 },
 				{ name = 'bankAccountID', type = 'int(10) unsigned' },
+				{ name = 'pin', type = 'int(10) unsigned' },
 			} ) then cancelEvent( ) return end
 		
 		--
@@ -232,7 +233,11 @@ addEventHandler( "bank:close", root,
 	function( )
 		if source == client then
 			if p[ source ] then
-				p[ source ].bankID = nil
+				if p[ source ].ignoreUpdate then
+					p[ source ].ignoreUpdate = nil
+				else
+					p[ source ].bankID = nil
+				end
 			end
 		end
 	end
@@ -251,7 +256,10 @@ addEventHandler( "bank:select", root,
 						if p[ source ].accounts < maxAccountsPerCharacter then
 							local bankAccount = exports.sql:query_insertid( "INSERT INTO bank_accounts (characterID) VALUES (" .. exports.players:getCharacterID( source ) .. ")" )
 							if bankAccount then
-								local cardID = exports.sql:query_insertid( "INSERT INTO bank_cards (bankAccountID) VALUES (" .. bankAccount .. ")" )
+								-- generate a PIN needed at ATMs and bank accs.
+								local pin = math.random( 1000, 9999 )
+								
+								local cardID = exports.sql:query_insertid( "INSERT INTO bank_cards (bankAccountID, pin) VALUES (" .. bankAccount .. ", " .. pin .. ")" )
 								if cardID then
 									-- give him the card
 									exports.items:give( source, 6, cardID )
@@ -260,10 +268,13 @@ addEventHandler( "bank:select", root,
 									p[ source ].accounts = ( p[ source ].accounts or 0 ) + 1
 									
 									-- tell him we're successful
-									outputChatBox( "Your account #" .. bankAccount .. " was successfully created. Have a nice day.", source, 0, 255, 0 )
+									outputChatBox( "Your account #" .. bankAccount .. " was successfully created.", source, 0, 255, 0 )
+									outputChatBox( "The PIN for your debit card is " .. pin .. ". Write it down, you'll need it to withdraw money.", source, 0, 255, 0 )
 									
 									-- refresh the gui
 									p[ source ].bankID = nil
+									p[ source ].ignoreUpdate = true
+									
 									triggerEvent( "onElementClicked", bank.bank, "left", "up", source )
 								else
 									outputChatBox( "Due to a technical error, it's not possible to hand out debit cards.", source, 255, 0, 0 )
