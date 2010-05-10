@@ -119,7 +119,8 @@ addCommandHandler( "createatm",
 		else
 			outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 		end
-	end
+	end,
+	true
 )
 
 addCommandHandler( "createbank",
@@ -136,7 +137,8 @@ addCommandHandler( "createbank",
 		else
 			outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 		end
-	end
+	end,
+	true
 )
 
 --
