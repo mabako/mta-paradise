@@ -24,6 +24,30 @@ local banks = { }
 
 --
 
+local addCommandHandler_ = addCommandHandler
+      addCommandHandler  = function( commandName, fn, restricted, caseSensitive )
+	-- add the default command handlers
+	if type( commandName ) ~= "table" then
+		commandName = { commandName }
+	end
+	for key, value in ipairs( commandName ) do
+		if key == 1 then
+			addCommandHandler_( value, fn, restricted, caseSensitive )
+		else
+			addCommandHandler_( value,
+				function( player, ... )
+					-- check if he has permissions to execute the command, default is not restricted (aka if the command is restricted - will default to no permission; otherwise okay)
+					if hasObjectPermissionTo( player, "command." .. commandName[ 1 ], not restricted ) then
+						fn( player, ... )
+					end
+				end
+			)
+		end
+	end
+end
+
+--
+
 local function loadBank( id, x, y, z, rotation, interior, dimension, skin )
 	local bank = nil
 	if skin == -1 then
@@ -139,6 +163,26 @@ addCommandHandler( "createbank",
 		end
 	end,
 	true
+)
+
+addCommandHandler( { "nearbyatms", "nearbybanks" },
+	function( player, commandName )
+		if hasObjectPermissionTo( player, "command.createbank", false ) or hasObjectPermissionTo( player, "command.createatm", false ) then
+			local x, y, z = getElementPosition( player )
+			local dimension = getElementDimension( player )
+			local interior = getElementInterior( player )
+			
+			outputChatBox( "Nearby Banks/ATMs:", player, 255, 255, 0 )
+			for key, value in pairs( banks ) do
+				if isElement( key ) and getElementDimension( key ) == dimension and getElementInterior( key ) == interior then
+					local distance = getDistanceBetweenPoints3D( x, y, z, getElementPosition( key ) )
+					if distance < 5 then
+						outputChatBox( "  " .. ( getElementType( key ) == "ped" and "Bank" or "ATM" ) .. " " .. value .. ".", player, 255, 255, 0 )
+					end
+				end
+			end
+		end
+	end
 )
 
 --
