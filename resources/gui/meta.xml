@@ -46,6 +46,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<!-- Updates the inventory. -->
 	<export function="updateInventory" type="client"/>
 	
+	<script src="windows/bank.lua" type="client"/>
+	<!-- Updates the bank account selection
+		parameters:
+			(table) all available accounts
+			(bool) true if the player can open new accounts, false otherwise.
+			(bool) true if the player can deposit, false otherwise.
+	-->
+	<export function="updateBankSelection" type="client"/>
+	
+	<!-- Updates the current bank account
+		parameters:
+			(number) balance of the bank account.
+			(bool) true if the player can deposit, false otherwise.
+	-->
+	<export function="updateBankSingle" type="client"/>
+	
 	<script src="gui_c.lua" type="client"/>
 	
 	<!-- Shows a GUI window.
