@@ -526,6 +526,9 @@ addEventHandler( "bank:updateaccount", root,
 					end
 					
 					if modifyAccountBalance( card[2] , amount ) then
+						if amount < 0 then
+							exports.players:giveMoney( source, -amount )
+						end
 						outputChatBox( "You've " .. ( amount > 0 and ( "deposited $" .. amount .. " to" ) or ( "withdrawn $" .. -amount .. " from" ) ) .. " your account. Your new balance: $" .. getAccountBalance( card[2] ) .. ".", source, 0, 255, 0 )
 					else
 						outputChatBox( "Your request could not be processed at this time.", source, 255, 0, 0 )
