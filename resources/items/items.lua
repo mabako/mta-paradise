@@ -325,7 +325,7 @@ addCommandHandler( "giveitem",
 			local other, pname = exports.players:getFromName( player, other )
 			if other then
 				-- check if it's a valid item id
-				if id >= 0 and id < #item_list then
+				if id >= 0 and id <= #item_list then
 					-- we need to split our name and value apart
 					local arguments = { ... }
 					local value = { }
