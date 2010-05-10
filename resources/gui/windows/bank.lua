@@ -149,3 +149,95 @@ windows.bank_prompt_pin =
 		onClick = function( ) hide( ) end,
 	}
 }
+
+--
+
+local _balance = 0
+
+local function deposit( key )
+	if key ~= 2 and destroy and destroy['g:bank:amount'] then
+		local amount = tonumber( guiGetText( destroy['g:bank:amount'] ) )
+		if amount then
+			amount = math.ceil( amount )
+			if amount <= 0 then
+				outputChatBox( "Please enter an amount greater than 0.", 255, 0, 0 )
+			elseif amount > getPlayerMoney( ) then
+				outputChatBox( "You do not have so much money with you.", 255, 0, 0 )
+			else
+				triggerServerEvent( "bank:updateaccount", getLocalPlayer( ), amount )
+				_balance = _balance + amount
+				windows.bank_single[2].text = "Your account balance: $" .. _balance .. "."
+			end
+		end
+	end
+end
+
+local function withdraw( key )
+	if key ~= 2 and destroy and destroy['g:bank:amount'] then
+		local amount = tonumber( guiGetText( destroy['g:bank:amount'] ) )
+		if amount then
+			amount = math.ceil( amount )
+			if amount <= 0 then
+				outputChatBox( "Please enter an amount greater than 0.", 255, 0, 0 )
+			elseif amount > _balance then
+				outputChatBox( "You do not have so much money on your account.", 255, 0, 0 )
+			else
+				triggerServerEvent( "bank:updateaccount", getLocalPlayer( ), -amount )
+				_balance = _balance - amount
+				windows.bank_single[2].text = "Your account balance: $" .. _balance .. "."
+			end
+		end
+	end
+end
+
+function updateBankSingle( balance, canDeposit )
+	_balance = balance
+	
+	windows.bank_single = {
+		onClose = function( )
+			triggerServerEvent( "bank:close", getLocalPlayer( ) )
+			windows.bank_single = { }
+		end,
+		{
+			type = "label",
+			text = "Bank of San Andreas",
+			font = "bankgothic",
+			alignX = "center",
+		},
+		{
+			type = "label",
+			text = "Your account balance: $" .. balance .. ".",
+			alignX = "center",
+		},
+		{
+			type = "edit",
+			text = "Amount:",
+			id = "g:bank:amount",
+		},
+		{
+			type = "button",
+			text = "Withdraw",
+			onClick = withdraw,
+		}
+	}
+	
+	if canDeposit then
+		table.insert( windows.bank_single,
+			{
+				type = "button",
+				text = "Deposit",
+				onClick = deposit,
+			}
+		)
+	end
+	
+	table.insert( windows.bank_single,
+		{
+			type = "button",
+			text = "Done",
+			onClick = function( ) hide( ) end,
+		}
+	)
+end
+
+windows.bank_single = { }

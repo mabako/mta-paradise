@@ -35,3 +35,12 @@ addEventHandler( "bank:promptPIN", resourceRoot,
 		exports.gui:show( 'bank_prompt_pin', true )
 	end
 )
+
+addEvent( "bank:single", true )
+addEventHandler( "bank:single", resourceRoot,
+	function( balance, canDeposit )
+		exports.gui:hide( )
+		exports.gui:updateBankSingle( balance, canDeposit )
+		exports.gui:show( 'bank_single', true )
+	end
+)

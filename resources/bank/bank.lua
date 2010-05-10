@@ -37,7 +37,7 @@ local function loadBank( id, x, y, z, rotation, interior, dimension, skin )
 	setElementInterior( bank, interior )
 	setElementDimension( bank, dimension )
 	
-	banks[ id ] = { bank = bank }
+	banks[ id ] = { bank = bank, canDeposit = skin ~= -1 }
 	banks[ bank ] = id
 end
 
@@ -156,11 +156,38 @@ local function getAccountFromCard( cardID )
 end
 
 local function getCardPIN( cardID )
-	if getAccountFromCard( cardID ) then
-		return cardCache[ cardID ].pin
+	return getAccountFromCard( cardID ) and cardCache[ cardID ].pin or false
+end
+
+--
+
+local accountCache = { }
+
+local function getAccountBalance( accountID )
+	if not accountCache[ accountID ] then
+		local result = exports.sql:query_assoc_single( "SELECT balance FROM bank_accounts WHERE accountID = " .. accountID )
+		if result then
+			accountCache[ accountID ] = { tick = getTickCount( ), balance = result.balance }
+		else
+			return false
+		end
+	end
+	return accountCache[ accountID ].balance
+end
+
+local function modifyAccountBalance( accountID, amount )
+	local old = getAccountBalance( accountID )
+	if accountCache[ accountID ] then
+		local balance = old + amount
+		if balance >= 0 and exports.sql:query_free( "UPDATE bank_accounts SET balance = " .. balance .. " WHERE accountID = " .. accountID ) then
+			accountCache[ accountID ].balance = balance
+			return true
+		end
 	end
 	return false
 end
+
+--
 
 setTimer(
 	function( )
@@ -171,10 +198,16 @@ setTimer(
 				cardCache[ key ] = nil
 			end
 		end
+		for key, value in pairs( accountCache ) do
+			if tick - value.tick > 1800000 then
+				accountCache[ key ] = nil
+			end
+		end
 	end,
 	1800000,
 	0
 )
+
 --
 
 addEventHandler( "onElementClicked", resourceRoot,
@@ -223,10 +256,10 @@ addEventHandler( "onElementClicked", resourceRoot,
 						
 						if getElementType( bank.bank ) == "object" then
 							-- for an ATM: show all of the accounts a player has a credit card for.
-							triggerClientEvent( player, "bank:open", source, cards, nil, false )
+							triggerClientEvent( player, "bank:open", source, cards, nil, bank.canDeposit )
 						else
 							-- show all accounts a player has a credit card for or which belongs to him.
-							triggerClientEvent( player, "bank:open", source, cards, p[ player ].accounts < maxAccountsPerCharacter, true )
+							triggerClientEvent( player, "bank:open", source, cards, p[ player ].accounts < maxAccountsPerCharacter, bank.canDeposit )
 						end
 					end
 				end
@@ -246,6 +279,9 @@ addEventHandler( "bank:close", root,
 					p[ source ].bankID = nil
 					p[ source ].cards = nil
 					p[ source ].card = nil
+					p[ source ].enteredPin = nil
+					
+					outputDebugString( "Bye." )
 				end
 			end
 		end
@@ -262,7 +298,14 @@ addEventHandler( "bank:select", root,
 					local cardPin = getCardPIN( p[ source ].card[ 1 ] )
 					if cardPin then
 						if cardPin == pin then
-							outputChatBox( "w2g" )
+							local balance = getAccountBalance( p[ source ].card[ 2 ] )
+							if balance then
+								p[ source ].enteredPin = true
+								p[ source ].ignoreUpdate = true
+								triggerClientEvent( source, "bank:single", bank.bank, balance, bank.canDeposit )
+							else
+								outputChatBox( "This service is currently not available.", source, 255, 0, 0 )
+							end
 						else
 							outputChatBox( "The PIN you entered is incorrect.", source, 255, 0, 0 )
 						end
@@ -347,3 +390,43 @@ addEventHandler( "onPlayerQuit", root,
 		p[ source ] = nil
 	end
 )
+
+--
+
+addEvent( "bank:updateaccount", true )
+addEventHandler( "bank:updateaccount", root,
+	function( amount )
+		if source == client and type( amount ) == "number" then
+			local bank = p[ source ] and p[ source ].bankID and banks[ p[ source ].bankID ]
+			if bank then
+				amount = math.ceil( amount )
+				
+				-- we assume the player entered the correct pin before
+				if p[ source ].enteredPin then
+					local card = p[ source ].card
+					
+					if amount == 0 then
+						return
+					elseif amount > 0 then -- we want to deposit money.
+						-- we check if it's depositable; if it is then check for whetever the player has so much money. This should never happen.
+						if not bank.canDeposit or not exports.players:takeMoney( source, amount ) then
+							return
+						end
+					else
+						-- ignore if the amount is too large to be withdrawn
+						if -amount > getAccountBalance( card[2] ) then
+							return
+						end
+					end
+					
+					if modifyAccountBalance( card[2] , amount ) then
+						outputChatBox( "You've " .. ( amount > 0 and ( "deposited $" .. amount .. " to" ) or ( "withdrawn $" .. -amount .. " from" ) ) .. " your account. Your new balance: $" .. getAccountBalance( card[2] ) .. ".", source, 0, 255, 0 )
+					else
+						outputChatBox( "Your request could not be processed at this time.", source, 255, 0, 0 )
+					end
+				end
+			end
+		end
+	end
+)
+
