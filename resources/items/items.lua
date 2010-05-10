@@ -316,6 +316,25 @@ addEventHandler( "items:use", root,
 	end
 )
 
+addEvent( "items:destroy", true )
+addEventHandler( "items:destroy", root,
+	function( slot )
+		if source == client then
+			if exports.players:isLoggedIn( source ) then
+				local item = get( source )[ slot ]
+				if item then
+					local id = item.item
+					local value = item.value
+					local name = item.name or getName( id )
+					
+					take( source, slot )
+					exports.chat:me( source, "destroyed a " .. name .. "." )
+				end
+			end
+		end
+	end
+)
+
 --
 
 addCommandHandler( "giveitem",

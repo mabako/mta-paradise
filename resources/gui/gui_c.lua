@@ -201,6 +201,10 @@ local function draw( window, y )
 		local line_height = dxGetFontHeight( window.scale or 1, window.font or "default" ) * math.max( window.type == "edit" and 2 or 1, window.cachedlines )
 		dxDrawText( tostring( window.cachedtext ), x, y, x + width / ( window.type == "edit" and 2.7 or 1 ), y + line_height, window.color and tocolor( unpack( window.color ) ) or tocolor( 255, 255, 255, 255 ), window.scale or 1, window.font or "default", window.alignX or window.type == "edit" and "right" or "left", window.alignY or "center", true, false, true )
 		
+		if window.onRender then
+			window.onRender( { x, y, x + width, y + line_height } )
+		end
+		
 		if window.type == "edit" then
 			if not window.edit then
 				window.edit = guiCreateEdit( x + width / 2.6, y + 3, width / 2 - 20, line_height - 8, "", false )
