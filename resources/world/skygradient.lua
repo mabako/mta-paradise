@@ -160,7 +160,7 @@ bindKey( 'a', 'down',
 							end
 						end
 						for y = py - 30, py + 30, 5 do
-							if isOnScreen( px - 30, y, z, px - 30, y, z ) then
+							if isOnScreen( px - 30, y, z, px + 30, y, z ) then
 								dxDrawLine3D( px - 100, y, z, px + 100, y, z, tocolor( 255, 255, 255, 191 ), 5, true )
 							end
 						end
