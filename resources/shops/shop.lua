@@ -226,6 +226,26 @@ addCommandHandler( { "deleteshop", "delshop" },
 	true
 )
 
+addCommandHandler( "nearbyshops",
+	function( player, commandName )
+		if hasObjectPermissionTo( player, "command.createshop", false ) or hasObjectPermissionTo( player, "command.deleteshop", false ) then
+			local x, y, z = getElementPosition( player )
+			local dimension = getElementDimension( player )
+			local interior = getElementInterior( player )
+			
+			outputChatBox( "Nearby Shops:", player, 255, 255, 0 )
+			for key, value in pairs( shops ) do
+				if isElement( key ) and getElementDimension( key ) == dimension and getElementInterior( key ) == interior then
+					local distance = getDistanceBetweenPoints3D( x, y, z, getElementPosition( key ) )
+					if distance < 20 then
+						outputChatBox( "  Shop " .. value .. " - Type: " .. tostring( shops[ value ].configuration ) .. ".", player, 255, 255, 0 )
+					end
+				end
+			end
+		end
+	end
+)
+
 -- client interaction
 
 addEventHandler( "onElementClicked", resourceRoot,
