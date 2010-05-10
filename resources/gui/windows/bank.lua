@@ -34,7 +34,7 @@ function updateBankSelection( accounts, canOpenAccount, canDeposit )
 	-- scrap what we had before
 	windows.bank_selection = {
 		onClose = function( )
-				triggerServerEvent( "banks:close", getLocalPlayer( ) )
+				triggerServerEvent( "bank:close", getLocalPlayer( ) )
 				windows.bank_selection = { closeButton }
 			end,
 		{
@@ -73,7 +73,7 @@ function updateBankSelection( accounts, canOpenAccount, canDeposit )
 						end,
 					onClick = function( key )
 							if key == 1 then
-								triggerServerEvent( "banks:select", getLocalPlayer( ), k )
+								triggerServerEvent( "bank:select", getLocalPlayer( ), k )
 							end
 						end,
 					wordBreak = true,
@@ -91,7 +91,7 @@ function updateBankSelection( accounts, canOpenAccount, canDeposit )
 						end,
 					onClick = function( key )
 							if key == 1 then
-								triggerServerEvent( "banks:select", getLocalPlayer( ), -1 )
+								triggerServerEvent( "bank:select", getLocalPlayer( ), -1 )
 							end
 						end,
 					wordBreak = true,

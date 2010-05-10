@@ -20,8 +20,8 @@ addEventHandler( "onClientPedDamage", resourceRoot, cancelEvent )
 
 --
 
-addEvent( "banks:open", true )
-addEventHandler( "banks:open", resourceRoot,
+addEvent( "bank:open", true )
+addEventHandler( "bank:open", resourceRoot,
 	function( accounts, canOpenAccount, canDeposit )
 		exports.gui:updateBankSelection( accounts, canOpenAccount, canDeposit )
 		exports.gui:show( 'bank_selection' )

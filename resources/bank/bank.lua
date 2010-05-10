@@ -41,6 +41,26 @@ local function loadBank( id, x, y, z, rotation, interior, dimension, skin )
 	banks[ bank ] = id
 end
 
+addEventHandler( "onPedWasted", resourceRoot,
+	function( )
+		local bankID = banks[ source ]
+		if bankID then
+			bank = createPed( skin, getElementPosition( source ) )
+			setPedRotation( bank, getPedRotation( source ) )
+			setPedFrozen( bank, true )
+			
+			setElementInterior( bank, getElementInterior( source ) )
+			setElementDimension( bank, getElementDimension( source ) )
+			
+			banks[ bank ] = bankID
+			banks[ bankID ].bank = bank
+			
+			banks[ source ] = nil
+			destroyElement( source )
+		end
+	end
+)
+
 --
 
 addEventHandler( "onResourceStart", resourceRoot,
@@ -150,14 +170,23 @@ addEventHandler( "onElementClicked", resourceRoot,
 						end
 						if getElementType( bank.bank ) == "object" then
 							-- for an ATM: show all of the accounts a player has a credit card for.
-							triggerClientEvent( player, "banks:open", source, cards, nil, false )
+							triggerClientEvent( player, "bank:open", source, cards, nil, false )
 						else
 							-- show all accounts a player has a credit card for or which belongs to him.
-							triggerClientEvent( player, "banks:open", source, cards, p[ player ].accounts < maxAccountsPerCharacter, true )
+							triggerClientEvent( player, "bank:open", source, cards, p[ player ].accounts < maxAccountsPerCharacter, true )
 						end
 					end
 				end
 			end
+		end
+	end
+)
+
+addEvent( "bank:close", true )
+addEventHandler( "bank:close", root,
+	function( )
+		if source == client then
+			p[ source ].bankID = nil
 		end
 	end
 )
