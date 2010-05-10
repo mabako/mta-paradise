@@ -59,7 +59,7 @@ local function load( element, force )
 				}
 				
 				-- load items
-				local i = exports.sql:query_assoc( "SELECT `index`, item, value, name FROM items WHERE owner = " .. elementID )
+				local i = exports.sql:query_assoc( "SELECT `index`, item, value, name FROM items WHERE owner = " .. elementID .. " ORDER BY `index` ASC" )
 				for key, value in ipairs( i ) do
 					table.insert( data[ element ].items, value )
 				end
