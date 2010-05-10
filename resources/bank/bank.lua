@@ -140,9 +140,38 @@ addCommandHandler( "createbank",
 
 --
 
+local cardCache = { }
+
+local function getAccountFromCard( cardID )
+	if not cardCache[ cardID ] then
+		local result = exports.sql:query_assoc_single( "SELECT bankAccountID FROM bank_cards WHERE cardID = " .. cardID )
+		if result then
+			cardCache[ cardID ] = { tick = getTickCount( ), account = result.bankAccountID }
+		else
+			return false
+		end
+	end
+	return cardCache[ cardID ].account
+end
+
+setTimer(
+	function( )
+		-- remove expired data
+		local tick = getTickCount( )
+		for key, value in pairs( cardCache ) do
+			if tick - value.tick > 1800000 then
+				cardCache[ key ] = nil
+			end
+		end
+	end,
+	1800000,
+	0
+)
+--
+
 addEventHandler( "onElementClicked", resourceRoot,
 	function( button, state, player )
-		if button == "left" and state == "up" then
+		if ( not p[ player ] or not p[ player ].bankID ) and button == "left" and state == "up" then
 			local bankID = banks[ source ]
 			if bankID then
 				local bank = banks[ bankID ]
@@ -165,9 +194,25 @@ addEventHandler( "onElementClicked", resourceRoot,
 						local cards = { }
 						for key, value in ipairs( exports.items:get( player ) ) do
 							if value.item == 6 then
-								table.insert( cards, value.value ) -- this should actually find out the associated card's account
+								local account = getAccountFromCard( value.value )
+								if account then
+									-- check for double
+									local found = false
+									for k, v in ipairs( cards ) do
+										if v[1] == value.value and v[2] == account then
+											found = true
+											break
+										end
+									end
+									
+									if not found then
+										table.insert( cards, { value.value, account } )
+									end
+								end
 							end
 						end
+						p[ player ].cards = cards
+						
 						if getElementType( bank.bank ) == "object" then
 							-- for an ATM: show all of the accounts a player has a credit card for.
 							triggerClientEvent( player, "bank:open", source, cards, nil, false )
@@ -186,7 +231,55 @@ addEvent( "bank:close", true )
 addEventHandler( "bank:close", root,
 	function( )
 		if source == client then
-			p[ source ].bankID = nil
+			if p[ source ] then
+				p[ source ].bankID = nil
+			end
+		end
+	end
+)
+
+addEvent( "bank:select", true )
+addEventHandler( "bank:select", root,
+	function( selected )
+		if source == client then
+			local bank = p[ source ] and p[ source ].bankID and banks[ p[ source ].bankID ]
+			if bank then
+				if selected == -1 then
+					-- create a new account, does only work on actual banks
+					if getElementType( bank.bank ) == "ped" then
+						-- check if the player does even need more accounts
+						if p[ source ].accounts < maxAccountsPerCharacter then
+							local bankAccount = exports.sql:query_insertid( "INSERT INTO bank_accounts (characterID) VALUES (" .. exports.players:getCharacterID( source ) .. ")" )
+							if bankAccount then
+								local cardID = exports.sql:query_insertid( "INSERT INTO bank_cards (bankAccountID) VALUES (" .. bankAccount .. ")" )
+								if cardID then
+									-- give him the card
+									exports.items:give( source, 6, cardID )
+									
+									-- increase the number since we can only give a player a limited number of accounts
+									p[ source ].accounts = ( p[ source ].accounts or 0 ) + 1
+									
+									-- tell him we're successful
+									outputChatBox( "Your account #" .. bankAccount .. " was successfully created. Have a nice day.", source, 0, 255, 0 )
+									
+									-- refresh the gui
+									p[ source ].bankID = nil
+									triggerEvent( "onElementClicked", bank.bank, "left", "up", source )
+								else
+									outputChatBox( "Due to a technical error, it's not possible to hand out debit cards.", source, 255, 0, 0 )
+									
+									-- delete the account again
+									exports.sql:query_free( "DELETE FROM bank_accounts WHERE accountID = " .. bankAccount )
+								end
+							else
+								outputChatBox( "Due to a technical error, it's not possible to open new bank accounts.", source, 255, 0, 0 )
+							end
+						end
+					end
+				else
+					outputChatBox( "NAW DUD" )
+				end
+			end
 		end
 	end
 )

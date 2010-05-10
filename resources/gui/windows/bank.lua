@@ -66,8 +66,8 @@ function updateBankSelection( accounts, canOpenAccount, canDeposit )
 			table.insert( windows.bank_selection[2].panes,
 				{
 					image = ":players/images/skins/-1.png",
-					title = "Credit Card",
-					text = "You can withdraw " .. ( canDeposit and "and deposit from/to" or "from" ) .. " account " .. value[2] .. ".",
+					title = "Debit Card",
+					text = "You can withdraw " .. ( canDeposit and "and deposit from/to" or "from" ) .. " account #" .. value[2] .. ".",
 					onHover = function( cursor, pos )
 							dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( { 0, 255, 0, 31 } ) ) )
 						end,
@@ -85,7 +85,7 @@ function updateBankSelection( accounts, canOpenAccount, canDeposit )
 		table.insert( windows.bank_selection[2].panes,
 			{
 				image = ":players/images/skins/-1.png",
-				title = "New account.",
+				title = "New account",
 				text = "Set up a new bank account.",
 				onHover = function( cursor, pos )
 						dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( { 255, 255, 0, 31 } ) ) )
