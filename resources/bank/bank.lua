@@ -388,8 +388,6 @@ addEventHandler( "bank:close", root,
 					p[ source ].cards = nil
 					p[ source ].card = nil
 					p[ source ].enteredPin = nil
-					
-					outputDebugString( "Bye." )
 				end
 			end
 		end
