@@ -27,6 +27,7 @@ local max_height = line_height * max_lines
 local max_panes = math.floor( max_height / 66 )
 local max_vpanes = math.floor( width / 70 )
 local clicked = { }
+local openedResource = nil
 destroy = { }
 
 local window = nil
@@ -523,6 +524,12 @@ function show( name, forced, dontEnableInput, mouse )
 			window.onCreate( )
 		end
 		
+		-- automatically close if the resource who opened it stops
+		if sourceResourceRoot then
+			openedResource = sourceResourceRoot
+			addEventHandler( "onClientResourceStop", openedResource, hide )
+		end
+		
 		return true
 	end
 	return false
@@ -549,6 +556,11 @@ function hide( )
 		
 		-- reset the width
 		scaleWidth( )
+		
+		if openedResource then
+			removeEventHandler( "onClientResourceStop", openedResource, hide )
+			openedResource = nil
+		end
 	end
 end
 
