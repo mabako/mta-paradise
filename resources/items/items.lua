@@ -306,6 +306,20 @@ addEventHandler( "items:use", root,
 							setElementHealth( source, math.max( 100, getElementHealth( source ) + value ) )
 						end
 						exports.chat:me( source, "drinks a " .. name .. "." )
+					elseif id == 5 then
+						if type( value ) == "number" and exports.players:isValidSkin( value ) then
+							local new = exports.players:getSkinDetails( value )
+							local current = exports.players:getSkinDetails( getElementModel( source ) )
+							if current.gender == new.gender and current.color == new.color then
+								if setElementModel( source, value ) then
+									exports.chat:me( source, "changes their clothes." )
+								else
+									outputChatBox( "(( You're already wearing these clothes. ))", source, 255, 0, 0 )
+								end
+							else
+								outputChatBox( "(( These clothes do not fit you. ))", source, 255, 0, 0 )
+							end
+						end
 					else
 						-- the original idea was to have the items run ("The wild Vehicle key ran away.") away yet I could convince myself players would like it that much
 						exports.chat:me( source, "looks at the " .. name .. ". Nothing happens..." )
