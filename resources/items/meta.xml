@@ -15,28 +15,107 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <meta>
+	<!-- What is an "item"?
+		
+		An item is a combination of four values in a table, namely:
+			(number) index - The index in the database. This is unique.
+			(number) item id - the item it refers to (1 = Vehicle key, 2 = House key, ...)
+			(number/string) value - the value of the item, that's what eventually determines what will happen exactly. For example for Food, value is the health given when you eat it. Keys have the house/vehicle ID as value.
+			(string) name - a string with the custom name, (nil) otherwise
+	-->
+	
 	<script src="items_list.lua"/>
 	<script src="items_list.lua" type="client"/>
+	
+	<!-- Returns the name associated to an Item ID.
+		parameters:
+			(number) ID of the Item.
+		returns:
+			(string) The name of the item, "" for none.
+	-->
 	<export function="getName"/>
 	<export function="getName" type="client"/>
+	
+	<!-- Returns the description for an Item ID.
+		parameters:
+			(number) ID of the Item.
+		returns:
+			(string) The description of the item, "" for none.
+	-->
 	<export function="getDescription"/>
 	<export function="getDescription" type="client"/>
+	
+	<!-- Returns the image that should be used for an Item ID.
+		parameters:
+			(number) ID of the Item.
+			(number/string) value - the item's value.
+			(string) name - the name of the item if it uses a custom name.
+		returns:
+			(string) The image path of the item, (nil) for none.
+	-->
 	<export function="getImage" type="client"/>
 	
 	<script src="items.lua"/>
-	<export function="get"/>
-	<export function="give"/>
-	<export function="take"/>
-	<export function="has"/>
-	
 	<script src="items_c.lua" type="client"/>
+	<!-- Returns all items for an element
+		parameters:
+			(element) element - the element to retrieve all items from.
+		returns:
+			(table) a table with all items if successful, (nil) otherwise.
+	-->
+	<export function="get"/>
 	<export function="get" type="client"/>
+	
+	<!-- Gives an element an item.
+		parameters:
+			(element) element - the element to give it to.
+			(number) item ID - the ID of the item.
+			(number/string) value - the item's value.
+		optional parameters:
+			(string) the name of the item, (nil) if the default name should be used.
+		returns:
+			(bool) true if successful, false otherwise.
+			(string) an error message if giving the element an item failed, (nil) if it was successful.
+	-->
+	<export function="give"/>
+	
+	<!-- Takes an item from an element.
+		parameters:
+			(element) element - the element to take it from.
+			(number) slot - the slot the item was on before.
+		returns:
+			(bool) true if successful, false otherwise.
+			(string) an error message if giving the element an item failed, (nil) if it was successful.
+	-->
+	<export function="take"/>
+	
+	<!-- Checks whetever an element has an item.
+		parameters:
+			(element) element - the element to check.
+			(number) item ID - the ID of the item, (nil) to ignore this in your search.
+			(number/string) value - the item's value, (nil) to ignore this in your search.
+		optional parameters:
+			(string) the name of the item, (nil) if it has no custom name or if you want to ignore it.
+		returns:
+			if successful:
+				(bool) true.
+				(number) slot - the slot the item is saved in. (used for take())
+				(item) item - the item on that slot.
+			otherwise:
+				(bool) false.
+				(string) an error message if giving the element an item failed, (nil) if no error happened, just that the element did not have this item.
+	-->
+	<export function="has"/>
 	<export function="has" type="client"/>
 	
+	<!-- Images for our inventory.
+		See items_list.lua for a nams => image lookup.
+	-->
 	<file src="images/1.png"/>
 	<file src="images/2.png"/>
 	<file src="images/3.png"/>
 	<file src="images/4.png"/>
+	<file src="images/6.png"/>
 	<file src="images/bs1.png"/>
 	<file src="images/bs2.png"/>
 	<file src="images/bs3.png"/>

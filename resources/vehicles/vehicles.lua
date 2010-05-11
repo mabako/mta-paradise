@@ -92,35 +92,35 @@ addEventHandler( "onResourceStart", resourceRoot,
 	function( )
 		-- Looking at it from a technical point of view, loading vehicles on a non-existant table makes only limited sense
 		if not exports.sql:create_table( 'vehicles', 
-		{
-			{ name = 'vehicleID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
-			{ name = 'model', type = 'int(10) unsigned' },
-			{ name = 'posX', type = 'float' },
-			{ name = 'posY', type = 'float' },
-			{ name = 'posZ', type = 'float' },
-			{ name = 'rotX', type = 'float' },
-			{ name = 'rotY', type = 'float' },
-			{ name = 'rotZ', type = 'float' },
-			{ name = 'interior', type = 'int(10) unsigned', default = 0 },
-			{ name = 'dimension', type = 'int(10) unsigned', default = 0 },
-			{ name = 'respawnPosX', type = 'float' },
-			{ name = 'respawnPosY', type = 'float' },
-			{ name = 'respawnPosZ', type = 'float' },
-			{ name = 'respawnRotX', type = 'float' },
-			{ name = 'respawnRotY', type = 'float' },
-			{ name = 'respawnRotZ', type = 'float' },
-			{ name = 'respawnInterior', type = 'int(10) unsigned', default = 0 },
-			{ name = 'respawnDimension', type = 'int(10) unsigned', default = 0 },
-			{ name = 'numberplate', type = 'varchar(8)' },
-			{ name = 'health', type = 'int(10) unsigned', default = 1000 },
-			{ name = 'color1', type = 'tinyint(3) unsigned', default = 0 },
-			{ name = 'color2', type = 'tinyint(3) unsigned', default = 0 },
-			{ name = 'characterID', type = 'int(11)', default = 0 },
-			{ name = 'locked', type = 'tinyint(3) unsigned', default = 0 },
-			{ name = 'engineState', type = 'tinyint(3) unsigned', default = 0 },
-			{ name = 'lightsState', type = 'tinyint(3) unsigned', default = 0 },
-			{ name = 'tintedWindows', type = 'tinyint(3) unsigned', default = 0 },
-		} ) then cancelEvent( ) return end
+			{
+				{ name = 'vehicleID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
+				{ name = 'model', type = 'int(10) unsigned' },
+				{ name = 'posX', type = 'float' },
+				{ name = 'posY', type = 'float' },
+				{ name = 'posZ', type = 'float' },
+				{ name = 'rotX', type = 'float' },
+				{ name = 'rotY', type = 'float' },
+				{ name = 'rotZ', type = 'float' },
+				{ name = 'interior', type = 'tinyint(3) unsigned', default = 0 },
+				{ name = 'dimension', type = 'int(10) unsigned', default = 0 },
+				{ name = 'respawnPosX', type = 'float' },
+				{ name = 'respawnPosY', type = 'float' },
+				{ name = 'respawnPosZ', type = 'float' },
+				{ name = 'respawnRotX', type = 'float' },
+				{ name = 'respawnRotY', type = 'float' },
+				{ name = 'respawnRotZ', type = 'float' },
+				{ name = 'respawnInterior', type = 'int(10) unsigned', default = 0 },
+				{ name = 'respawnDimension', type = 'int(10) unsigned', default = 0 },
+				{ name = 'numberplate', type = 'varchar(8)' },
+				{ name = 'health', type = 'int(10) unsigned', default = 1000 },
+				{ name = 'color1', type = 'tinyint(3) unsigned', default = 0 },
+				{ name = 'color2', type = 'tinyint(3) unsigned', default = 0 },
+				{ name = 'characterID', type = 'int(11)', default = 0 },
+				{ name = 'locked', type = 'tinyint(3) unsigned', default = 0 },
+				{ name = 'engineState', type = 'tinyint(3) unsigned', default = 0 },
+				{ name = 'lightsState', type = 'tinyint(3) unsigned', default = 0 },
+				{ name = 'tintedWindows', type = 'tinyint(3) unsigned', default = 0 },
+			} ) then cancelEvent( ) return end
 		
 		-- load all vehicles
 		local result = exports.sql:query_assoc( "SELECT * FROM vehicles ORDER BY vehicleID ASC" )
@@ -673,15 +673,17 @@ addEventHandler( "onPlayerWasted", root,
 --
 
 local function lockVehicle( player, vehicle, driver )
-	local vehicleID = vehicles[ vehicle ].vehicleID
-	if vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET locked = 1 - locked WHERE vehicleID = " .. vehicleID ) then
+	local vehicleID = vehicles[ vehicle ] and vehicles[ vehicle ].vehicleID
+	if vehicleID and ( vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET locked = 1 - locked WHERE vehicleID = " .. vehicleID ) ) then
 		if driver then
 			exports.chat:me( player, ( isVehicleLocked( vehicle ) and "un" or "" ) .. "locks the vehicle doors." )
 		else
 			exports.chat:me( player, "presses on the key to " .. ( isVehicleLocked( vehicle ) and "un" or "" ) .. "lock the " .. getVehicleName( vehicle ) .. "." )
 		end
 		setVehicleLocked( vehicle, not isVehicleLocked( vehicle ) )
+		return true
 	end
+	return false
 end
 
 addCommandHandler( "lockvehicle",
@@ -760,6 +762,10 @@ addCommandHandler( "togglelights",
 	end
 )
 
+function getVehicle( vehicleID )
+	return vehicleIDs[ vehicleID ] or false
+end
+
 function getOwner( vehicle )
 	if vehicles[ vehicle ] then
 		local owner = vehicles[ vehicle ].characterID
@@ -769,6 +775,10 @@ end
 
 function hasTintedWindows( vehicle )
 	return vehicles[ vehicle ] and vehicles[ vehicle ].tintedWindows or false
+end
+
+function toggleLock( player, vehicle )
+	return getElementType( player ) == "player" and isElement( vehicle ) and lockVehicle( player, vehicle, false ) or false
 end
 
 --

@@ -17,7 +17,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local screenX, screenY = guiGetScreenSize( )
 local cursorX, cursorY = -1, -1
-local width = 360
+local defaultWidth = 360
+local width = defaultWidth
 local height = 0
 local x = ( screenX - width ) / 2
 local line_height = 16
@@ -26,10 +27,18 @@ local max_height = line_height * max_lines
 local max_panes = math.floor( max_height / 66 )
 local max_vpanes = math.floor( width / 70 )
 local clicked = { }
+local openedResource = nil
 destroy = { }
 
 local window = nil
 local windowName = nil
+
+-- this needs to change all resolution dependant variables.
+local function scaleWidth( newWidth )
+	width = ( newWidth or 1 ) * defaultWidth
+	x = ( screenX - width ) / 2
+	max_vpanes = math.floor( width / 70 )
+end
 
 local function cache( window )
 	local size = 0
@@ -191,6 +200,10 @@ local function draw( window, y )
 	elseif window.type == "label" or window.type == "edit" then
 		local line_height = dxGetFontHeight( window.scale or 1, window.font or "default" ) * math.max( window.type == "edit" and 2 or 1, window.cachedlines )
 		dxDrawText( tostring( window.cachedtext ), x, y, x + width / ( window.type == "edit" and 2.7 or 1 ), y + line_height, window.color and tocolor( unpack( window.color ) ) or tocolor( 255, 255, 255, 255 ), window.scale or 1, window.font or "default", window.alignX or window.type == "edit" and "right" or "left", window.alignY or "center", true, false, true )
+		
+		if window.onRender then
+			window.onRender( { x, y, x + width, y + line_height } )
+		end
 		
 		if window.type == "edit" then
 			if not window.edit then
@@ -497,19 +510,33 @@ function show( name, forced, dontEnableInput, mouse )
 		windowName = name
 		if forced then
 			forcedWindow = true
-			showCursor( true )
 			if not dontEnableInput then
 				guiSetInputEnabled( true )
+				showCursor( true )
+			elseif mouse then
+				showCursor( true )
 			end
 		elseif mouse then
 			showCursor( true )
-			showMouse = true
+		end
+		
+		if window.widthScale then
+			scaleWidth( math.min( 2, math.max( 0.1, window.widthScale ) ) )
 		end
 		
 		if window.onCreate then
 			window.onCreate( )
 		end
+		
+		-- automatically close if the resource who opened it stops
+		if isElement( sourceResourceRoot ) then
+			openedResource = sourceResourceRoot
+			addEventHandler( "onClientResourceStop", openedResource, hide )
+		end
+		
+		return true
 	end
+	return false
 end
 
 function hide( )
@@ -524,10 +551,20 @@ function hide( )
 			guiSetInputEnabled( false )
 		end
 		forcedWindow = nil
+		
+		-- destroy all created gui elements
 		for key, value in pairs( destroy ) do
 			destroyElement( value )
 		end
 		destroy = { }
+		
+		-- reset the width
+		scaleWidth( )
+		
+		if openedResource then
+			removeEventHandler( "onClientResourceStop", openedResource, hide )
+			openedResource = nil
+		end
 	end
 end
 

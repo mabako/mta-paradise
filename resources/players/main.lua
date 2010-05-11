@@ -28,7 +28,7 @@ local p = { }
 local groups = {
 	{ groupName = "MTA Moderators", groupID = false, aclGroup = "Moderator", displayName = "Moderator", nametagColor = { 255, 255, 191 }, priority = 5 },
 	{ groupName = "MTA Administrators", groupID = false, aclGroup = "Admin", displayName = "Administrator", nametagColor = { 255, 255, 91 }, priority = 10, defaultForFirstUser = true },
-	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer", nametagColor = { 191, 255, 191 }, priority = 20 },
+	{ groupName = "Developers", groupID = false, aclGroup = "Developer", displayName = "Developer", nametagColor = { 191, 255, 191 }, priority = 20, defaultForFirstUser = true },
 }
 
 local function updateNametagColor( player )
@@ -279,7 +279,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'x', type = 'float' },
 				{ name = 'y', type = 'float' },
 				{ name = 'z', type = 'float' },
-				{ name = 'interior', type = 'int(10) unsigned' },
+				{ name = 'interior', type = 'tinyint(3) unsigned' },
 				{ name = 'dimension', type = 'int(10) unsigned' },
 				{ name = 'skin', type = 'int(10) unsigned' },
 				{ name = 'rotation', type = 'float' },
@@ -457,6 +457,7 @@ function performLogin( source, token, isPasswordAuth, ip )
 								return false
 							end
 						end
+						
 						local username = info.username
 						p[ source ] = { userID = info.userID, username = username, mtasalt = info.salts }
 						
@@ -470,6 +471,8 @@ function performLogin( source, token, isPasswordAuth, ip )
 						else
 							triggerClientEvent( source, getResourceName( resource ) .. ":characters", source, chars, true )
 						end
+						
+						outputServerLog( "PARADISE LOGIN: " .. getPlayerName( source ) .. " logged in as " .. info.username .. " (IP: " .. getPlayerIP( source ) .. ", Serial: " .. getPlayerSerial( source ) .. ")" )
 						return true
 					end
 				end
@@ -591,7 +594,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					setPlayerMoney( source, char.money )
 					
 					p[ source ].charID = tonumber( charID )
-					p[ source ].characterName = characterName
+					p[ source ].characterName = char.characterName
 					
 					setPlayerTeam( source, team )
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
@@ -601,6 +604,8 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					
 					-- set last login to now
 					exports.sql:query_free( "UPDATE characters SET lastLogin = NOW() WHERE characterID = " .. tonumber( charID ) )
+					
+					outputServerLog( "PARADISE CHARACTER: " .. p[ source ].username .. " is now playing as " .. char.characterName )
 				end
 			end
 		end
@@ -617,15 +622,15 @@ addEventHandler( "onPlayerChangeNick", root,
 
 -- exports
 function getCharacterID( player )
-	return player and p[ player ] and p[ player ].charID
+	return player and p[ player ] and p[ player ].charID or false
 end
 
 function isLoggedIn( player )
-	return getCharacterID( player ) and true
+	return getCharacterID( player ) and true or false
 end
 
 function getUserID( player )
-	return player and p[ player ] and p[ player ].userID
+	return player and p[ player ] and p[ player ].userID or false
 end
 
 -- retrieves a character name from the database id
@@ -644,6 +649,7 @@ function getCharacterName( characterID )
 			return data.characterName
 		end
 	end
+	return false
 end
 
 -- money functions
@@ -660,15 +666,15 @@ function setMoney( player, amount )
 end
 
 function giveMoney( player, amount )
-	return isLoggedIn( player ) and setMoney( player, p[ player ].money + amount )
+	return setMoney( player, p[ player ].money + amount )
 end
 
 function takeMoney( player, amount )
-	return isLoggedIn( player ) and setMoney( player, p[ player ].money - amount )
+	return setMoney( player, p[ player ].money - amount )
 end
 
 function getMoney( player, amount )
-	return isLoggedIn( player ) and p[ player ].money
+	return isLoggedIn( player ) and p[ player ].money or 0
 end
 
 --
@@ -689,8 +695,10 @@ function createCharacter( player, name, skin )
 		elseif exports.sql:query_free( "INSERT INTO characters (characterName, userID, x, y, z, interior, dimension, skin, rotation) VALUES ('%s', " .. p[ player ].userID .. ", -1984.5, 138, 27.7, 0, 0, " .. tonumber( skin ) .. ", 90)", name ) then
 			updateCharacters( player )
 			triggerClientEvent( player, "players:characterCreationResult", player, 0 )
+			return true
 		end
 	end
+	return false
 end
 
 --
@@ -706,5 +714,8 @@ function updateNametag( player )
 		end
 		
 		setPlayerNametagText( player, tostring( text ) )
+		updateNametagColor( player )
+		return true
 	end
+	return false
 end

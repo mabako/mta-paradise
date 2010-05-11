@@ -19,9 +19,45 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="vehicles_c.lua" type="client"/>
 	<script src="util.lua"/>
 	
+	<!-- Creates a new vehicle based off an old one (clones the vehicle & creates it permanently)
+		parameters:
+			(player) the player which the new vehicle should belong to.
+			(vehicle) the vehicle to clone.
+	-->
 	<export function="create"/>
+	
+	<!-- Returns the vehicle with that ID (if any was found).
+		parameters:
+			(number) vehicle ID of the car to search for.
+		returns:
+			(vehicle) the vehicle if one was found, (bool) false otherwise.
+	-->
+	<export function="getVehicle"/>
+	
+	<!-- Retrieves the vehicle owner's character ID.
+		parameters:
+			(vehicle) the vehicle to get the owner of.
+		returns:
+			(number) character ID if owned by anyone, (bool) false if civilian, (nil) if not a valid vehicle.
+	-->
 	<export function="getOwner"/>
+	
+	<!-- Returns true if the vehicle has tinted windows.
+		parameters:
+			(vehicle) the vehicle to check for tinted windows.
+		returns:
+			(bool) true if the vehicle has tinted windows, false otherwise.
+	-->
 	<export function="hasTintedWindows"/>
+	
+	<!-- Locks or unlocks a vehicle, depending the previous state.
+		parameters:
+			(player) the player who wants to (un)lock the given vehicle.
+			(vehicle) the vehicle to (un)lock.
+		returns:
+			(bool) true if toggling the lock was successful, false otherwise.
+	-->
+	<export function="toggleLock"/>
 	
 	<include resource="sql"/>
 </meta>

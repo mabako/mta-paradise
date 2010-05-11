@@ -103,7 +103,7 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 		exports.gui:updateCharacters( chars )
 		isSpawnScreen = spawn
 		if isSpawnScreen then
-			exports.gui:show( 'characters', true, true )
+			exports.gui:show( 'characters', true, true, true )
 			showChat( false )
 			showPlayerHudComponent( "radar", false )
 			showPlayerHudComponent( "area_name", false )
@@ -137,7 +137,7 @@ addEventHandler( "onClientResourceStart", root,
 					if characters then
 						exports.gui:updateCharacters( characters )
 						if not loggedIn then
-							exports.gui:show( 'characters', true, true )
+							exports.gui:show( 'characters', true, true, true )
 						end
 					else
 						exports.gui:show( 'login', true )

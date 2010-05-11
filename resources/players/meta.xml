@@ -19,25 +19,145 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<script src="main.lua"/>
 	<script src="main_c.lua" type="client"/>
+	
+	<!-- Returns all groups the player is in, starting with the one with the highest priority.
+		parameters:
+			(player) the player whom to return the groups of.
+		returns:
+			(table) all groups the player is in, an empty table if none.
+	-->
 	<export function="getGroups"/>
+	
+	<!-- Returns the ID of the character the player is currently logged in as.
+		parameters:
+			(player) the player to get the character's ID of.
+		returns:
+			(number) the character ID if successful, (bool) false otherwise.
+	-->
 	<export function="getCharacterID"/>
+	
+	<!-- Returns the name that's assigned to a character ID.
+		parameters:
+			(number) Character ID you want to get the name from
+		returns:
+			(string) Character name if successful, (bool) false otherwise.
+	-->
 	<export function="getCharacterName"/>
+	
+	<!-- (server) Returns true if the player is logged in.
+		parameters:
+			(player) the player to check.
+		returns:
+			(bool) true if the player is logged in, false otherwise.
+	-->
 	<export function="isLoggedIn"/>
+	
+	<!-- (client) Returns true if the local player is logged in.
+		returns:
+			(bool) true if the local player is logged in, false otherwise.
+	-->
 	<export function="isLoggedIn" type="client"/>
+	
+	<!-- Returns the user ID. (not character ID, one user can have multiple characters)
+		parameters:
+			(player) the player to retrieve the user ID from.
+		returns:
+			(number) user ID if he's logged in into any user, (bool) false otherwise.
+	-->
 	<export function="getUserID"/>
+	
+	<!-- -- -->
+	
+	<!-- sets the money value for a player.
+		parameters:
+			(player) the player to set the money for.
+			(number) the amount of money the player now should have.
+		returns:
+			(bool) true if successful, false otherwise.
+	-->
 	<export function="setMoney"/>
+	
+	<!-- gives the player money.
+		parameters:
+			(player) the player to give the money to.
+			(number) the amount of money you want to give to the player.
+		returns:
+			(bool) true if successful, false otherwise.
+	-->
 	<export function="giveMoney"/>
+	
+	<!-- takes money from a player.
+		parameters:
+			(player) the player to take the money from.
+			(number) the amount of money to take from the player.
+		returns:
+			(bool) true if successful, false otherwise (e.g. if the player does not have enough money).
+	-->
 	<export function="takeMoney"/>
+	
+	<!-- retrieves the amount of money a player has
+		parameters:
+			(player) the player to set the money for.
+		returns:
+			(number) the amount of money a player has, 0 if he/she isn't logged in.
+	-->
 	<export function="getMoney"/>
+	
+	<!-- -- -->
+	
+	<!-- Creates a new character.
+		parameters:
+			(player) the player who the new character will belong to.
+			(string) name - the name of the character.
+			(number) skin - the character's skin. See http://wiki.multitheftauto.com/wiki/All_Skins_Page for a list of skins.
+		returns:
+			(bool) true if the character was created, false otherwise (such as: a character with that name already exists)
+	-->
 	<export function="createCharacter"/>
+	
+	<!-- sends the player an updated character list
+		parameters:
+			(player) player of whom to reload the char list
+		returns:
+			(bool) true if successful, false otherwise.
+	-->
 	<export function="updateCharacters"/>
+	
+	<!-- (client) Function that is called whenever you select a char from the chararcter selection.
+		parameters:
+			(number) character id - the char ID you want to spawn as.
+			(string) name - the name of the character, only used to check if it's not the one you're currently playing as.
+	-->
 	<export function="selectCharacter" type="client"/>
+	
+	<!-- Updates the text and color of a player's nametag.
+		parameters:
+			(player) player to update the nametag of.
+		returns:
+			(bool) true if successful, false otherwise.
+	-->
 	<export function="updateNametag"/>
 	
 	<script src="registration.lua"/>
 	
 	<script src="ids.lua"/>
+	
+	<!-- resolves an ID/name/name part into a player element
+		parameters:
+			(player) the player who wants to resolve the ID. It'll show "Not logged in" etc. messages to this player. (nil) to show no messages.
+			(number) player id or (string) full player name or (string) part of player name
+			(bool) ignore login state - if this is set to true, even a not logged in player might be returned (/kick uses this, for example), if set to false an error message will show if the player is not logged in. Default: false.
+		returns:
+			(player) The player matching your search if exactly one player is found, (nil) otherwise.
+	-->
 	<export function="getFromName"/>
+	
+	<!-- retrieves the ID of a player within the range from 1 to (max. number of slots).
+		parameters:
+			(player) player id of whom to get the ID.
+		returns:
+			(number) the ID of the player, (nil) if no ID is assigned.
+	-->
 	<export function="getID"/>
 	
 	<include resource="sql"/>
@@ -315,10 +435,29 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<script src="skins.lua"/>
 	<script src="skins.lua" type="client"/>
+	
+	<!-- Returns a table of all valid skins.
+		returns: table with skins.
+	-->
 	<export function="getSkins"/>
 	<export function="getSkins" type="client"/>
+	
+	<!-- Checks if a skin is valid.
+		parameters:
+			(number) skin ID - the skin to check.
+		returns:
+			(bool) true if the skin is valid, false otherwise.
+	-->
 	<export function="isValidSkin"/>
 	<export function="isValidSkin" type="client"/>
+	
+	<!-- Returns a table with the details of a skin.
+			(number) skin ID - the skin to check.
+		returns:
+			(table) with two fields:
+				(string) gender: male/female
+				(string) color: white/black
+	-->
 	<export function="getSkinDetails"/>
 	<export function="getSkinDetails" type="client"/>
 	

@@ -110,12 +110,12 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'outsideX', type = 'float' },
 				{ name = 'outsideY', type = 'float' },
 				{ name = 'outsideZ', type = 'float' },
-				{ name = 'outsideInterior', type = 'int(10) unsigned' },
+				{ name = 'outsideInterior', type = 'tinyint(3) unsigned' },
 				{ name = 'outsideDimension', type = 'int(10) unsigned' },
 				{ name = 'insideX', type = 'float' },
 				{ name = 'insideY', type = 'float' },
 				{ name = 'insideZ', type = 'float' },
-				{ name = 'insideInterior', type = 'int(10) unsigned' },
+				{ name = 'insideInterior', type = 'tinyint(3) unsigned' },
 				{ name = 'interiorName', type = 'varchar(255)' },
 				{ name = 'interiorType', type = 'tinyint(3) unsigned' },
 				{ name = 'interiorPrice', type = 'int(10) unsigned' },
@@ -501,9 +501,11 @@ local function lockInterior( player, key, state, colShape )
 				elseif not interior.locked and getElementDimension( interior.outside ) == 0 and not getElementData( interior.outside, "price" ) then
 					interior.blip = createBlipEx( interior.outside, interior.inside )
 				end
+				return true
 			end
 		end
 	end
+	return false
 end
 
 addEventHandler( "onColShapeHit", resourceRoot,
@@ -561,4 +563,9 @@ function setDropOff( id, x, y, z )
 			return true
 		end
 	end
+	return false
+end
+
+function toggleLock( player, colShape )
+	return getElementType( player ) == "player" and isElement( colShape ) and lockInterior( player, "k", "down", colShape ) or false
 end

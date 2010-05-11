@@ -22,6 +22,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="windows/scoreboard.lua" type="client"/>
 	
 	<script src="windows/shop.lua" type="client"/>
+	
+	<!-- Updates the content of the currently showing shop
+		parameters:
+			(table) new content - see shops/shop_configurations.lua for an example. This only contains all items.
+			(string) shop name - name of the shop, needs to fit on one line.
+	-->
 	<export function="updateShopContent" type="client"/>
 	
 	<script src="verify/create_character.lua"/>
@@ -30,13 +36,53 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="windows/create_character.lua" type="client"/>
 	
 	<script src="windows/characters.lua" type="client"/>
+	<!-- Updates the characters showing in the char selection.
+		parameters:
+			(table) all of a player's characters that'll be shown in the char selection.
+	-->
 	<export function="updateCharacters" type="client"/>
 	
 	<script src="windows/inventory.lua" type="client"/>
+	<!-- Updates the inventory. -->
 	<export function="updateInventory" type="client"/>
 	
+	<script src="windows/bank.lua" type="client"/>
+	<!-- Updates the bank account selection
+		parameters:
+			(table) all available accounts
+			(bool) true if the player can open new accounts, false otherwise.
+			(bool) true if the player can deposit, false otherwise.
+	-->
+	<export function="updateBankSelection" type="client"/>
+	
+	<!-- Updates the current bank account
+		parameters:
+			(number) balance of the bank account.
+			(bool) true if the player can deposit, false otherwise.
+	-->
+	<export function="updateBankSingle" type="client"/>
+	
 	<script src="gui_c.lua" type="client"/>
+	
+	<!-- Shows a GUI window.
+		parameters:
+			(string) window name - name of the windows, needs to exist as windows.<name> in this resource
+		optional parameters:
+			(bool) forced - if set to true, the player can't close the window unless hide() is called. - default: false
+			(bool) don't enable input - if set to true, this will leave the input disabled thus you can use any key binds, walk etc. Has no effect if the window is not forced. - default: false
+			(bool) show mouse -- if set to true, it'll show the mouse cursor when opening the GUI. Has no effect when input is enabled or the window is forced. - default: false
+		returns:
+			(bool) true if the window creation was successful, false otherwise.
+	-->
 	<export function="show" type="client"/>
+	
+	<!-- Hides the currently opened GUI window. -->
 	<export function="hide" type="client"/>
+	
+	<!-- Returns the name of the currently active GUI window.
+		returns:
+			(string) name of the GUI window or (nil) if no window is showing
+			(bool) true if the window was forced, false otherwise
+	-->
 	<export function="getShowing" type="client"/>
 </meta>

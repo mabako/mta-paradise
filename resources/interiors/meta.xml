@@ -20,8 +20,28 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="interiors.lua"/>
 	<script src="interiors_c.lua" type="client"/>
 	
+	<!-- FIXME: Remove this function and replace with more appropriate ones (getExteriorPosition, getInteriorPositon, getName) -->
 	<export function="getInterior"/>
+	
+	<!-- Changes the Drop-Off point for the delivery job.
+		parameters:
+			(number) interior id - equals the dimension of being inside, can be retrieved via /getinterior.
+			(number) x-position
+			(number) y-position
+			(number) z-position
+		returns:
+			(bool) true if successful, false otherwise.
+	-->
 	<export function="setDropOff"/>
+	
+	<!-- Locks or unlocks an interior, depending the previous state.
+		parameters:
+			(player) the player who wants to (un)lock the given interior.
+			(element) either the interior's inside's colshape or the outside's colshape.
+		returns:
+			(bool) true if toggling the lock was successful, false otherwise.
+	-->
+	<export function="toggleLock"/>
 	
 	<script src="map_fixes.lua" type="client"/>
 	<script src="blips.lua"/>

@@ -105,7 +105,7 @@ addEventHandler( "anims:reset", root,
 --
 
 -- runs a user-defined animation by block/name
-addCommandHandler( "runanim",
+addCommandHandler( "anim",
 	function( player, commandName, block, anim )
 		if exports.players:isLoggedIn( player ) then
 			if block and anim then

@@ -59,7 +59,7 @@ local function load( element, force )
 				}
 				
 				-- load items
-				local i = exports.sql:query_assoc( "SELECT `index`, item, value, name FROM items WHERE owner = " .. elementID )
+				local i = exports.sql:query_assoc( "SELECT `index`, item, value, name FROM items WHERE owner = " .. elementID .. " ORDER BY `index` ASC" )
 				for key, value in ipairs( i ) do
 					table.insert( data[ element ].items, value )
 				end
@@ -242,13 +242,14 @@ addEventHandler( "loadItems", root,
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		if not exports.sql:create_table( 'items', {
-			{ name = 'index', type = 'int(10) unsigned', primary_key = true, auto_increment = true },
-			{ name = 'owner', type = 'int(10) unsigned' },
-			{ name = 'item', type = 'int(10) unsigned' },
-			{ name = 'value', type = 'text' },
-			{ name = 'name', type = 'text', null = true },
-		} ) then cancelEvent( ) return end
+		if not exports.sql:create_table( 'items',
+			{
+				{ name = 'index', type = 'int(10) unsigned', primary_key = true, auto_increment = true },
+				{ name = 'owner', type = 'int(10) unsigned' },
+				{ name = 'item', type = 'int(10) unsigned' },
+				{ name = 'value', type = 'text' },
+				{ name = 'name', type = 'text', null = true },
+			} ) then cancelEvent( ) return end
 	end
 )
 
@@ -265,7 +266,35 @@ addEventHandler( "items:use", root,
 					local value = item.value
 					local name = item.name or getName( id )
 					
-					if id == 3 then
+					if id == 1 then -- vehicle key
+						local vehicle = exports.vehicles:getVehicle( value )
+						if vehicle then
+							local x, y, z = getElementPosition( source )
+							if getElementDimension( source ) == getElementDimension( vehicle ) and getDistanceBetweenPoints3D( x, y, z, getElementPosition( vehicle ) ) < 20 then
+								exports.vehicles:toggleLock( source, vehicle )
+							else
+								outputChatBox( "(( This vehicle is too far away. ))", source, 255, 0, 0 )
+							end
+						else
+							outputChatBox( "(( This vehicle doesn't exist. ))", source, 255, 0, 0 )
+						end
+					elseif id == 2 then -- house key
+						local interior = exports.interiors:getInterior( value )
+						if interior then
+							local dimension = getElementDimension( source )
+							local x, y, z = getElementPosition( source )
+							-- close to the interior or exterior?
+							if dimension == getElementDimension( interior.inside ) and getDistanceBetweenPoints3D( x, y, z, getElementPosition( interior.inside ) ) < 5 then
+								exports.interiors:toggleLock( source, interior.inside )
+							elseif dimension == getElementDimension( interior.outside ) and getDistanceBetweenPoints3D( x, y, z, getElementPosition( interior.outside ) ) < 5 then
+								exports.interiors:toggleLock( source, interior.outside )
+							else
+								outputChatBox( "(( You can't lock anything nearby with this key. ))", source, 255, 0, 0 )
+							end
+						else
+							outputChatBox( "(( This interior doesn't exist. ))", source, 255, 0, 0 )
+						end
+					elseif id == 3 then
 						take( source, slot )
 						if value > 0 then -- we will only give health, not take it.
 							setElementHealth( source, math.max( 100, getElementHealth( source ) + value ) )
@@ -287,6 +316,25 @@ addEventHandler( "items:use", root,
 	end
 )
 
+addEvent( "items:destroy", true )
+addEventHandler( "items:destroy", root,
+	function( slot )
+		if source == client then
+			if exports.players:isLoggedIn( source ) then
+				local item = get( source )[ slot ]
+				if item then
+					local id = item.item
+					local value = item.value
+					local name = item.name or getName( id )
+					
+					take( source, slot )
+					exports.chat:me( source, "destroyed a " .. name .. "." )
+				end
+			end
+		end
+	end
+)
+
 --
 
 addCommandHandler( "giveitem",
@@ -296,7 +344,7 @@ addCommandHandler( "giveitem",
 			local other, pname = exports.players:getFromName( player, other )
 			if other then
 				-- check if it's a valid item id
-				if id >= 0 and id < #item_list then
+				if id >= 0 and id <= #item_list then
 					-- we need to split our name and value apart
 					local arguments = { ... }
 					local value = { }

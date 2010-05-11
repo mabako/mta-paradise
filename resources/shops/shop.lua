@@ -92,7 +92,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'y', type = 'float' },
 				{ name = 'z', type = 'float' },
 				{ name = 'rotation', type = 'float' },
-				{ name = 'interior', type = 'int(10) unsigned' },
+				{ name = 'interior', type = 'tinyint(3) unsigned' },
 				{ name = 'dimension', type = 'int(10) unsigned' },
 				{ name = 'configuration', type = 'varchar(45)' },
 				{ name = 'skin', type = 'int(10) unsigned', default = 0 },
@@ -226,6 +226,26 @@ addCommandHandler( { "deleteshop", "delshop" },
 	true
 )
 
+addCommandHandler( "nearbyshops",
+	function( player, commandName )
+		if hasObjectPermissionTo( player, "command.createshop", false ) or hasObjectPermissionTo( player, "command.deleteshop", false ) then
+			local x, y, z = getElementPosition( player )
+			local dimension = getElementDimension( player )
+			local interior = getElementInterior( player )
+			
+			outputChatBox( "Nearby Shops:", player, 255, 255, 0 )
+			for key, value in pairs( shops ) do
+				if isElement( key ) and getElementDimension( key ) == dimension and getElementInterior( key ) == interior then
+					local distance = getDistanceBetweenPoints3D( x, y, z, getElementPosition( key ) )
+					if distance < 20 then
+						outputChatBox( "  Shop " .. value .. " - Type: " .. tostring( shops[ value ].configuration ) .. ".", player, 255, 255, 0 )
+					end
+				end
+			end
+		end
+	end
+)
+
 -- client interaction
 
 addEventHandler( "onElementClicked", resourceRoot,
@@ -256,6 +276,14 @@ addEventHandler( "onElementClicked", resourceRoot,
 					end
 				end
 			end
+		end
+	end
+)
+
+addEventHandler( "onCharacterLogout", root,
+	function( )
+		if p[ source ] then
+			p[ source ].shopID = nil
 		end
 	end
 )

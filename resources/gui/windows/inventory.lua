@@ -29,6 +29,12 @@ windows.inventory =
 		panes = { }
 	},
 	{
+		type = "label",
+		text = function( ) return getKeyState( 'delete' ) and "Click on an Item to destroy it." or "Press 'delete', then click an item to destroy it." end,
+		onRender = function( pos ) if getKeyState( 'delete' ) then dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( { 255, 255, 255, 63 } ) ) ) end end,
+		alignX = "center",
+	},
+	{
 		type = "button",
 		text = "Close",
 		onClick = function( ) hide( ) showCursor( false ) end,
@@ -45,11 +51,15 @@ function updateInventory( )
 				{
 					image = image or ":players/images/skins/-1.png",
 					onHover = function( cursor, pos )
-							dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( { 255, 255, 0, 63 } ) ) )
+							dxDrawRectangle( pos[1], pos[2], pos[3] - pos[1], pos[4] - pos[2], tocolor( unpack( getKeyState( 'delete' ) and { 255, 0, 0, 63 } or { 255, 255, 0, 63 } ) ) )
 						end,
 					onClick = function( key )
 							if key == 1 then
-								triggerServerEvent( "items:use", getLocalPlayer( ), k )
+								if getKeyState( 'delete' ) then
+									triggerServerEvent( "items:destroy", getLocalPlayer( ), k )
+								else
+									triggerServerEvent( "items:use", getLocalPlayer( ), k )
+								end
 							end
 						end
 				}

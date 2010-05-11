@@ -80,18 +80,18 @@ end
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
 		if not exports.sql:create_table( 'teleports',
-		{
-			{ name = 'teleportID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
-			{ name = 'aX', type = 'float' },
-			{ name = 'aY', type = 'float' },
-			{ name = 'aZ', type = 'float' },
-			{ name = 'aInterior', type = 'tinyint(3) unsigned' },
-			{ name = 'aDimension', type = 'int(10) unsigned' },
-			{ name = 'bX', type = 'float' },
-			{ name = 'bY', type = 'float' },
-			{ name = 'bZ', type = 'float' },
-			{ name = 'bInterior', type = 'tinyint(3) unsigned' },
-			{ name = 'bDimension', type = 'int(10) unsigned' },
+			{
+				{ name = 'teleportID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
+				{ name = 'aX', type = 'float' },
+				{ name = 'aY', type = 'float' },
+				{ name = 'aZ', type = 'float' },
+				{ name = 'aInterior', type = 'tinyint(3) unsigned' },
+				{ name = 'aDimension', type = 'int(10) unsigned' },
+				{ name = 'bX', type = 'float' },
+				{ name = 'bY', type = 'float' },
+				{ name = 'bZ', type = 'float' },
+				{ name = 'bInterior', type = 'tinyint(3) unsigned' },
+				{ name = 'bDimension', type = 'int(10) unsigned' },
 			} ) then cancelEvent( ) return end
 		
 		--

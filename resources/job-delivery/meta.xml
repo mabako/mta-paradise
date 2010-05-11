@@ -23,8 +23,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<include resource="interiors"/>
 	<include resource="vehicle-nodes"/>
 	
-	<export function="addDropOff"/><!-- ( dimension ) -->
-	<export function="removeDropOff"/><!-- ( dimension ) -->
+	<!-- Adds a drop-off for an interior.
+		parameters:
+			(number) interior id/dimension - the interior which should have a drop-off.
+	-->
+	<export function="addDropOff"/>
+	<!-- Removes a drop off that was assigned to an interior
+		parameters:
+			(number) interior id/dimension - which interior had a drop-off and should now be removed.
+	-->
+	<export function="removeDropOff"/>
 	
 	<settings>
 		<!-- (Civilian) Vehicles you can use for the delivery job -->
