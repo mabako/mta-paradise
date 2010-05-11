@@ -296,13 +296,13 @@ addEventHandler( "items:use", root,
 						end
 					elseif id == 3 then
 						take( source, slot )
-						if value > 0 then -- we will only give health, not take it.
+						if type( value ) == "number" and value > 0 then -- we will only give health, not take it.
 							setElementHealth( source, math.max( 100, getElementHealth( source ) + value ) )
 						end
 						exports.chat:me( source, "eats a " .. name .. "." )
 					elseif id == 4 then
 						take( source, slot )
-						if value > 0 then -- we will only give health, not take it.
+						if type( value ) == "number" and value > 0 then -- we will only give health, not take it.
 							setElementHealth( source, math.max( 100, getElementHealth( source ) + value ) )
 						end
 						exports.chat:me( source, "drinks a " .. name .. "." )
