@@ -161,7 +161,40 @@ addEventHandler( "faction:show", root,
 						table.insert( members, { value.characterName, value.factionLeader, value.factionRank, exports.players:isLoggedIn( getPlayerFromName( value.characterName:gsub( " ", "_" ) ) ) and -1 or value.days } )
 					end
 					
-					triggerClientEvent( source, "faction:show", source, members, factions[ faction ].name )
+					triggerClientEvent( source, "faction:show", source, faction, members, factions[ faction ].name )
+				end
+			end
+		end
+	end
+)
+
+--
+
+addEvent( "faction:leave", true )
+addEventHandler( "faction:leave", root,
+	function( faction )
+		if source == client then
+			if factions[ faction ] and p[ source ].factions[ faction ] then
+				if exports.sql:query_free( "DELETE FROM character_to_factions WHERE characterID = " .. exports.players:getCharacterID( source ) .. " AND factionID = " .. faction .. " LIMIT 1" ) then
+					sendMessageToFaction( faction, "(( " .. getPlayerName( source ):gsub( "_", " " ) .. " left the faction " .. factions[ faction ].name .. ". ))", 255, 127, 0 )
+					
+					-- remove him from the tables
+					p[ source ].types = { }
+					for i = #p[ source ].factions, 1 do
+						if p[ source ].factions[ i ] == faction then
+							table.remove( p[ source ].factions, i )
+						else
+							p[ source ].types[ factions[ i ].type ] = true
+						end
+					end
+					p[ source ].rfactions[ faction ] = nil
+					
+					-- count other chars of this player in the same faction
+					local result = exports.sql:query_assoc_single( "SELECT COUNT(*) AS number FROM character_to_factions cf LEFT JOIN characters c ON c.characterID = cf.characterID WHERE cf.factionID = " .. faction .. " AND c.userID = " .. exports.players:getUserID( source ) )
+					if result.number == 0 then
+						-- delete from the usergroup
+						exports.sql:query_free( "DELETE FROM wcf1_user_to_groups WHERE userID = " .. exports.players:getUserID( source ) .. " AND groupID = " .. factions[ faction ].group )
+					end
 				end
 			end
 		end

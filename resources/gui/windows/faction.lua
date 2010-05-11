@@ -19,6 +19,14 @@ local localPlayer = getLocalPlayer( )
 
 --
 
+local function leave( faction )
+	triggerServerEvent( "faction:leave", localPlayer, faction )
+	hide( )
+	windows.faction[2].content = { }
+end
+
+--
+
 windows.faction =
 {
 	widthScale = 1.4,
@@ -38,10 +46,15 @@ windows.faction =
 			{ name = "Activity", width = 0.15, alignX = "center" }
 		},
 		content = { }
-	}
+	},
+	{
+		type = "button",
+		text = "Leave",
+		onClick = nil,
+	},
 }
 
-function updateFaction( members, name )
+function updateFaction( fnum, members, name )
 	windows.faction[1].text = name
 	
 	local grid = { }
@@ -63,4 +76,5 @@ function updateFaction( members, name )
 	end
 	
 	windows.faction[2].content = grid
+	windows.faction[3].onClick = function( key ) if key == 1 then leave( fnum ) end end
 end

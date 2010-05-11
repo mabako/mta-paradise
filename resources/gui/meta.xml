@@ -66,6 +66,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<!-- Updates the faction overview
 		parameters:
+			(number) unique ID of the faction
 			(table) all members
 			(string) name of the faction
 	-->
