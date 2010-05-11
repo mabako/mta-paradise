@@ -259,6 +259,8 @@ local function getAccountFromCard( cardID )
 		else
 			return false
 		end
+	else
+		cardCache[ cardID ].tick = getTickCount( )
 	end
 	return cardCache[ cardID ].account
 end
@@ -279,6 +281,8 @@ local function getAccountBalance( accountID )
 		else
 			return false
 		end
+	else
+		accountCache[ accountID ].tick = getTickCount( )
 	end
 	return accountCache[ accountID ].balance
 end
