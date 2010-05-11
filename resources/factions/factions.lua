@@ -72,6 +72,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 			{ name = 'characterID', type = 'int(10) unsigned', default = 0, primary_key = true },
 			{ name = 'factionID', type = 'int(10) unsigned', default = 0, primary_key = true },
 			{ name = 'factionLeader', type = 'tinyint(3) unsigned', default = 0 },
+			{ name = 'factionRank', type = 'tinyint(3) unsigned', default = 1 },
 			} ) then cancelEvent( ) return end
 		
 		--
@@ -144,3 +145,25 @@ end
 function isPlayerInFactionType( player, type )
 	return p[ player ] and p[ player ].types and p[ player ].types[ type ] or false
 end
+
+--
+
+addEvent( "faction:show", true )
+addEventHandler( "faction:show", root,
+	function( fnum )
+		if source == client then
+			local faction = p[ source ].factions[ fnum or 1 ]
+			if faction then
+				local result = exports.sql:query_assoc( "SELECT c.characterName, cf.factionLeader, cf.factionRank, DATEDIFF(NOW(),c.lastLogin) AS days FROM character_to_factions cf LEFT JOIN characters c ON c.characterID = cf.characterID WHERE cf.factionID = " .. faction .. " ORDER BY cf.factionRank DESC, c.characterName ASC" )
+				if result then
+					local members = { }
+					for key, value in ipairs( result ) do
+						table.insert( members, { value.characterName, value.factionLeader, value.factionRank, exports.players:isLoggedIn( getPlayerFromName( value.characterName:gsub( " ", "_" ) ) ) and -1 or value.days } )
+					end
+					
+					triggerClientEvent( source, "faction:show", source, members )
+				end
+			end
+		end
+	end
+)

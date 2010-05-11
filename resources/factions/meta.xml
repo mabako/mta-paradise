@@ -17,12 +17,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 <meta>
 	<script src="factions.lua"/>
 	
-	<include resource="players"/>
-
 	<export function="getFactionName"/>
 	<export function="getFactionTag"/>
 	
 	<export function="getPlayerFactions"/>
 	<export function="sendMessageToFaction"/>
 	<export function="isPlayerInFactionType"/>
+	
+	<script src="factions_c.lua" type="client"/>
+	
+	<include resource="players"/>
+	<include resource="gui"/>
 </meta>
