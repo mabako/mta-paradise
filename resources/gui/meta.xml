@@ -67,6 +67,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<!-- Updates the faction overview
 		parameters:
 			(table) all members
+			(string) name of the faction
 	-->
 	<export function="updateFaction" type="client"/>
 	

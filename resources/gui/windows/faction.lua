@@ -21,7 +21,13 @@ local localPlayer = getLocalPlayer( )
 
 windows.faction =
 {
-	widthScale = 1.3,
+	widthScale = 1.4,
+	{
+		type = "label",
+		text = "",
+		font = "bankgothic",
+		alignX = "center",
+	},
 	{
 		type = "grid",
 		columns =
@@ -35,7 +41,9 @@ windows.faction =
 	}
 }
 
-function updateFaction( members )
+function updateFaction( members, name )
+	windows.faction[1].text = name
+	
 	local grid = { }
 	
 	for key, value in ipairs( members ) do
@@ -54,5 +62,5 @@ function updateFaction( members )
 		table.insert( grid, t )
 	end
 	
-	windows.faction[1].content = grid
+	windows.faction[2].content = grid
 end

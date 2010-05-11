@@ -161,7 +161,7 @@ addEventHandler( "faction:show", root,
 						table.insert( members, { value.characterName, value.factionLeader, value.factionRank, exports.players:isLoggedIn( getPlayerFromName( value.characterName:gsub( " ", "_" ) ) ) and -1 or value.days } )
 					end
 					
-					triggerClientEvent( source, "faction:show", source, members )
+					triggerClientEvent( source, "faction:show", source, members, factions[ faction ].name )
 				end
 			end
 		end
