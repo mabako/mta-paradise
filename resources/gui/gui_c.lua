@@ -205,7 +205,7 @@ local function draw( window, y )
 						end
 					end
 					
-					color = text.color
+					color = text.color or color
 					text = text.text
 					if type( text ) == "function" then
 						text = text( )
