@@ -575,8 +575,6 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 						kickPlayer( otherPlayer )
 					end
 					setPlayerName( source, mtaCharName )
-					updateNametag( source )
-					updateNametagColor( source )
 					
 					-- spawn the player, as it's a valid char
 					spawnPlayer( source, char.x, char.y, char.z, char.rotation, char.skin, char.interior, char.dimension )
@@ -596,6 +594,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					
 					p[ source ].charID = tonumber( charID )
 					p[ source ].characterName = char.characterName
+					updateNametag( source )
 					
 					setPlayerTeam( source, team )
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
