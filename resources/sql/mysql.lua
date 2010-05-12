@@ -195,12 +195,21 @@ function query_assoc_single( str, ... )
 end
 
 function query_insertid( str, ... )
-	local id = false
 	local result, error = query( str, ... )
 	if result then
-		id = mysql_insert_id( connection )
+		local id = mysql_insert_id( connection )
 		free_result( result )
 		return id
+	end
+	return false, error
+end
+
+function query_affected_rows( str, ... )
+	local result, error = query( str, ... )
+	if result then
+		local rows = mysql_affected_rows( connection )
+		free_result( result )
+		return rows
 	end
 	return false, error
 end

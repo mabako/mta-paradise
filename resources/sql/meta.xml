@@ -63,7 +63,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			(string) the MySQL error message if any error occured, (nil) otherwise.
 	-->
 	<export function="query_insertid"/>
-
+	
+	<!-- Executes a MySQL query and returns the number of affected rows.
+		parameters:
+			(string) the query to execute. Can contain format options (%s, etc.)
+			(...) the format options. String will be automatically escaped.
+		returns:
+			(number) the number of rows affected if successful, (bool) false otherwise.
+			(string) the MySQL error message if any error occured, (nil) otherwise.
+	-->
+	<export function="query_affected_rows"/>
+	
 	<script src="layout.lua"/>
 	
 	<!-- Creates or modifies an existing MySQL table in a way that all columns exist with the given definitions.
