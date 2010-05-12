@@ -52,21 +52,90 @@ windows.faction =
 		text = "Leave",
 		onClick = nil,
 	},
+	{
+		type = "button",
+		text = "Close",
+		onClick = function( ) hide( ) end,
+	},
 }
 
+local function isInLeftHalf( cursor, pos )
+	return cursor[1] <= ( pos[1] + pos[3] ) / 2
+end
+
+local rightNames = { [0] = "-", [1] = "Leader", [2] = "Owner" }
 function updateFaction( fnum, members, name )
 	windows.faction[1].text = name
 	
 	local grid = { }
+	local ownRights = 0
+	local ownName = getPlayerName( localPlayer ):gsub( "_", " " )
+	for key, value in ipairs( members ) do
+		if value[1] == ownName then
+			ownRights = value[2]
+			break
+		end
+	end
 	
 	for key, value in ipairs( members ) do
-		t =
-		{
-			value[1],
-			value[2] == 2 and "Owner" or value[2] == 1 and "Leader" or "",
-			value[3],
-			value[4] == -1 and "Online" or value[4] == 0 and "Today" or value[4] == 1 and "Yesterday" or value[4] and ( value[4] .. " days ago" ) or "Never",
-		}
+		local t = { }
+		
+		table.insert( t, value[1] )
+		
+		-- promote/demote rights
+		local rights = rightNames[ value[2] ]
+		if ownRights == 2 and value[1] ~= ownName then
+			local a =
+			{
+				numRights = value[2],
+				text = rights
+			}
+			
+			a.onRender = function( cursor, pos )
+				a.text = rights
+				a.color = nil
+			end
+			
+			a.onHover = function( cursor, pos )
+				if isInLeftHalf( cursor, pos ) then
+					if a.numRights > 0 then
+						a.text = rightNames[ a.numRights - 1 ]
+						a.color = { 255, 127, 127 }
+					end
+				else
+					if a.numRights < 2 then
+						a.text = rightNames[ a.numRights + 1 ]
+						a.color = { 255, 127, 127 }
+					end
+				end
+			end
+			
+			a.onClick = function( key, cursor, pos )
+				if key == 1 then
+					if isInLeftHalf( cursor, pos ) then
+						if a.numRights > 0 then
+							if triggerServerEvent( "faction:demoterights", localPlayer, fnum, value[1], a.numRights - 1 ) then
+								a.numRights = a.numRights - 1
+								rights = rightNames[ a.numRights ]
+							end
+						end
+					else
+						if a.numRights < 2 then
+							if triggerServerEvent( "faction:promoterights", localPlayer, fnum, value[1], a.numRights + 1 ) then
+								a.numRights = a.numRights + 1
+								rights = rightNames[ a.numRights ]
+							end
+						end
+					end
+				end
+			end
+			table.insert( t, a )
+		else
+			table.insert( t, rights )
+		end
+		table.insert( t, a )
+		table.insert( t, value[3] )
+		table.insert( t, value[4] == -1 and "Online" or value[4] == 0 and "Today" or value[4] == 1 and "Yesterday" or value[4] and ( value[4] .. " days ago" ) or "Never" )
 		
 		if value[4] == -1 then
 			t.color = { 191, 255, 191 }

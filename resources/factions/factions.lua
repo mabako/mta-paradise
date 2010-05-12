@@ -68,12 +68,13 @@ addEventHandler( "onResourceStart", resourceRoot,
 			} ) then cancelEvent( ) return end
 		
 		if not exports.sql:create_table( 'character_to_factions',
-		{
-			{ name = 'characterID', type = 'int(10) unsigned', primary_key = true },
-			{ name = 'factionID', type = 'int(10) unsigned', primary_key = true },
-			{ name = 'factionLeader', type = 'tinyint(3) unsigned', default = 0 },
-			{ name = 'factionRank', type = 'tinyint(3) unsigned', default = 1 },
-			} ) then cancelEvent( ) return end
+			{
+				{ name = 'characterID', type = 'int(10) unsigned', primary_key = true },
+				{ name = 'factionID', type = 'int(10) unsigned', primary_key = true },
+				{ name = 'factionLeader', type = 'tinyint(3) unsigned', default = 0 },
+				{ name = 'factionRank', type = 'tinyint(3) unsigned', default = 1 },
+			}
+		) then cancelEvent( ) return end
 		
 		--
 		
@@ -246,7 +247,7 @@ addEvent( "faction:leave", true )
 addEventHandler( "faction:leave", root,
 	function( faction )
 		if source == client then
-			if factions[ faction ] and p[ source ].factions[ faction ] then
+			if factions[ faction ] and p[ source ].rfactions[ faction ] then
 				if exports.sql:query_free( "DELETE FROM character_to_factions WHERE characterID = " .. exports.players:getCharacterID( source ) .. " AND factionID = " .. faction .. " LIMIT 1" ) then
 					sendMessageToFaction( faction, "(( " .. getPlayerName( source ):gsub( "_", " " ) .. " left the faction " .. factions[ faction ].name .. ". ))", 255, 127, 0 )
 					
@@ -267,6 +268,60 @@ addEventHandler( "faction:leave", root,
 						-- delete from the usergroup
 						exports.sql:query_free( "DELETE FROM wcf1_user_to_groups WHERE userID = " .. exports.players:getUserID( source ) .. " AND groupID = " .. factions[ faction ].group )
 					end
+				end
+			end
+		end
+	end
+)
+
+--
+
+local rightNames = { "Leader", "Owner" }
+
+addEvent( "faction:demoterights", true )
+addEventHandler( "faction:demoterights", root,
+	function( faction, name, new )
+		-- Sanity Check
+		if source == client and p[ source ].rfactions[ faction ] and p[ source ].rfactions[ faction ].leader == 2 and type( name ) == "string" then
+			local player = getPlayerFromName( name:gsub( " ", "_" ) )
+			if player ~= source then -- You can't change your own rights.
+				if p[ player ] and not p[ player ].rfactions[ faction ] then
+					-- player exists, but is not a member of the faction
+					return
+				end
+				
+				if exports.sql:query_affected_rows( "UPDATE character_to_factions cf, characters c SET cf.factionLeader = cf.factionLeader - 1 WHERE c.characterID = cf.characterID AND c.characterName = '%s' AND cf.factionLeader >= 0", name ) then
+					sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " demoted " .. name .. " to " .. ( rightNames[ new ] or "Member" ) .. ". ))", 255, 127, 0 )
+					if player then
+						p[ player ].rfactions[ faction ].leader = p[ player ].rfactions[ faction ].leader + 1
+					end
+				else
+					outputChatBox( "(( MySQL-Error. ))", source, 255, 0, 0 )
+				end
+			end
+		end
+	end
+)
+
+addEvent( "faction:promoterights", true )
+addEventHandler( "faction:promoterights", root,
+	function( faction, name, new )
+		-- Sanity Check
+		if source == client and p[ source ].rfactions[ faction ] and p[ source ].rfactions[ faction ].leader == 2 and type( name ) == "string" then
+			local player = getPlayerFromName( name:gsub( " ", "_" ) )
+			if player ~= source then -- You can't change your own rights.
+				if p[ player ] and not p[ player ].rfactions[ faction ] then
+					-- player exists, but is not a member of the faction
+					return
+				end
+				
+				if exports.sql:query_affected_rows( "UPDATE character_to_factions cf, characters c SET cf.factionLeader = cf.factionLeader + 1 WHERE c.characterID = cf.characterID AND c.characterName = '%s' AND cf.factionLeader < 2", name ) then
+					sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " promoted " .. name .. " to " .. ( rightNames[ new ] or "Member" ) .. ". ))", 255, 127, 0 )
+					if player then
+						p[ player ].rfactions[ faction ].leader = p[ player ].rfactions[ faction ].leader + 1
+					end
+				else
+					outputChatBox( "(( MySQL-Error. ))", source, 255, 0, 0 )
 				end
 			end
 		end
