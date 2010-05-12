@@ -73,7 +73,7 @@ local p = { }
 local getPedOccupiedVehicle_ = getPedOccupiedVehicle
       getPedOccupiedVehicle = function( ped )
 	local vehicle = isPedInVehicle( ped ) and getPedOccupiedVehicle_( ped )
-	if vehicle and ( p[ ped ] == vehicle or getElementParent( vehicle ) ~= getResourceDynamicElementRoot( resource ) ) then
+	if vehicle and ( p[ ped ] and p[ ped ].vehicle == vehicle or getElementParent( vehicle ) ~= getResourceDynamicElementRoot( resource ) ) then
 		return vehicle
 	end
 	return false
@@ -438,6 +438,22 @@ addCommandHandler( { "vehicleid", "thisvehicle" },
 	end
 )
 
+addCommandHandler( { "oldvehicleid", "oldvehicle" },
+	function( player, commandName )
+		local vehicle = p[ player ] and p[ player ].oldVehicle
+		if vehicle and isElement( vehicle ) then
+			local vehicleID = vehicles[ vehicle ] and vehicles[ vehicle ].vehicleID
+			if vehicleID then
+				outputChatBox( "The ID of your old " .. getVehicleName( vehicle ) .. " is " .. vehicleID .. ".", player, 0, 255, 0 )
+			else
+				outputChatBox( "This " .. getVehicleName( vehicle ) .. " has no ID.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "You haven't been in any vehicle.", player, 255, 0, 0 )
+		end
+	end
+)
+
 addCommandHandler( "setwindowstinted",
 	function( player, commandName, other, state )
 		local state = tonumber( state )
@@ -635,7 +651,10 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 					end
 				end
 				
-				p[ player ] = source
+				if not p[ player ] then
+					p[ player ] = { }
+				end
+				p[ player ].vehicle = source
 				
 				setVehicleEngineState( source, data.engineState )
 				
@@ -653,20 +672,25 @@ addEventHandler( "onVehicleStartExit", resourceRoot,
 			cancelEvent( )
 			outputChatBox( "(( The door is locked. ))", player, 255, 0, 0 )
 		else
-			p[ player ] = nil
+			p[ player ].oldVehicle = p[ player ].vehicle
+			p[ player ].vehicle = nil
 		end
 	end
 )
 
 addEventHandler( "onVehicleExit", resourceRoot,
 	function( player )
-		p[ player ] = nil
+		if p[ source ] then
+			p[ source ].vehicle = nil
+		end
 	end
 )
 
 addEventHandler( "onPlayerWasted", root,
 	function( )
-		p[ source ] = nil
+		if p[ source ] then
+			p[ source ].vehicle = nil
+		end
 	end
 )
 
