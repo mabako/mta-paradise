@@ -18,6 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 local p = { }
 local factions = { }
 local factionTypes = { police = 1 }
+local maxRanks = 12
+
+--
 
 local function loadFaction( factionID, name, type, tag, groupID )
 	if not tag or #tag == 0 then
@@ -428,6 +431,52 @@ addEventHandler( "faction:kick", root,
 				else
 					outputChatBox( "(( MySQL-Error. ))", source, 255, 0, 0 )
 				end
+			end
+		end
+	end
+)
+
+addEvent( "faction:updateranks", true )
+addEventHandler( "faction:updateranks", root,
+	function( faction, ranks )
+		-- Sanity Check
+		if source == client and p[ source ].rfactions[ faction ] and p[ source ].rfactions[ faction ].leader == 2 and type( ranks ) == "table" and #ranks <= maxRanks then
+			-- we enforce 1 rank minimum either way.
+			if #ranks > 0 then
+				-- check if all names are <= 64 chars (not that it makes remotely sense to have so long names) --- TODO: Check to what to reduce this. See table definition above and client's maxlength field for ranks.
+				for i = 1, #ranks do
+					if type( ranks[i] ) ~= "string" or #ranks[i] > 64 then
+						return
+					end
+				end
+				
+				local endCount = #ranks
+				if #factions[ faction ].ranks > #ranks then -- too much ranks
+					-- delete all ranks that do not exist anymore, set user to the highest existing rank
+					exports.sql:query_free( "DELETE FROM faction_ranks WHERE factionID = " .. faction .. " AND factionRankID > " .. #ranks )
+					exports.sql:query_free( "UPDATE character_to_factions SET factionRankID = " .. #ranks .. " WHERE factionID = " .. faction .. " AND factionRank > " .. #ranks )
+				elseif #factions[ faction ].ranks < #ranks then -- not enough ranks
+					-- we only save those ranks we didn't add later
+					endCount = #factions[ faction ].ranks
+					
+					-- fill our new ranks in
+					for i = endCount + 1, #ranks do
+						exports.sql:query_free( "INSERT INTO faction_ranks (factionID, factionRankID, factionRankName) VALUES (" .. faction .. ", " .. i .. ", '%s')", ranks[i] )
+					end
+				end
+				
+				-- update all existing ranks
+				for i = 1, endCount do
+					if factions[ faction ].ranks[i] ~= ranks[i] then
+						exports.sql:query_free( "UPDATE faction_ranks SET factionRankName = '%s' WHERE factionID = " .. faction .. " AND factionRankID = " .. i, ranks[i] )
+					end
+				end
+				
+				-- save our ranks
+				factions[ faction ].ranks = ranks
+				
+				-- message
+				sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " updated the ranks. ))", 255, 127, 0 )
 			end
 		end
 	end

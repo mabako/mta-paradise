@@ -239,6 +239,10 @@ local function draw( window, y )
 					guiEditSetMasked( window.edit, true )
 				end
 				
+				if window.maxlength then
+					guiEditSetMaxLength( window.edit, window.maxlength )
+				end
+				
 				addEventHandler( "onClientElementDestroy", window.edit, function( ) window.edit = nil end, false )
 				if window.onAccepted then
 					addEventHandler( "onClientGUIAccepted", window.edit, function( ) window.onAccepted( ) end, false )

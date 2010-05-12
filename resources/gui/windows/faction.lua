@@ -16,6 +16,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 local localPlayer = getLocalPlayer( )
+local maxRanks = 12
 
 --
 
@@ -65,6 +66,110 @@ end
 
 local rightNames = { [0] = "-", [1] = "Leader", [2] = "Owner" }
 local rankNames = { }
+
+local function buildRanksWindow( fnum )
+	windows.faction_ranks =
+	{
+		{
+			type = "label",
+			text = "Ranks",
+			font = "bankgothic",
+			alignX = "center",
+		}
+	}
+	
+	for key, value in ipairs( rankNames ) do
+		table.insert( windows.faction_ranks,
+			{
+				type = "edit",
+				text = "Rank #" .. key,
+				id = "g:faction_ranks:" .. key,
+				default = value,
+				maxlength = 64,
+			}
+		)
+	end
+	
+	table.insert( windows.faction_ranks,
+		{
+			type = "button",
+			text = "More...",
+			onClick = function( key )
+					if key == 1 then
+						local endEdits = #windows.faction_ranks - 3
+						if endEdits <= maxRanks then
+							table.insert( windows.faction_ranks, endEdits + 1,
+								{
+									type = "edit",
+									text = "Rank #" .. endEdits,
+									id = "g:faction_ranks:" .. endEdits,
+									maxlength = 64,
+								}
+							)
+						end
+					end
+				end
+		}
+	)
+	table.insert( windows.faction_ranks,
+		{
+			type = "button",
+			text = "Save & Back",
+			onClick = function( key )
+					if key == 1 then
+						-- collect all ranks
+						local ranks = { }
+						for i = 1, 12 do
+							if destroy[ "g:faction_ranks:" .. i ] then
+								ranks[ i ] = guiGetText( destroy[ "g:faction_ranks:" .. i ] )
+							else
+								break
+							end
+						end
+						
+						-- cut empty ranks at the rock bottom
+						for i = #ranks, 1, -1 do
+							if ranks[ i ] == "" then
+								ranks[ i ] = nil
+							else
+								break
+							end
+						end
+						
+						if #ranks > 0 then
+							-- update for ourselves
+							rankNames = ranks
+							
+							-- refresh our view
+							for key, value in ipairs( windows.faction[2].content ) do
+								value[3].text = ranks[ value[3].numRank ] or ranks[ #ranks ]
+								value[3].ctext = value[3].text
+							end
+							
+							-- tell the server
+							triggerServerEvent( "faction:updateranks", localPlayer, fnum, ranks )
+						else
+							outputChatBox( "You need to define at least one rank.", 255, 0, 0 )
+						end
+						-- back to the faction menu
+						show( 'faction', true )
+					end
+				end
+		}
+	)
+	table.insert( windows.faction_ranks,
+		{
+			type = "button",
+			text = "Cancel & Back",
+			onClick = function( key )
+					if key == 1 then
+						show( 'faction', true )
+					end
+				end
+		}
+	)
+end
+
 function updateFaction( fnum, members, name, ranks )
 	rankNames = ranks
 	windows.faction[1].text = name
@@ -107,7 +212,6 @@ function updateFaction( fnum, members, name, ranks )
 				else
 					if a.numRights < 2 then
 						a.text = rightNames[ a.numRights + 1 ]
-						value[2] = value[2] + 1
 						a.color = { 255, 127, 127 }
 					end
 				end
@@ -143,11 +247,12 @@ function updateFaction( fnum, members, name, ranks )
 			local a =
 			{
 				text = rank,
-				numRank = value[3]
+				numRank = value[3],
+				ctext = rank
 			}
 			
 			a.onRender = function( cursor, pos )
-				a.text = rank
+				a.text = a.ctext
 				a.color = nil
 			end
 			
@@ -160,7 +265,6 @@ function updateFaction( fnum, members, name, ranks )
 				else
 					if a.numRank < #rankNames then
 						a.text = rankNames[ a.numRank + 1 ]
-						value[2] = value[2] + 1
 						a.color = { 255, 127, 127 }
 					end
 				end
@@ -172,14 +276,14 @@ function updateFaction( fnum, members, name, ranks )
 						if a.numRank > 1 then
 							if triggerServerEvent( "faction:demote", localPlayer, fnum, value[1], a.numRank - 1 ) then
 								a.numRank = a.numRank - 1
-								rank = rankNames[ a.numRank ]
+								a.ctext = rankNames[ a.numRank ]
 							end
 						end
 					else
 						if a.numRank < #rankNames then
 							if triggerServerEvent( "faction:promote", localPlayer, fnum, value[1], a.numRank + 1 ) then
 								a.numRank = a.numRank + 1
-								rank = rankNames[ a.numRank ]
+								a.ctext = rankNames[ a.numRank ]
 							end
 						end
 					end
@@ -188,7 +292,7 @@ function updateFaction( fnum, members, name, ranks )
 			
 			table.insert( t, a )
 		else
-			table.insert( t, rankNames[ value[3] ] or value[3] )
+			table.insert( t, { text = rankNames[ value[3] ] or value[3], numRank = value[3], ctext = rankNames[ value[3] ] or value[3] } )
 		end
 		
 		local lastOnline = value[4] == -1 and "Online" or value[4] == 0 and "Today" or value[4] == 1 and "Yesterday" or value[4] and ( value[4] .. " days ago" ) or "Never"
@@ -274,8 +378,20 @@ function updateFaction( fnum, members, name, ranks )
 			text = "Invite",
 			onClick = function( key ) if key == 1 then show( 'faction_invite', true ) end end
 		}
+	end
+	
+	--
+	if ownRights == 2 then
+		windows.faction[6] =
+		{
+			type = "button",
+			text = "Ranks",
+			onClick = function( key ) if key == 1 then buildRanksWindow( fnum ) show( 'faction_ranks', true ) end end
+		}
 	else
 		windows.faction[5] = nil
+		windows.faction[6] = nil
+		windows.faction_ranks = nil
 		windows.faction_invite = nil
 	end
 end
