@@ -69,8 +69,8 @@ addEventHandler( "onResourceStart", resourceRoot,
 		
 		if not exports.sql:create_table( 'character_to_factions',
 		{
-			{ name = 'characterID', type = 'int(10) unsigned', default = 0, primary_key = true },
-			{ name = 'factionID', type = 'int(10) unsigned', default = 0, primary_key = true },
+			{ name = 'characterID', type = 'int(10) unsigned', primary_key = true },
+			{ name = 'factionID', type = 'int(10) unsigned', primary_key = true },
 			{ name = 'factionLeader', type = 'tinyint(3) unsigned', default = 0 },
 			{ name = 'factionRank', type = 'tinyint(3) unsigned', default = 1 },
 			} ) then cancelEvent( ) return end
@@ -166,6 +166,78 @@ addEventHandler( "faction:show", root,
 			end
 		end
 	end
+)
+
+--
+
+local function joinFaction( inviter, player, faction )
+	if exports.players:isLoggedIn( player ) and p[ player ] then
+		if not p[ player ].rfactions[ faction ] then
+			-- let's add him into the faction
+			if exports.sql:query_free( "INSERT INTO character_to_factions (characterID, factionID) VALUES (" .. exports.players:getCharacterID( player ) .. ", " .. faction .. ")" ) then
+				-- if he is the first user of this char, set him to the usergroup
+				local result = exports.sql:query_assoc_single( "SELECT COUNT(*) AS number FROM character_to_factions cf LEFT JOIN characters c ON c.characterID = cf.characterID WHERE cf.factionID = " .. faction .. " AND c.userID = " .. exports.players:getUserID( player ) )
+				if result.number == 1 then
+					if not exports.sql:query_free( "INSERT INTO wcf1_user_to_groups (userID, groupID) VALUES (" .. exports.players:getUserID( player ) .. ", " .. factions[ faction ].group .. ")" ) then
+						-- revert the faction assignment back
+						exports.sql:query_free( "DELETE FROM character_to_factions WHERE characterID = " .. exports.players:getCharacterID( player ) .. " AND factionID = " .. faction .. " LIMIT 1" )
+						
+						outputChatBox( "(( MySQL-Error. ))", inviter, 255, 0, 0 )
+						
+						return false
+					end
+					outputDebugString( "Added " .. getPlayerName( player ) .. " to usergroup " .. factions[ faction ].name )
+				end
+				
+				-- successful
+				table.insert( p[ player ].factions, faction )
+				p[ player ].rfactions[ faction ] = { leader = 0 }
+				p[ player ].types[ factions[ faction ].type ] = true
+				outputDebugString( getPlayerName( inviter ):gsub( "_", " " ) .. " set " .. getPlayerName( player ):gsub( "_", " " ) .. " to " .. factions[ faction ].name )
+				return true
+			end
+		else
+			outputChatBox( "(( " .. getPlayerName( player ) .. " already is in that faction. ))", inviter, 255, 0, 0 )
+		end
+	end
+	return false
+end
+
+addEvent( "faction:join", true )
+addEventHandler( "faction:join", root,
+	function( faction )
+		-- check for faction owner
+		if client and client ~= source and p[ client ] and p[ client ].rfactions[ faction ] and p[ client ].rfactions[ faction ].leader == 2 then
+			if joinFaction( client, source, faction ) then
+				outputChatBox( "(( " .. getPlayerName( client ):gsub( "_", " " ) .. " set you to faction " .. factions[ faction ].name .. ". ))", source, 0, 255, 0 )
+				outputChatBox( "(( You set " .. getPlayerName( source ):gsub( "_", " " ) .. " to faction " .. factions[ faction ].name .. ". ))", client, 0, 255, 0 )
+			end
+		end
+	end
+)
+
+addCommandHandler( "setplayerfaction",
+	function( player, commandName, other, faction )
+		local faction = tonumber( faction )
+		if other and faction then
+			if factions[ faction ] then
+				local other, name = exports.players:getFromName( player, other )
+				if other then
+					if joinFaction( player, other, faction ) then
+						outputChatBox( "(( " .. getPlayerName( player ):gsub( "_", " " ) .. " set you to faction " .. factions[ faction ].name .. ". ))", other, 0, 255, 153 )
+						if player ~= other then
+							outputChatBox( "(( You set " .. getPlayerName( other ):gsub( "_", " " ) .. " to faction " .. factions[ faction ].name .. ". ))", player, 0, 255, 153 )
+						end
+					end
+				end
+			else
+				outputChatBox( "This faction does not exist.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [faction]", player, 255, 255, 255 )
+		end
+	end,
+	true
 )
 
 --
