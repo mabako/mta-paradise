@@ -21,6 +21,7 @@ local maxAccountsPerCharacter = get( 'max_accounts_per_character' ) or 3
 
 local p = { }
 local banks = { }
+local blips = { }
 
 --
 
@@ -56,6 +57,18 @@ local function loadBank( id, x, y, z, rotation, interior, dimension, skin )
 		bank = createPed( skin, x, y, z )
 		setPedRotation( bank, rotation )
 		setPedFrozen( bank, true )
+		
+		if dimension > 0 and not blips[ dimension ] then
+			if getResourceState( getResourceFromName( "interiors" ) ) == "running" then
+				local int = exports.interiors:getInterior( dimension )
+				if int then
+					if getElementDimension( int.outside ) == 0 then
+						local x, y, z = getElementPosition( int.outside )
+						blips[ dimension ] = createBlip( x, y, z, 52, 2, 255, 255, 255, 255, 0, 50 )
+					end
+				end
+			end
+		end
 	end
 	
 	setElementInterior( bank, interior )
@@ -199,9 +212,27 @@ addCommandHandler( { "deletebank", "delbank" },
 					if exports.sql:query_free( "DELETE FROM banks WHERE bankID = " .. bankID ) then
 						outputChatBox( "You deleted bank " .. bankID .. ".", player, 0, 255, 153 )
 						
+						local dimension = getElementDimension( bank.bank )
+						
 						destroyElement( bank.bank )
 						banks[ bankID ] = nil
 						banks[ bank.bank ] = nil
+						
+						-- check for other banks in that dimension and destroy a blip if neccessary
+						local found = false
+						if blips[ dimension ] then
+							for key, value in pairs( banks ) do
+								if isElement( key ) and getElementType( key ) == "ped" and getElementDimension( key ) == dimension then
+									found = true
+									break
+								end
+							end
+						end
+						
+						if not found then
+							destroyElement( blips[ dimension ] )
+							blips[ dimension ] = nil
+						end
 					else
 						outputChatBox( "MySQL-Query failed.", player, 255, 0, 0 )
 					end

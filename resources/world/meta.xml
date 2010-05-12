@@ -35,4 +35,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<file src="col/ggbrig_05_sfw.col" />
 	<file src="col/ggbrig_07_sfw.col" />
 	<script src="cols.lua" type="client" />
+	
+	<script src="custom_blip.lua" type="client"/>
 </meta>

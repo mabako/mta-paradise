@@ -55,10 +55,6 @@ bindKey( 'arrow_u', 'down',
 				setTimer(
 					function( )
 						if konamiProcess ~= 0 then
-							if konamiProcess == 8 then
-								bindKey( "b", "down", "chatbox", "LocalOOC" )
-							end
-							
 							konamiProcess = 0
 						end
 					end,
