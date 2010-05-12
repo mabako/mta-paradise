@@ -217,7 +217,7 @@ addEventHandler( "faction:join", root,
 	end
 )
 
-addCommandHandler( "setplayerfaction",
+addCommandHandler( "setfaction",
 	function( player, commandName, other, faction )
 		local faction = tonumber( faction )
 		if other and faction then
