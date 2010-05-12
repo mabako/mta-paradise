@@ -187,6 +187,24 @@ local function draw( window, y )
 				if type( text ) == "table" then
 					color = text.color
 					text = text.text
+					
+					if value.onRender then
+						value.onRender( { x, y, x + width, y + line_height } )
+					end
+					if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY <= y + line_height then
+						if value.onHover then
+							value.onHover( { cursorX, cursorY }, { x, y, x + width, y + line_height } )
+						end
+						
+						if value.onClick then
+							if clicked.mouse1 then
+								value.onClick( 1, { cursorX, cursorY }, { x, y, x + width, y + line_height } )
+							end
+							if clicked.mouse2 then
+								value.onClick( 2, { cursorX, cursorY }, { x, y, x + width, y + line_height } )
+							end
+						end
+					end
 				end
 				
 				-- draw it
