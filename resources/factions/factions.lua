@@ -35,7 +35,15 @@ local function loadFaction( factionID, name, type, tag, groupID )
 		until false
 	end
 	
-	factions[ factionID ] = { name = name, type = type, tag = tag, group = groupID }
+	-- load all ranks
+	local ranks = { }
+	local result = exports.sql:query_assoc( "SELECT factionRankName FROM faction_ranks WHERE factionID = " .. factionID .. " ORDER BY factionRankID ASC" )
+	if result then
+		for key, value in ipairs( result ) do
+			table.insert( ranks, value.factionRankName )
+		end
+	end
+	factions[ factionID ] = { name = name, type = type, tag = tag, group = groupID, ranks = ranks }
 end
 
 local function loadPlayer( player )
@@ -73,6 +81,14 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'factionID', type = 'int(10) unsigned', primary_key = true },
 				{ name = 'factionLeader', type = 'tinyint(3) unsigned', default = 0 },
 				{ name = 'factionRank', type = 'tinyint(3) unsigned', default = 1 },
+			}
+		) then cancelEvent( ) return end
+		
+		if not exports.sql:create_table( 'faction_ranks',
+			{
+				{ name = 'factionID', type = 'int(10) unsigned', primary_key = true },
+				{ name = 'factionRankID', type = 'int(10) unsigned', primary_key = true },
+				{ name = 'factionRankName', type = 'varchar(64)' },
 			}
 		) then cancelEvent( ) return end
 		
@@ -162,7 +178,7 @@ addEventHandler( "faction:show", root,
 						table.insert( members, { value.characterName, value.factionLeader, value.factionRank, exports.players:isLoggedIn( getPlayerFromName( value.characterName:gsub( " ", "_" ) ) ) and -1 or value.days } )
 					end
 					
-					triggerClientEvent( source, "faction:show", source, faction, members, factions[ faction ].name )
+					triggerClientEvent( source, "faction:show", source, faction, members, factions[ faction ].name, factions[ faction ].ranks )
 				end
 			end
 		end
@@ -318,6 +334,50 @@ addEventHandler( "faction:promoterights", root,
 					if player then
 						p[ player ].rfactions[ faction ].leader = p[ player ].rfactions[ faction ].leader + 1
 					end
+				else
+					outputChatBox( "(( MySQL-Error. ))", source, 255, 0, 0 )
+				end
+			end
+		end
+	end
+)
+
+addEvent( "faction:demote", true )
+addEventHandler( "faction:demote", root,
+	function( faction, name, new )
+		-- Sanity Check
+		if source == client and p[ source ].rfactions[ faction ] and p[ source ].rfactions[ faction ].leader >= 1 and type( name ) == "string" then
+			local player = getPlayerFromName( name:gsub( " ", "_" ) )
+			if player and p[ player ] and not p[ player ].rfactions[ faction ] then
+				-- player exists, but is not a member of the faction
+				return
+			end
+			
+			if factions[ faction ].ranks[ new ] then
+				if exports.sql:query_affected_rows( "UPDATE character_to_factions cf, characters c SET cf.factionRank = cf.factionRank - 1 WHERE c.characterID = cf.characterID AND c.characterName = '%s' AND cf.factionRank > 1", name ) == 1 then
+					sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " demoted " .. name .. " to " .. ( factions[ faction ].ranks[ new ] or "?" ) .. ". ))", 255, 127, 0 )
+				else
+					outputChatBox( "(( MySQL-Error. ))", source, 255, 0, 0 )
+				end
+			end
+		end
+	end
+)
+
+addEvent( "faction:promote", true )
+addEventHandler( "faction:promote", root,
+	function( faction, name, new )
+		-- Sanity Check
+		if source == client and p[ source ].rfactions[ faction ] and p[ source ].rfactions[ faction ].leader >= 1 and type( name ) == "string" then
+			local player = getPlayerFromName( name:gsub( " ", "_" ) )
+			if player and p[ player ] and not p[ player ].rfactions[ faction ] then
+				-- player exists, but is not a member of the faction
+				return
+			end
+			
+			if factions[ faction ].ranks[ new ] then
+				if exports.sql:query_affected_rows( "UPDATE character_to_factions cf, characters c SET cf.factionRank = cf.factionRank + 1 WHERE c.characterID = cf.characterID AND c.characterName = '%s' AND cf.factionRank < " .. #factions[ faction ].ranks, name ) == 1 then
+					sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " promoted " .. name .. " to " .. ( factions[ faction ].ranks[ new ] or "?" ) .. ". ))", 255, 127, 0 )
 				else
 					outputChatBox( "(( MySQL-Error. ))", source, 255, 0, 0 )
 				end

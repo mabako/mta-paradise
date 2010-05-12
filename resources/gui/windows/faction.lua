@@ -64,7 +64,9 @@ local function isInLeftHalf( cursor, pos )
 end
 
 local rightNames = { [0] = "-", [1] = "Leader", [2] = "Owner" }
-function updateFaction( fnum, members, name )
+local rankNames = { }
+function updateFaction( fnum, members, name, ranks )
+	rankNames = ranks
 	windows.faction[1].text = name
 	
 	local grid = { }
@@ -135,7 +137,59 @@ function updateFaction( fnum, members, name )
 			table.insert( t, { text = rights, numRights = value[2] } )
 		end
 		table.insert( t, a )
-		table.insert( t, value[3] )
+		
+		local rank = rankNames[ value[3] ] or value[3]
+		if ownRights >= 1 then
+			local a =
+			{
+				text = rank,
+				numRank = value[3]
+			}
+			
+			a.onRender = function( cursor, pos )
+				a.text = rank
+				a.color = nil
+			end
+			
+			a.onHover = function( cursor, pos )
+				if isInLeftHalf( cursor, pos ) then
+					if a.numRank > 1 then
+						a.text = rankNames[ a.numRank - 1 ]
+						a.color = { 255, 127, 127 }
+					end
+				else
+					if a.numRank < #rankNames then
+						a.text = rankNames[ a.numRank + 1 ]
+						value[2] = value[2] + 1
+						a.color = { 255, 127, 127 }
+					end
+				end
+			end
+			
+			a.onClick = function( key, cursor, pos )
+				if key == 1 then
+					if isInLeftHalf( cursor, pos ) then
+						if a.numRank > 1 then
+							if triggerServerEvent( "faction:demote", localPlayer, fnum, value[1], a.numRank - 1 ) then
+								a.numRank = a.numRank - 1
+								rank = rankNames[ a.numRank ]
+							end
+						end
+					else
+						if a.numRank < #rankNames then
+							if triggerServerEvent( "faction:promote", localPlayer, fnum, value[1], a.numRank + 1 ) then
+								a.numRank = a.numRank + 1
+								rank = rankNames[ a.numRank ]
+							end
+						end
+					end
+				end
+			end
+			
+			table.insert( t, a )
+		else
+			table.insert( t, rankNames[ value[3] ] or value[3] )
+		end
 		
 		local lastOnline = value[4] == -1 and "Online" or value[4] == 0 and "Today" or value[4] == 1 and "Yesterday" or value[4] and ( value[4] .. " days ago" ) or "Never"
 		if ownRights >= 1 and value[1] ~= ownName then
