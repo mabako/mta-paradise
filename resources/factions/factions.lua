@@ -17,6 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local p = { }
 local factions = { }
+local factionTypes = { police = 1 }
 
 local function loadFaction( factionID, name, type, tag, groupID )
 	if not tag or #tag == 0 then
@@ -143,7 +144,7 @@ function sendMessageToFaction( factionID, message, ... )
 end
 
 function isPlayerInFactionType( player, type )
-	return p[ player ] and p[ player ].types and p[ player ].types[ type ] or false
+	return factionTypes[ type ] and p[ player ] and p[ player ].types and p[ player ].types[ factionTypes[ type ] ] or false
 end
 
 --
