@@ -165,7 +165,7 @@ local function draw( window, y )
 			if value.onRender then
 				value.onRender( { x, y, x + width, y + line_height } )
 			end
-			if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY <= y + line_height then
+			if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY < y + line_height then
 				if value.onHover then
 					value.onHover( { cursorX, cursorY }, { x, y, x + width, y + line_height } )
 				end
@@ -190,7 +190,7 @@ local function draw( window, y )
 					if text.onRender then
 						text.onRender( { v.pos._start, y, v.pos._end, y + line_height } )
 					end
-					if cursorX >= v.pos._start and cursorX <= v.pos._end and cursorY >= y and cursorY <= y + line_height then
+					if cursorX >= v.pos._start and cursorX <= v.pos._end and cursorY >= y and cursorY < y + line_height then
 						if text.onHover then
 							text.onHover( { cursorX, cursorY }, { v.pos._start, y, v.pos._end, y + line_height } )
 						end
