@@ -106,6 +106,24 @@ addEventHandler( "onPlayerChat", getRootElement( ),
 	end
 )
 
+for i = 1, 10 do
+	addCommandHandler( "f" .. ( i > 1 and i or "" ),
+		function( thePlayer, commandName, ... )
+			if exports.players:isLoggedIn( thePlayer ) then
+				local factionID = exports.factions:getPlayerFactions( thePlayer )[ i ]
+				if factionID then
+					local message = table.concat( { ... }, " " )
+					if #message > 0 then
+						faction( thePlayer, factionID, message )
+					else
+						outputChatBox( "Syntax: /" .. commandName .. " [ooc faction text]", thePlayer, 255, 255, 255 )
+					end
+				end
+			end
+		end
+	)
+end
+
 -- /do
 addCommandHandler( "do", 
 	function( thePlayer, commandName, ... )
