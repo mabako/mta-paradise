@@ -378,20 +378,22 @@ function updateFaction( fnum, members, name, ranks )
 			text = "Invite",
 			onClick = function( key ) if key == 1 then show( 'faction_invite', true ) end end
 		}
-	end
-	
-	--
-	if ownRights == 2 then
-		windows.faction[6] =
-		{
-			type = "button",
-			text = "Ranks",
-			onClick = function( key ) if key == 1 then buildRanksWindow( fnum ) show( 'faction_ranks', true ) end end
-		}
+		
+		--
+		
+		if ownRights == 2 then
+			windows.faction[6] =
+			{
+				type = "button",
+				text = "Ranks",
+				onClick = function( key ) if key == 1 then buildRanksWindow( fnum ) show( 'faction_ranks', true ) end end
+			}
+		else
+			windows.faction[6] = nil
+			windows.faction_ranks = nil
+		end
 	else
 		windows.faction[5] = nil
-		windows.faction[6] = nil
-		windows.faction_ranks = nil
 		windows.faction_invite = nil
 	end
 end
