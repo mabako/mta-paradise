@@ -524,3 +524,33 @@ addCommandHandler( "createfaction",
 	end,
 	true
 )
+
+addCommandHandler( "setfactionrights",
+	function( player, commandName, other, faction, level )
+		local faction = tonumber( faction )
+		local level = math.ceil( tonumber( level ) or -1 )
+		if level and level >= 0 and level <= 2 and other and faction then
+			if factions[ faction ] then
+				local other, name = exports.players:getFromName( player, other )
+				if other then
+					if p[ other ] and p[ other ].rfactions[ faction ] then
+						if exports.sql:query_free( "UPDATE character_to_factions SET factionLeader = " .. level .. " WHERE factionID = " .. faction .. " AND characterID = " .. exports.players:getCharacterID( other ) ) then
+							p[ other ].rfactions[ faction ].leader = level
+							
+							outputChatBox( "(( You set " .. getPlayerName( other ):gsub( "_", " " ) .. " to " .. ( rightNames[ level ] or "Member" ) .. " of " .. factions[ faction ].name .. ". ))", player, 0, 255, 153 )
+						else
+							outputChatBox( "MySQL-Error.", player, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "Player is not in that faction.", player, 255, 0, 0 )
+					end
+				end
+			else
+				outputChatBox( "This faction does not exist.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [faction] [level: 0=member, 1=leader, 2=owner]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
