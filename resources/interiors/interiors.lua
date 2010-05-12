@@ -76,7 +76,7 @@ local function createBlipEx( outside, inside )
 	
 	local name, i = getInteriorIDAt( x, y, z, interior )
 	if i and i.blip then
-		return createBlipAttachedTo( outside, i.blip, 2, 255, 255, 255, 255, 0, 300 )
+		return createBlipAttachedTo( outside, i.blip, 2, 255, 255, 255, 255, 0, 50 )
 	end
 end
 

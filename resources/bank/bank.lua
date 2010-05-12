@@ -64,7 +64,7 @@ local function loadBank( id, x, y, z, rotation, interior, dimension, skin )
 				if int then
 					if getElementDimension( int.outside ) == 0 then
 						local x, y, z = getElementPosition( int.outside )
-						blips[ dimension ] = createBlip( x, y, z, 52, 2, 255, 255, 255, 255, 0, 300 )
+						blips[ dimension ] = createBlip( x, y, z, 52, 2, 255, 255, 255, 255, 0, 50 )
 					end
 				end
 			end
