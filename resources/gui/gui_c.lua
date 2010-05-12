@@ -231,6 +231,10 @@ local function draw( window, y )
 			if not window.edit then
 				window.edit = guiCreateEdit( x + width / 2.6, y + 3, width / 2 - 20, line_height - 8, "", false )
 				
+				if window.default then
+					guiSetText( window.edit, window.default )
+				end
+				
 				if window.masked then
 					guiEditSetMasked( window.edit, true )
 				end
@@ -246,9 +250,9 @@ local function draw( window, y )
 					table.insert( destroy, window.edit )
 				end
 			else
-				local bx, by = guiGetPosition( window.button, false )
+				local bx, by = guiGetPosition( window.edit, false )
 				if by ~= y + 3 then
-					guiSetPosition( window.button, bx, y + 3, false )
+					guiSetPosition( window.edit, bx, y + 3, false )
 				end
 			end
 		end
