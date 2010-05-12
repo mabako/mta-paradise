@@ -133,7 +133,7 @@ addEventHandler( "players:characterCreationResult", getLocalPlayer( ),
 			if exports.players:isLoggedIn( ) then
 				show( 'characters', false, false, true )
 			else
-				show( 'characters', true, true )
+				show( 'characters', true, true, true )
 			end
 		elseif code == 1 then
 			setMessage( "A character with that name already exists." )
