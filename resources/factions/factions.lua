@@ -504,7 +504,13 @@ addCommandHandler( "createfaction",
 					-- go ahead
 					local faction = exports.sql:query_insertid( "INSERT INTO factions (groupID, factionType, factionTag) VALUES (" .. group.groupID .. ", " .. factionTypes[ type ] .. ", '')" )
 					if faction then
+						-- add a default rank
+						exports.sql:query_free( "INSERT INTO faction_ranks (factionID, factionRankID, factionRankName) VALUES (" .. faction .. ", 1, 'Default Rank')" )
+						
+						-- load the faction
 						loadFaction( faction, name, factionTypes[ type ], nil, group.groupID )
+						
+						-- show a message
 						outputChatBox( "Created Faction " .. name .. " (" .. faction .. ").", player, 0, 255, 153 )
 					else
 						outputChatBox( "MySQL-Error.", player, 255, 0, 0 )
@@ -550,6 +556,37 @@ addCommandHandler( "setfactionrights",
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [player] [faction] [level: 0=member, 1=leader, 2=owner]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+addCommandHandler( "setfactionrank",
+	function( player, commandName, other, faction, rank )
+		local faction = tonumber( faction )
+		local rank = math.ceil( tonumber( rank ) or -1 )
+		if rank and rank >= 1 and other and faction then
+			if factions[ faction ] then
+				local other, name = exports.players:getFromName( player, other )
+				if other then
+					if p[ other ] and p[ other ].rfactions[ faction ] then
+						if rank <= #factions[ faction ].ranks then
+							if exports.sql:query_free( "UPDATE character_to_factions SET factionRank = " .. rank .. " WHERE factionID = " .. faction .. " AND characterID = " .. exports.players:getCharacterID( other ) ) then
+								outputChatBox( "(( You set " .. getPlayerName( other ):gsub( "_", " " ) .. " to " .. factions[ faction ].ranks[ rank ] .. " of " .. factions[ faction ].name .. ". ))", player, 0, 255, 153 )
+							else
+								outputChatBox( "MySQL-Error.", player, 255, 0, 0 )
+							end
+						else
+							outputChatBox( "This faction does not have " .. rank .. " ranks.", player, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "Player is not in that faction.", player, 255, 0, 0 )
+					end
+				end
+			else
+				outputChatBox( "This faction does not exist.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [faction] [rank]", player, 255, 255, 255 )
 		end
 	end,
 	true
