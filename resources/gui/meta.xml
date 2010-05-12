@@ -62,6 +62,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="updateBankSingle" type="client"/>
 	
+	<script src="windows/faction.lua" type="client"/>
+	
+	<!-- Updates the faction overview
+		parameters:
+			(number) unique ID of the faction
+			(table) all members
+			(string) name of the faction
+	-->
+	<export function="updateFaction" type="client"/>
+	
 	<script src="gui_c.lua" type="client"/>
 	
 	<!-- Shows a GUI window.

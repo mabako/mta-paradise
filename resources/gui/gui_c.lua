@@ -165,7 +165,7 @@ local function draw( window, y )
 			if value.onRender then
 				value.onRender( { x, y, x + width, y + line_height } )
 			end
-			if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY <= y + line_height then
+			if cursorX >= x and cursorX <= x + width and cursorY >= y and cursorY < y + line_height then
 				if value.onHover then
 					value.onHover( { cursorX, cursorY }, { x, y, x + width, y + line_height } )
 				end
@@ -182,15 +182,37 @@ local function draw( window, y )
 			
 			-- draw the single columns
 			for k, text in ipairs( value ) do
+				local v = window.columns[k]
+				
 				-- check if this is meant to have a special color
 				local color = value.color
 				if type( text ) == "table" then
-					color = text.color
+					if text.onRender then
+						text.onRender( { v.pos._start, y, v.pos._end, y + line_height } )
+					end
+					if cursorX >= v.pos._start and cursorX <= v.pos._end and cursorY >= y and cursorY < y + line_height then
+						if text.onHover then
+							text.onHover( { cursorX, cursorY }, { v.pos._start, y, v.pos._end, y + line_height } )
+						end
+						
+						if text.onClick then
+							if clicked.mouse1 then
+								text.onClick( 1, { cursorX, cursorY }, { v.pos._start, y, v.pos._end, y + line_height } )
+							end
+							if clicked.mouse2 then
+								text.onClick( 2, { cursorX, cursorY }, { v.pos._start, y, v.pos._end, y + line_height } )
+							end
+						end
+					end
+					
+					color = text.color or color
 					text = text.text
+					if type( text ) == "function" then
+						text = text( )
+					end
 				end
 				
 				-- draw it
-				local v = window.columns[k]
 				dxDrawText( tostring( text ), v.pos._start, y, v.pos._end, y + line_height, color and tocolor( unpack( color ) ) or v.color and tocolor( unpack( v.color ) ) or tocolor( 255, 255, 255, 255 ), 1, v.font or "default-bold", v.alignX or "left", v.alignY or "center", true, false, true )
 			end
 			
@@ -209,8 +231,16 @@ local function draw( window, y )
 			if not window.edit then
 				window.edit = guiCreateEdit( x + width / 2.6, y + 3, width / 2 - 20, line_height - 8, "", false )
 				
+				if window.default then
+					guiSetText( window.edit, window.default )
+				end
+				
 				if window.masked then
 					guiEditSetMasked( window.edit, true )
+				end
+				
+				if window.maxlength then
+					guiEditSetMaxLength( window.edit, window.maxlength )
 				end
 				
 				addEventHandler( "onClientElementDestroy", window.edit, function( ) window.edit = nil end, false )
@@ -224,9 +254,9 @@ local function draw( window, y )
 					table.insert( destroy, window.edit )
 				end
 			else
-				local bx, by = guiGetPosition( window.button, false )
+				local bx, by = guiGetPosition( window.edit, false )
 				if by ~= y + 3 then
-					guiSetPosition( window.button, bx, y + 3, false )
+					guiSetPosition( window.edit, bx, y + 3, false )
 				end
 			end
 		end

@@ -21,6 +21,7 @@ addEvent( "onCharacterLogout", false )
 
 --
 
+local team = createTeam( "MTA: Paradise" ) -- this is used as a dummy team. We need this for faction chat to work.
 local p = { }
 
 -- Import Groups
@@ -303,12 +304,13 @@ addEventHandler( "onResourceStart", resourceRoot,
 			{
 				{ name = 'groupID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
 				{ name = 'groupName', type = 'varchar(255)', default = '' },
+				{ name = 'canBeFactioned', type = 'tinyint(1) unsigned', default = 1 }, -- if this is set to 0, you can't make a faction from this group.
 			} )
 		if not success then cancelEvent( ) return end
 		if didCreateTable then
 			-- add default groups
 			for key, value in ipairs( groups ) do
-				value.groupID = exports.sql:query_insertid( "INSERT INTO wcf1_group (groupName) VALUES ('%s')", value.groupName )
+				value.groupID = exports.sql:query_insertid( "INSERT INTO wcf1_group (groupName, canBeFactioned) VALUES ('%s', 0)", value.groupName )
 			end
 		else
 			-- import all groups
@@ -516,6 +518,7 @@ addEventHandler( getResourceName( resource ) .. ":logout", root,
 			savePlayer( source )
 			if p[ source ].charID then
 				triggerEvent( "onCharacterLogout", source )
+				setPlayerTeam( source, nil )
 			end
 			p[ source ] = nil
 			showLoginScreen( source )
@@ -539,6 +542,7 @@ addEventHandler( "onPlayerQuit", root,
 			savePlayer( source )
 			if p[ source ].charID then
 				triggerEvent( "onCharacterLogout", source )
+				setPlayerTeam( source, nil )
 			end
 			p[ source ] = nil
 			loginAttempts[ source ] = nil
@@ -557,6 +561,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 				savePlayer( source )
 				if p[ source ].charID then
 					triggerEvent( "onCharacterLogout", source )
+					setPlayerTeam( source, nil )
 					p[ source ].charID = nil
 					p[ source ].money = nil
 				end
@@ -592,6 +597,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					p[ source ].charID = tonumber( charID )
 					p[ source ].characterName = char.characterName
 					
+					setPlayerTeam( source, team )
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
 					triggerEvent( "onCharacterLogin", source )
 					

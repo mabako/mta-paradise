@@ -82,6 +82,14 @@ function me( source, message )
 	end
 end
 
+-- faction chat
+local function faction( player, factionID, message )
+	if factionID then
+		local tag = exports.factions:getFactionTag( factionID )
+		exports.factions:sendMessageToFaction( factionID, "(( " .. tag .. " )) " .. getPlayerName( player ) .. ": " .. message, 127, 127, 255 )
+	end
+end
+
 -- overwrite MTA's default chat events
 addEventHandler( "onPlayerChat", getRootElement( ),
 	function( message, type )
@@ -91,10 +99,30 @@ addEventHandler( "onPlayerChat", getRootElement( ),
 				localMessage( source, " " .. getPlayerName( source ) .. " says: " .. message, 230, 230, 230, false, 127, 127, 127 )
 			elseif type == 1 then
 				me( source, message )
+			elseif type == 2 then
+				faction( source, exports.factions:getPlayerFactions( source )[ 1 ], message )
 			end
 		end
 	end
 )
+
+for i = 1, 10 do
+	addCommandHandler( "f" .. ( i > 1 and i or "" ),
+		function( thePlayer, commandName, ... )
+			if exports.players:isLoggedIn( thePlayer ) then
+				local factionID = exports.factions:getPlayerFactions( thePlayer )[ i ]
+				if factionID then
+					local message = table.concat( { ... }, " " )
+					if #message > 0 then
+						faction( thePlayer, factionID, message )
+					else
+						outputChatBox( "Syntax: /" .. commandName .. " [ooc faction text]", thePlayer, 255, 255, 255 )
+					end
+				end
+			end
+		end
+	)
+end
 
 -- /do
 addCommandHandler( "do", 
