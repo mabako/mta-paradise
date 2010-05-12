@@ -24,6 +24,7 @@ local maxRanks = 12
 
 local function loadFaction( factionID, name, type, tag, groupID )
 	if not tag or #tag == 0 then
+		tag = ""
 		-- create a tag from the first letter of each word
 		local i = 0
 		repeat
@@ -480,4 +481,46 @@ addEventHandler( "faction:updateranks", root,
 			end
 		end
 	end
+)
+
+--
+
+-- Tricky thing ahead: we rely on groups to be created before we turn them into factions
+addCommandHandler( "createfaction",
+	function( player, commandName, type, ... )
+		if type and (...) then
+			if factionTypes[ type ] then
+				local name = table.concat( { ... }, " " )
+				local group = exports.sql:query_assoc_single( "SELECT groupID FROM wcf1_group WHERE groupName = '%s'", name )
+				if group then
+					-- we need no duplicates
+					for key, value in pairs( factions ) do
+						if value.group == group.groupID then
+							outputChatBox( "This group is already a faction.", player, 255, 0, 0 )
+							return
+						end
+					end
+					
+					-- go ahead
+					local faction = exports.sql:query_insertid( "INSERT INTO factions (groupID, factionType, factionTag) VALUES (" .. group.groupID .. ", " .. factionTypes[ type ] .. ", '')" )
+					if faction then
+						loadFaction( faction, name, factionTypes[ type ], nil, group.groupID )
+						outputChatBox( "Created Faction " .. name .. " (" .. faction .. ").", player, 0, 255, 153 )
+					else
+						outputChatBox( "MySQL-Error.", player, 255, 0, 0 )
+					end
+				end
+			else
+				local list = { }
+				for type in pairs( factionTypes ) do
+					list[ #list + 1 ] = type
+				end
+				outputChatBox( "Faction type must be one of the following:", player, 255, 255, 255 )
+				outputChatBox( "  " .. table.concat( list, ", " ), player, 255, 255, 255 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [type] [name]", player, 255, 255, 255 )
+		end
+	end,
+	true
 )

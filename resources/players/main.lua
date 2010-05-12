@@ -304,12 +304,13 @@ addEventHandler( "onResourceStart", resourceRoot,
 			{
 				{ name = 'groupID', type = 'int(10) unsigned', auto_increment = true, primary_key = true },
 				{ name = 'groupName', type = 'varchar(255)', default = '' },
+				{ name = 'canBeFactioned', type = 'tinyint(1) unsigned', default = 1 }, -- if this is set to 0, you can't make a faction from this group.
 			} )
 		if not success then cancelEvent( ) return end
 		if didCreateTable then
 			-- add default groups
 			for key, value in ipairs( groups ) do
-				value.groupID = exports.sql:query_insertid( "INSERT INTO wcf1_group (groupName) VALUES ('%s')", value.groupName )
+				value.groupID = exports.sql:query_insertid( "INSERT INTO wcf1_group (groupName, canBeFactioned) VALUES ('%s', 0)", value.groupName )
 			end
 		else
 			-- import all groups

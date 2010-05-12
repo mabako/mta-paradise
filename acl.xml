@@ -198,6 +198,7 @@
         <right name="command.createbank" access="true" />
         <right name="command.deleteatm" access="true" />
         <right name="command.deletebank" access="true" />
+        <right name="command.createfaction" access="true" />
         <right name="command.setfaction" access="true" />
         <right name="function.executeCommandHandler" access="true" />
         <right name="function.setPlayerMuted" access="true" />
