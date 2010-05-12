@@ -177,4 +177,51 @@ function updateFaction( fnum, members, name )
 	
 	windows.faction[2].content = grid
 	windows.faction[3].onClick = function( key ) if key == 1 then leave( fnum ) end end
+	
+	if ownRights >= 1 then
+		local function click( )
+			local player = getPlayerFromName( guiGetText( destroy[ "g:faction_invite:player" ] ):gsub( " ", "_" ) )
+			if player and player ~= localPlayer then
+				triggerServerEvent( "faction:join", player, fnum )
+				hide( )
+				triggerServerEvent( "faction:show", localPlayer, -fnum )
+			end
+		end
+		
+		windows.faction_invite =
+		{
+			{
+				type = "label",
+				text = "Invite Player",
+				font = "bankgothic",
+				alignX = "center",
+			},
+			{
+				type = "edit",
+				text = "Player",
+				id = "g:faction_invite:player",
+				onAccepted = click,
+			},
+			{
+				type = "button",
+				text = "Invite",
+				onClick = click,
+			},
+			{
+				type = "button",
+				text = "Close",
+				onClick = function( ) show( 'faction' ) end,
+			},
+		}
+		
+		windows.faction[5] =
+		{
+			type = "button",
+			text = "Invite",
+			onClick = function( key ) if key == 1 then show( 'faction_invite', true ) end end
+		}
+	else
+		windows.faction[5] = nil
+		windows.faction_invite = nil
+	end
 end

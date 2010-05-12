@@ -46,7 +46,7 @@ local function loadPlayer( player )
 			local factionID = value.factionID
 			if factions[ factionID ] then
 				table.insert( p[ player ].factions, factionID )
-				p[ player ].rfactions[ factionID ] = { leader = value.factionLeader }
+				p[ player ].rfactions[ factionID ] = { leader = value.factionLeader, id = factionID }
 				p[ player ].types[ factions[ factionID ].type ] = true
 			else
 				outputDebugString( "Faction " .. factionID .. " does not exist, removing players from it." )
@@ -152,7 +152,7 @@ addEvent( "faction:show", true )
 addEventHandler( "faction:show", root,
 	function( fnum )
 		if source == client then
-			local faction = p[ source ].factions[ fnum or 1 ]
+			local faction = fnum and fnum < 0 and p[ source ].rfactions[ -fnum ] and p[ source ].rfactions[ -fnum ].id or p[ source ].factions[ fnum or 1 ]
 			if faction then
 				local result = exports.sql:query_assoc( "SELECT c.characterName, cf.factionLeader, cf.factionRank, DATEDIFF(NOW(),c.lastLogin) AS days FROM character_to_factions cf LEFT JOIN characters c ON c.characterID = cf.characterID WHERE cf.factionID = " .. faction .. " ORDER BY cf.factionRank DESC, c.characterName ASC" )
 				if result then
@@ -190,7 +190,7 @@ local function joinFaction( inviter, player, faction )
 				
 				-- successful
 				table.insert( p[ player ].factions, faction )
-				p[ player ].rfactions[ faction ] = { leader = 0 }
+				p[ player ].rfactions[ faction ] = { leader = 0, id = faction }
 				p[ player ].types[ factions[ faction ].type ] = true
 				return true
 			end
@@ -204,8 +204,8 @@ end
 addEvent( "faction:join", true )
 addEventHandler( "faction:join", root,
 	function( faction )
-		-- check for faction owner
-		if client and client ~= source and p[ client ] and p[ client ].rfactions[ faction ] and p[ client ].rfactions[ faction ].leader == 2 then
+		-- check for faction leader
+		if client and client ~= source and p[ client ] and p[ client ].rfactions[ faction ] and p[ client ].rfactions[ faction ].leader >= 1 then
 			if joinFaction( client, source, faction ) then
 				outputChatBox( "(( " .. getPlayerName( client ):gsub( "_", " " ) .. " set you to faction " .. factions[ faction ].name .. ". ))", source, 0, 255, 0 )
 				outputChatBox( "(( You set " .. getPlayerName( source ):gsub( "_", " " ) .. " to faction " .. factions[ faction ].name .. ". ))", client, 0, 255, 0 )
@@ -290,7 +290,7 @@ addEventHandler( "faction:demoterights", root,
 				if exports.sql:query_affected_rows( "UPDATE character_to_factions cf, characters c SET cf.factionLeader = cf.factionLeader - 1 WHERE c.characterID = cf.characterID AND c.characterName = '%s' AND cf.factionLeader >= 0", name ) == 1 then
 					sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " demoted " .. name .. " to " .. ( rightNames[ new ] or "Member" ) .. ". ))", 255, 127, 0 )
 					if player then
-						p[ player ].rfactions[ faction ].leader = p[ player ].rfactions[ faction ].leader + 1
+						p[ player ].rfactions[ faction ].leader = p[ player ].rfactions[ faction ].leader - 1
 					end
 				else
 					outputChatBox( "(( MySQL-Error. ))", source, 255, 0, 0 )
@@ -335,7 +335,7 @@ addEventHandler( "faction:kick", root,
 				if player and p[ player ] and not p[ player ].rfactions[ faction ] then
 					-- player exists, but is not a member of the faction
 					return
-				elseif player and p[ source ].rfactions[ faction ].leader < p[ player ].rfactions[ faction ] then
+				elseif player and p[ source ].rfactions[ faction ].leader < p[ player ].rfactions[ faction ].leader then
 					-- we don't have enough rights to kick the player
 					return
 				end
