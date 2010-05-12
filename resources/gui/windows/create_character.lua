@@ -51,7 +51,7 @@ local function cancelCreate( )
 	if exports.players:isLoggedIn( ) then
 		hide( )
 	else
-		show( 'characters', true, true )
+		show( 'characters', true, true, true )
 	end
 end
 
