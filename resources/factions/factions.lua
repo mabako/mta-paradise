@@ -48,7 +48,6 @@ local function loadPlayer( player )
 				table.insert( p[ player ].factions, factionID )
 				p[ player ].rfactions[ factionID ] = { leader = value.factionLeader }
 				p[ player ].types[ factions[ factionID ].type ] = true
-				outputDebugString( "Set " .. getPlayerName( player ):gsub( "_", " " ) .. " to " .. factions[ factionID ].name )
 			else
 				outputDebugString( "Faction " .. factionID .. " does not exist, removing players from it." )
 				-- exports.sql:query_assoc( "DELETE FROM characters_to_factions WHERE factionID = " .. factionID )
@@ -187,18 +186,16 @@ local function joinFaction( inviter, player, faction )
 						
 						return false
 					end
-					outputDebugString( "Added " .. getPlayerName( player ) .. " to usergroup " .. factions[ faction ].name )
 				end
 				
 				-- successful
 				table.insert( p[ player ].factions, faction )
 				p[ player ].rfactions[ faction ] = { leader = 0 }
 				p[ player ].types[ factions[ faction ].type ] = true
-				outputDebugString( getPlayerName( inviter ):gsub( "_", " " ) .. " set " .. getPlayerName( player ):gsub( "_", " " ) .. " to " .. factions[ faction ].name )
 				return true
 			end
 		else
-			outputChatBox( "(( " .. getPlayerName( player ) .. " already is in that faction. ))", inviter, 255, 0, 0 )
+			outputChatBox( "(( " .. getPlayerName( player ):gsub( "_", " " ) .. " is already in that faction. ))", inviter, 255, 0, 0 )
 		end
 	end
 	return false
@@ -285,12 +282,12 @@ addEventHandler( "faction:demoterights", root,
 		if source == client and p[ source ].rfactions[ faction ] and p[ source ].rfactions[ faction ].leader == 2 and type( name ) == "string" then
 			local player = getPlayerFromName( name:gsub( " ", "_" ) )
 			if player ~= source then -- You can't change your own rights.
-				if p[ player ] and not p[ player ].rfactions[ faction ] then
+				if player and p[ player ] and not p[ player ].rfactions[ faction ] then
 					-- player exists, but is not a member of the faction
 					return
 				end
 				
-				if exports.sql:query_affected_rows( "UPDATE character_to_factions cf, characters c SET cf.factionLeader = cf.factionLeader - 1 WHERE c.characterID = cf.characterID AND c.characterName = '%s' AND cf.factionLeader >= 0", name ) then
+				if exports.sql:query_affected_rows( "UPDATE character_to_factions cf, characters c SET cf.factionLeader = cf.factionLeader - 1 WHERE c.characterID = cf.characterID AND c.characterName = '%s' AND cf.factionLeader >= 0", name ) == 1 then
 					sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " demoted " .. name .. " to " .. ( rightNames[ new ] or "Member" ) .. ". ))", 255, 127, 0 )
 					if player then
 						p[ player ].rfactions[ faction ].leader = p[ player ].rfactions[ faction ].leader + 1
@@ -310,15 +307,62 @@ addEventHandler( "faction:promoterights", root,
 		if source == client and p[ source ].rfactions[ faction ] and p[ source ].rfactions[ faction ].leader == 2 and type( name ) == "string" then
 			local player = getPlayerFromName( name:gsub( " ", "_" ) )
 			if player ~= source then -- You can't change your own rights.
-				if p[ player ] and not p[ player ].rfactions[ faction ] then
+				if player and p[ player ] and not p[ player ].rfactions[ faction ] then
 					-- player exists, but is not a member of the faction
 					return
 				end
 				
-				if exports.sql:query_affected_rows( "UPDATE character_to_factions cf, characters c SET cf.factionLeader = cf.factionLeader + 1 WHERE c.characterID = cf.characterID AND c.characterName = '%s' AND cf.factionLeader < 2", name ) then
+				if exports.sql:query_affected_rows( "UPDATE character_to_factions cf, characters c SET cf.factionLeader = cf.factionLeader + 1 WHERE c.characterID = cf.characterID AND c.characterName = '%s' AND cf.factionLeader < 2", name ) == 1 then
 					sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " promoted " .. name .. " to " .. ( rightNames[ new ] or "Member" ) .. ". ))", 255, 127, 0 )
 					if player then
 						p[ player ].rfactions[ faction ].leader = p[ player ].rfactions[ faction ].leader + 1
+					end
+				else
+					outputChatBox( "(( MySQL-Error. ))", source, 255, 0, 0 )
+				end
+			end
+		end
+	end
+)
+
+addEvent( "faction:kick", true )
+addEventHandler( "faction:kick", root,
+	function( faction, name )
+		-- Sanity Check
+		if source == client and p[ source ].rfactions[ faction ] and p[ source ].rfactions[ faction ].leader >= 1 and type( name ) == "string" then
+			local player = getPlayerFromName( name:gsub( " ", "_" ) )
+			if player ~= source then -- You can't change your own rights.
+				if player and p[ player ] and not p[ player ].rfactions[ faction ] then
+					-- player exists, but is not a member of the faction
+					return
+				elseif player and p[ source ].rfactions[ faction ].leader < p[ player ].rfactions[ faction ] then
+					-- we don't have enough rights to kick the player
+					return
+				end
+				
+				if exports.sql:query_affected_rows( "DELETE cf FROM character_to_factions cf LEFT JOIN characters c ON c.characterID = cf.characterID WHERE cf.factionID = 1 AND c.characterName = '%s' AND cf.factionLeader < " .. p[ source ].rfactions[ faction ].leader, name ) == 1 then
+					sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " kicked " .. name .. ". ))", 255, 127, 0 )
+					if player then
+						-- remove him from the tables
+						p[ player ].types = { }
+						for i = #p[ player ].factions, 1 do
+							if p[ player ].factions[ i ] == faction then
+								table.remove( p[ player ].factions, i )
+							else
+								p[ player ].types[ factions[ i ].type ] = true
+							end
+						end
+						p[ player ].rfactions[ faction ] = nil
+					end
+					
+					-- count other chars of this player in the same faction
+					local user = exports.sql:query_assoc_single( "SELECT userID FROM characters WHERE characterName = '%s'", name )
+					if user then
+						local result = exports.sql:query_assoc_single( "SELECT COUNT(*) AS number FROM character_to_factions cf LEFT JOIN characters c ON c.characterID = cf.characterID WHERE cf.factionID = " .. faction .. " AND c.userID = " .. user.userID )
+						if result.number == 0 then
+							-- delete from the usergroup
+							exports.sql:query_free( "DELETE FROM wcf1_user_to_groups WHERE userID = " .. user.userID .. " AND groupID = " .. factions[ faction ].group )
+						end
 					end
 				else
 					outputChatBox( "(( MySQL-Error. ))", source, 255, 0, 0 )

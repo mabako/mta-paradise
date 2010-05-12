@@ -105,6 +105,7 @@ function updateFaction( fnum, members, name )
 				else
 					if a.numRights < 2 then
 						a.text = rightNames[ a.numRights + 1 ]
+						value[2] = value[2] + 1
 						a.color = { 255, 127, 127 }
 					end
 				end
@@ -131,11 +132,41 @@ function updateFaction( fnum, members, name )
 			end
 			table.insert( t, a )
 		else
-			table.insert( t, rights )
+			table.insert( t, { text = rights, numRights = value[2] } )
 		end
 		table.insert( t, a )
 		table.insert( t, value[3] )
-		table.insert( t, value[4] == -1 and "Online" or value[4] == 0 and "Today" or value[4] == 1 and "Yesterday" or value[4] and ( value[4] .. " days ago" ) or "Never" )
+		
+		local lastOnline = value[4] == -1 and "Online" or value[4] == 0 and "Today" or value[4] == 1 and "Yesterday" or value[4] and ( value[4] .. " days ago" ) or "Never"
+		if ownRights >= 1 and value[1] ~= ownName then
+			local a = { text = lastOnline }
+			
+			a.onRender = function( cursor, pos )
+				a.text = lastOnline
+				a.color = nil
+			end
+			
+			a.onHover = function( cursor, pos )
+				if ownRights > t[2].numRights then
+					a.text = "Kick"
+					a.color = { 255, 127, 127 }
+				end
+			end
+			
+			a.onClick = function( k, cursor, pos )
+				if k == 1 then
+					if ownRights > t[2].numRights then
+						if triggerServerEvent( "faction:kick", localPlayer, fnum, value[1] ) then
+							table.remove( windows.faction[2].content, key )
+						end
+					end
+				end
+			end
+			
+			table.insert( t, a )
+		else
+			table.insert( t, lastOnline )
+		end
 		
 		if value[4] == -1 then
 			t.color = { 191, 255, 191 }
