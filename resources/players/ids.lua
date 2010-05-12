@@ -62,8 +62,8 @@ function getFromName( player, targetName, ignoreLoggedOut )
 			match = { getPlayerFromName ( targetName ) }
 		else	
 			for key, value in ipairs ( getElementsByType ( "player" ) ) do
-				if getPlayerName ( player ):lower():find( targetName:lower() ) then
-					match[ #match + 1 ] = player
+				if getPlayerName ( value ):lower():find( targetName:lower() ) then
+					match[ #match + 1 ] = value
 				end
 			end
 		end
