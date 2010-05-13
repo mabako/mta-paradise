@@ -72,13 +72,34 @@ addCommandHandler( "setskin",
 --
 
 local function teleport( player, x, y, z, interior, dimension )
-	-- todo: vehicle teleports
-	removePedFromVehicle( player )
-	
-	setElementPosition( player, x, y, z )
-	setElementInterior( player, interior )
-	setElementDimension( player, dimension )
-	return true
+	if isPedInVehicle( player ) and getPedOccupiedVehicleSeat( player ) == 0 then
+		local vehicle = getPedOccupiedVehicle( player )
+		
+		setElementPosition( vehicle, x, y, z )
+		setElementInterior( vehicle, interior )
+		setElementDimension( vehicle, dimension )
+		
+		for i = 0, getVehicleMaxPassengers( vehicle ) do
+			local p = getVehicleOccupant( vehicle, i )
+			if p then
+				setElementInterior( p, interior )
+				setElementDimension( p, dimension )
+			end
+		end
+		
+		setVehicleTurnVelocity( vehicle, 0, 0, 0 )
+		setElementVelocity( vehicle, 0, 0, 0 )
+		return true
+	else
+		if isPedInVehicle( player ) then
+			removePedFromVehicle( player )
+		end
+		
+		setElementPosition( player, x, y, z )
+		setElementInterior( player, interior )
+		setElementDimension( player, dimension )
+		return true
+	end
 end
 
 
