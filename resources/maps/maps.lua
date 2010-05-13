@@ -22,7 +22,7 @@ local maps = { }
 local function addMap( name, id, dimension, protected )
 	name = name:lower( )
 	if not maps[ name ] then
-		maps[ name ] = { id = id, objects = { }, dimension = dimension or 0, protected = protected or false }
+		maps[ name ] = { id = id, objects = { }, dimension = dimension or 0, protected = protected or false, element = createElement( "map" ) }
 		return true
 	else
 		return false
@@ -38,6 +38,7 @@ local function addMapObject( mapName, objectID, object, interior, alpha )
 			setElementInterior( object, interior )
 			setElementDimension( object, map.dimension )
 			setElementAlpha( object, alpha )
+			setElementParent( object, map.element )
 			
 			-- save a reference
 			map.objects[ object ] = { id = objectID }
@@ -67,6 +68,9 @@ local function removeMap( name )
 		
 		-- delete the map
 		exports.sql:query_free( "DELETE FROM maps WHERE mapID = " .. map.id )
+		
+		-- delete the element
+		destroyElement( map.element )
 		
 		maps[ name ] = nil
 		return true
