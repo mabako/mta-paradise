@@ -49,14 +49,9 @@ windows.faction =
 		content = { }
 	},
 	{
-		type = "button",
-		text = "Leave",
-		onClick = nil,
-	},
-	{
-		type = "button",
-		text = "Close",
-		onClick = function( ) hide( ) end,
+		type = "grid",
+		columns = { },
+		content = { }
 	},
 }
 
@@ -171,6 +166,7 @@ local function buildRanksWindow( fnum )
 end
 
 function updateFaction( fnum, members, name, ranks )
+	local buttons = { { "Leave Faction", function( ) leave( fnum ) end }, { "Close Window", hide } }
 	rankNames = ranks
 	windows.faction[1].text = name
 	
@@ -334,7 +330,6 @@ function updateFaction( fnum, members, name, ranks )
 	end
 	
 	windows.faction[2].content = grid
-	windows.faction[3].onClick = function( key ) if key == 1 then leave( fnum ) end end
 	
 	if ownRights >= 1 then
 		local function click( )
@@ -372,28 +367,28 @@ function updateFaction( fnum, members, name, ranks )
 			},
 		}
 		
-		windows.faction[5] =
-		{
-			type = "button",
-			text = "Invite",
-			onClick = function( key ) if key == 1 then show( 'faction_invite', true ) end end
-		}
+		table.insert( buttons, { "Invite Player", function( ) show( 'faction_invite', true ) end } )
 		
 		--
 		
 		if ownRights == 2 then
-			windows.faction[6] =
-			{
-				type = "button",
-				text = "Ranks",
-				onClick = function( key ) if key == 1 then buildRanksWindow( fnum ) show( 'faction_ranks', true ) end end
-			}
+			table.insert( buttons, { "Edit Ranks", function( ) buildRanksWindow( fnum ) show( 'faction_ranks', true ) end } )
 		else
-			windows.faction[6] = nil
 			windows.faction_ranks = nil
 		end
 	else
-		windows.faction[5] = nil
 		windows.faction_invite = nil
+	end
+	
+	-- custom button stuff
+	windows.faction[3].columns = { { name = "", width = 0.1 }, { name = "", width = 0.1 } }
+	windows.faction[3].content = { { "", "" } }
+	local buttonwidth = 0.8 / #buttons
+	for k, v in ipairs( buttons ) do
+		table.insert( windows.faction[3].columns, k + 1, { name = "", width = buttonwidth, alignX = "center" } )
+		local a = { text = v[1], onClick = function( key ) if key == 1 then v[2]( ) end end }
+		a.onRender = function( ) a.color = nil end
+		a.onHover = function( ) a.color = { 255, 127, 127 } end
+		table.insert( windows.faction[3].content[1], k + 1, a )
 	end
 end
