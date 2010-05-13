@@ -69,18 +69,33 @@ addCommandHandler( "setskin",
 	true
 )
 
+--
+
+local function teleport( player, x, y, z, interior, dimension )
+	-- todo: vehicle teleports
+	removePedFromVehicle( player )
+	
+	setElementPosition( player, x, y, z )
+	setElementInterior( player, interior )
+	setElementDimension( player, dimension )
+	return true
+end
+
+
 addCommandHandler( "get",
 	function( player, commandName, otherPlayer )
 		if otherPlayer then
 			local other, name = exports.players:getFromName( player, otherPlayer )
 			if other then
-				-- todo: vehicle teleports
-				removePedFromVehicle( other )
-				
-				local x, y, z = getElementPosition( player )
-				setElementPosition( other, x + 1, y, z )
-				setElementInterior( other, getElementInterior( player ) )
-				setElementDimension( other, getElementDimension( player ) )
+				if other ~= player then
+					local x, y, z = getElementPosition( player )
+					if teleport( other, x + 1, y, z, getElementInterior( player ), getElementDimension( player ) ) then
+						outputChatBox( "You teleported " .. name .. " to you.", player, 0, 255, 153 )
+						outputChatBox( getPlayerName( player ):gsub( "_", " " ) .. " teleported you to them.", other, 0, 255, 153 )
+					end
+				else
+					outputChatBox( "You can't teleport yourself to yourself.", player, 255, 0, 0 )
+				end
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [player]", player, 255, 255, 255 )
@@ -94,13 +109,15 @@ addCommandHandler( "goto",
 		if otherPlayer then
 			local other, name = exports.players:getFromName( player, otherPlayer )
 			if other then
-				-- todo: vehicle teleports
-				removePedFromVehicle( player )
-				
-				local x, y, z = getElementPosition( other )
-				setElementPosition( player, x + 1, y, z )
-				setElementInterior( player, getElementInterior( other ) )
-				setElementDimension( player, getElementDimension( other ) )
+				if other ~= player then
+					local x, y, z = getElementPosition( other )
+					if teleport( player, x + 1, y, z, getElementInterior( other ), getElementDimension( other ) ) then
+						outputChatBox( "You teleported to " .. name .. ".", player, 0, 255, 153 )
+						outputChatBox( getPlayerName( player ):gsub( "_", " " ) .. " teleported to you.", other, 0, 255, 153 )
+					end
+				else
+					outputChatBox( "You can't teleport to yourself.", player, 255, 0, 0 )
+				end
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [player]", player, 255, 255, 255 )
@@ -108,6 +125,8 @@ addCommandHandler( "goto",
 	end,
 	true
 )
+
+--
 
 addCommandHandler( { "freeze", "unfreeze" },
 	function( player, commandName, otherPlayer )
