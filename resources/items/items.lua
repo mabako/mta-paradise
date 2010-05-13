@@ -359,6 +359,9 @@ addCommandHandler( "giveitem",
 			if other then
 				-- check if it's a valid item id
 				if id >= 0 and id <= #item_list then
+					if id == 7 then
+						return -- TODO: Insert it into our phones table if it doesn't exist. Will screw up if using a phone number that's like 1234567890123 cause everything will start from there
+					end
 					-- we need to split our name and value apart
 					local arguments = { ... }
 					local value = { }
