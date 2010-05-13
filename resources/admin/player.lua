@@ -109,8 +109,24 @@ addCommandHandler( "get",
 			local other, name = exports.players:getFromName( player, otherPlayer )
 			if other then
 				if other ~= player then
+					-- if the vehicle ain't locked, try to put the player into a seat
+					local teleported = false
+					local vehicle = getPedOccupiedVehicle( player )
+					if vehicle and not isVehicleLocked( vehicle ) then
+						for i = 0, getVehicleMaxPassengers( vehicle ) do
+							local p = getVehicleOccupant( vehicle, i )
+							if not p then
+								setElementInterior( other, getElementInterior( vehicle ) )
+								setElementDimension( other, getElementDimension( vehicle ) )
+								warpPedIntoVehicle( other, vehicle, i )
+								teleported = true
+								break
+							end
+						end
+					end
+					
 					local x, y, z = getElementPosition( player )
-					if teleport( other, x + 1, y, z, getElementInterior( player ), getElementDimension( player ) ) then
+					if teleported or teleport( other, x + 1, y, z, getElementInterior( player ), getElementDimension( player ) ) then
 						outputChatBox( "You teleported " .. name .. " to you.", player, 0, 255, 153 )
 						outputChatBox( getPlayerName( player ):gsub( "_", " " ) .. " teleported you to them.", other, 0, 255, 153 )
 					end
@@ -131,8 +147,24 @@ addCommandHandler( "goto",
 			local other, name = exports.players:getFromName( player, otherPlayer )
 			if other then
 				if other ~= player then
+					-- if the vehicle ain't locked, try to put the player into a seat
+					local teleported = false
+					local vehicle = getPedOccupiedVehicle( other )
+					if vehicle and not isVehicleLocked( vehicle ) then
+						for i = 0, getVehicleMaxPassengers( vehicle ) do
+							local p = getVehicleOccupant( vehicle, i )
+							if not p then
+								setElementInterior( player, getElementInterior( vehicle ) )
+								setElementDimension( player, getElementDimension( vehicle ) )
+								warpPedIntoVehicle( player, vehicle, i )
+								teleported = true
+								break
+							end
+						end
+					end
+					
 					local x, y, z = getElementPosition( other )
-					if teleport( player, x + 1, y, z, getElementInterior( other ), getElementDimension( other ) ) then
+					if teleported or teleport( player, x + 1, y, z, getElementInterior( other ), getElementDimension( other ) ) then
 						outputChatBox( "You teleported to " .. name .. ".", player, 0, 255, 153 )
 						outputChatBox( getPlayerName( player ):gsub( "_", " " ) .. " teleported to you.", other, 0, 255, 153 )
 					end
