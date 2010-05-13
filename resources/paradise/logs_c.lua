@@ -37,7 +37,7 @@ local function openFile( )
 		
 		local style = xmlCreateChild( head, "style" )
 		xmlNodeSetAttribute( style, "type", "text/css" )
-		xmlNodeSetValue( style, "body { font-family: Tahoma; font-size: 0.8em; background: #34282C; }  p { padding: 0; margin: 0; } .v1 { color: #AAAAAA; } .v2 { color: #DDDDDD; } .v3 { white-space:pre; }" )
+		xmlNodeSetValue( style, "body { font-family: Tahoma; font-size: 0.8em; background: #000000; }  p { padding: 0; margin: 0; } .v1 { color: #AAAAAA; } .v2 { color: #DDDDDD; } .v3 { white-space:pre; }" )
 		
 		--
 		
