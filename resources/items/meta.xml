@@ -108,6 +108,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="has"/>
 	<export function="has" type="client"/>
 	
+	<script src="phones.lua"/>
+	<!-- Returns a new (unused) phone number.
+		returns:
+			(number) phone number if successful, (bool) false otherwise.
+	-->
+	<export function="createPhone"/>
+	
 	<!-- Images for our inventory.
 		See items_list.lua for a nams => image lookup.
 	-->
