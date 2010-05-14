@@ -19,7 +19,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 	function( )
 		if not exports.sql:create_table( 'phones',
 			{
-				{ name = 'phoneNumber', type = 'int(10) unsigned', primary_key = true, auto_increment = 10000 },
+				{ name = 'phoneNumber', type = 'int(10) unsigned', primary_key = true, auto_increment = 100000 },
 			} ) then cancelEvent( ) return end
 	end
 )
