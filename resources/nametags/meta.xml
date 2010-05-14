@@ -16,4 +16,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <meta>
 	<script src="nametags_c.lua" type="client"/>
+	
+	<script src="chat_bubbles.lua"/><!-- Client-side code is part of nametags_c.lua -->
+	<file src="chat.png"/>
 </meta>

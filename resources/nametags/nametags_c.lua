@@ -25,6 +25,7 @@ local _nametag_alpha = 170 -- alpha of the nametag (max.)
 local _bar_alpha = 120 -- alpha of the bar (max.)
 local _scale = 0.2 -- change this to keep it looking good (proportions)
 local _nametag_textsize = 0.6 -- change to increase nametag text
+local _chatbubble_size = 15
 local _bar_width = 40
 local _bar_height = 6
 local _bar_border = 1.2
@@ -43,7 +44,7 @@ addEventHandler( 'onClientRender', root,
 		local interior = getElementInterior( localPlayer )
 		
 		-- loop through all players
-		for player in pairs( nametags ) do
+		for player, chaticon in pairs( nametags ) do
 			if getElementDimension( player ) == dimension and getElementInterior( player ) == interior and isElementOnScreen( player ) then
 				local px, py, pz = getElementPosition( player )
 				local distance = getDistanceBetweenPoints3D( px, py, pz, cx, cy, cz )
@@ -55,6 +56,8 @@ addEventHandler( 'onClientRender', root,
 					pz = pz + dz
 					local sx, sy = getScreenFromWorldPosition( px, py, pz )
 					if sx and sy then
+						local cx = sx
+						
 						-- how large should it be drawn
 						distance = math.max( distance, _min_distance )
 						local scale = _max_distance / ( real_scale * distance )
@@ -106,6 +109,13 @@ addEventHandler( 'onClientRender', root,
 							
 							-- fill it with the actual health
 							dxDrawRectangle( sx + border, sy + border, math.floor( ( width - 2 * border ) / 100 * health ), height - 2 * border, tocolor( r, g, b, bar_alpha ) )
+							
+							-- chat icon if the player has one
+							if chaticon then
+								local square = math.ceil( _chatbubble_size * scale )
+								local sy = sy + square / 1.9
+								dxDrawImage( cx, sy, square, square, "chat.png", 0, 0, 0, tocolor( r, g, b, nametag_alpha ) )
+							end
 						end
 					end
 				end
@@ -123,7 +133,7 @@ addEventHandler( 'onClientResourceStart', getResourceRootElement( ),
 				
 				if isElementStreamedIn( player ) then
 					-- save the player data
-					nametags[ player ] = true
+					nametags[ player ] = false
 				end
 			end
 		end
@@ -152,9 +162,11 @@ addEventHandler ( 'onClientPlayerJoin', root,
 
 addEventHandler ( 'onClientElementStreamIn', root,
 	function( )
-		if getElementType( source ) == "player" then
+		if source ~= localPlayer and getElementType( source ) == "player" then
 			-- save the player data
-			nametags[ source ] = true
+			nametags[ source ] = false
+			
+			triggerServerEvent( "nametags:chatbubble", source )
 		end
 	end
 )
@@ -173,6 +185,30 @@ addEventHandler ( 'onClientPlayerQuit', root,
 		if nametags[ source ] then
 			-- cleanup
 			nametags[ source ] = nil
+		end
+	end
+)
+
+
+--
+
+local oldInputState = false
+
+addEventHandler( "onClientRender", root,
+	function( )
+		local newInputState = isChatBoxInputActive( )
+		if newInputState ~= oldInputState then
+			triggerServerEvent( "nametags:chatbubble", localPlayer, newInputState )
+			oldInputState = newInputState
+		end
+	end
+)
+
+addEvent( "nametags:chatbubble", true )
+addEventHandler( "nametags:chatbubble", root,
+	function( state )
+		if nametags[ source ] ~= nil and type( state ) == "boolean" then
+			nametags[ source ] = state
 		end
 	end
 )
