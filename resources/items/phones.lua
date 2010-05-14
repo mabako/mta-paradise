@@ -29,3 +29,129 @@ function createPhone( )
 	local number = exports.sql:query_insertid( "INSERT INTO phones VALUES ()" );
 	return number -- we don't want to return the MySQL error if that failed
 end
+
+--
+
+local function findFromPhoneBook( number, name )
+	-- TODO: this should once in near future return the number associated to a certain name in the phone book - implies we have a phone book
+	return false
+end
+
+local function findInPhoneBook( number, otherNumber )
+	-- TODO: this should once in near future return the name of the phonebook entry assigned to that number - implies we have a phone book
+	return false
+end
+
+--
+
+local p = { }
+
+--
+
+addCommandHandler( "call",
+	function( player, commandName, ownNumber, otherNumber )
+		if exports.players:isLoggedIn( player ) then
+			local ownNumber = tonumber( ownNumber )
+			if ownNumber and otherNumber and exports.items:has( player, 7, ownNumber ) then
+				-- do nothing?
+			else
+				local has, key, item = exports.items:has( player, 7 )
+				if has then
+					otherNumber = ownNumber
+					ownNumber = item.value
+				else
+					outputChatBox( "(( You do not have a phone. ))", player, 255, 0, 0 )
+				end
+			end
+			
+			local otherNumber = tonumber( otherNumber ) or findFromPhoneBook( ownNumber, otherNumber )
+			if ownNumber and otherNumber then
+				local ownPhone = { exports.items:has( player, 7, ownNumber ) }
+				exports.chat:me( player, "takes out a " .. ( ownPhone[3].name or "cellphone" ) .. " and taps a few buttons on it." )
+				
+				for key, value in ipairs( getElementsByType( "player" ) ) do
+					--if value ~= player then
+						local otherPhone = { has( value, 7, otherNumber ) }
+						if otherPhone and otherPhone[1] then
+							p[ player ] = { other = value, number = ownNumber, state = 0 }
+							p[ value ] = { other = player, number = otherNumber, state = 0 }
+							
+							exports.chat:me( value, "'s " .. ( otherPhone[3].name or "phone" ) .. " starts to ring." )
+							outputChatBox( "The phone's display shows " .. ( findInPhoneBook( otherNumber, ownNumber ) or ( "#" .. ownNumber ) ) .. ". (( /pickup to pick up. ))", value, 180, 255, 180 )
+							return
+						end
+					--end
+				end
+				
+				-- TODO: if the phone is a dropped item, a menu for picking up/hanging up would be nice. and an actual check if it is
+				
+				outputChatBox( "You hear a dead tone.", player, 255, 0, 0 )
+			else
+				outputChatBox( "Syntax: /call [number] or /call [your number] [other number]", player, 255, 255, 255 )
+			end
+		end
+	end
+)
+
+addCommandHandler( "pickup" ,
+	function( player )
+		if p[ player ] and p[ player ].state == 0 then
+			exports.chat:me( player, "answers their phone." )
+			outputChatBox( "They picked up. (( /p to talk ))", p[ player ].other, 180, 255, 180 )
+			
+			p[ p[ player ].other ].state = 1
+			p[ player ].state = 1
+		else
+			outputChatBox( "You are not on a call.", player, 255, 0, 0 )
+		end
+	end
+)
+
+addCommandHandler( "p" ,
+	function( player, commandName, ... )
+		if ( ... ) then
+			if p[ player ] and p[ player ].state == 1 then
+				local message = table.concat( { ... }, " " )
+				outputChatBox( "((You)) " .. ( findInPhoneBook( p[ player ].number, p[ p[ player ].other ].number ) or ( "#" .. p[ p[ player ].other ].number ) ) .. " said: " .. message, player, 180, 255, 180 )
+				outputChatBox( "((" .. getPlayerName( player ):gsub( "_", " " ) .. ")) " .. ( findInPhoneBook( p[ p[ player ].other ].number, p[ player ].number ) or ( "#" .. p[ player ].number ) ) .. " says: " .. message, p[ player ].other, 180, 255, 180 )
+			else
+				outputChatBox( "You are not on a call.", player, 255, 0, 0 )
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [text] - talks into your phone.", player, 255, 255, 255 )
+		end
+	end
+)
+
+addCommandHandler( "hangup" ,
+	function( player )
+		if p[ player ] then
+			outputChatBox( "You hung up.", player, 180, 255, 180 )
+			outputChatBox( "They hung up.", p[ player ].other, 180, 255, 180 )
+			
+			p[ p[ player ].other ] = nil
+			p[ player ] = nil
+		else
+			outputChatBox( "You are not on a call.", player, 255, 0, 0 )
+		end
+	end
+)
+
+addEventHandler( "onPlayerQuit", root,
+	function( )
+		if p[ source ] then
+			outputChatBox( "Your phone lost the connection...", player, 255, 0, 0 )
+			p[ p[ source ].other ] = nil
+			p[ source ] = nil
+		end
+	end
+)
+addEventHandler( "onCharacterLogout", root,
+	function( )
+		if p[ source ] then
+			outputChatBox( "Your phone lost the connection...", player, 255, 0, 0 )
+			p[ p[ source ].other ] = nil
+			p[ source ] = nil
+		end
+	end
+)
