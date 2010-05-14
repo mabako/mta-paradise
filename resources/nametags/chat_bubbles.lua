@@ -22,7 +22,7 @@ addEventHandler( "nametags:chatbubble", root,
 	function( state )
 		if source == client then
 			-- since you can't request the state for your local player anyway, here we go for syncing it
-			if type( state ) == "boolean" then
+			if state == true or state == false or state == 1 then
 				if state == true then
 					p[ source ] = true
 				else

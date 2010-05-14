@@ -114,7 +114,8 @@ addEventHandler( 'onClientRender', root,
 							if chaticon then
 								local square = math.ceil( _chatbubble_size * scale )
 								local sy = sy + square / 1.9
-								dxDrawImage( cx, sy, square, square, "chat.png", 0, 0, 0, tocolor( r, g, b, nametag_alpha ) )
+								local r, g, b = 255 - 128 * health / 100, 127 + 128 * health / 100, 127
+								dxDrawImage( cx, sy, square, square, chaticon == true and "chat.png" or "console.png", 0, 0, 0, tocolor( r, g, b, nametag_alpha ) )
 							end
 						end
 					end
@@ -192,14 +193,21 @@ addEventHandler ( 'onClientPlayerQuit', root,
 
 --
 
+local oldConsoleState = false
 local oldInputState = false
 
 addEventHandler( "onClientRender", root,
 	function( )
-		local newInputState = isChatBoxInputActive( )
-		if newInputState ~= oldInputState then
-			triggerServerEvent( "nametags:chatbubble", localPlayer, newInputState )
-			oldInputState = newInputState
+		local newConsoleState = isConsoleActive( )
+		if newConsoleState ~= oldConsoleState then
+			triggerServerEvent( "nametags:chatbubble", localPlayer, newConsoleState and 1 or false )
+			oldConsoleState = newConsoleState
+		else
+			local newInputState = isChatBoxInputActive( )
+			if newInputState ~= oldInputState then
+				triggerServerEvent( "nametags:chatbubble", localPlayer, newInputState )
+				oldInputState = newInputState
+			end
 		end
 	end
 )
@@ -207,7 +215,7 @@ addEventHandler( "onClientRender", root,
 addEvent( "nametags:chatbubble", true )
 addEventHandler( "nametags:chatbubble", root,
 	function( state )
-		if nametags[ source ] ~= nil and type( state ) == "boolean" then
+		if nametags[ source ] ~= nil and ( state == true or state == false or state == 1 ) then
 			nametags[ source ] = state
 		end
 	end

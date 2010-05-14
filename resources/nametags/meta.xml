@@ -19,4 +19,5 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<script src="chat_bubbles.lua"/><!-- Client-side code is part of nametags_c.lua -->
 	<file src="chat.png"/>
+	<file src="console.png"/>
 </meta>
