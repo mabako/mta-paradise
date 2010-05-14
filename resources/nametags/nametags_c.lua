@@ -121,8 +121,10 @@ addEventHandler( 'onClientResourceStart', getResourceRootElement( ),
 				-- hide the default nametag
 				setPlayerNametagShowing( player, false )
 				
-				-- save the player data
-				nametags[ player ] = true
+				if isElementStreamedIn( player ) then
+					-- save the player data
+					nametags[ player ] = true
+				end
 			end
 		end
 	end
@@ -145,15 +147,32 @@ addEventHandler ( 'onClientPlayerJoin', root,
 	function( )
 		-- hide the nametag
 		setPlayerNametagShowing( source, false )
-		
-		-- save the player data
-		nametags[ source ] = true
+	end
+)
+
+addEventHandler ( 'onClientElementStreamIn', root,
+	function( )
+		if getElementType( source ) == "player" then
+			-- save the player data
+			nametags[ source ] = true
+		end
+	end
+)
+
+addEventHandler ( 'onClientElementStreamOut', root,
+	function( )
+		if nametags[ source ] then
+			-- cleanup
+			nametags[ source ] = nil
+		end
 	end
 )
 
 addEventHandler ( 'onClientPlayerQuit', root,
 	function( )
-		-- cleanup
-		nametags[ source ] = nil
+		if nametags[ source ] then
+			-- cleanup
+			nametags[ source ] = nil
+		end
 	end
 )
