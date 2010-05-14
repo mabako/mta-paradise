@@ -25,8 +25,30 @@ addEventHandler( "onResourceStart", resourceRoot,
 )
 
 -- we need to export a function to generate a new (unused) phone number, really
-function createPhone( )
-	local number = exports.sql:query_insertid( "INSERT INTO phones VALUES ()" );
+function createPhone( number )
+	if not number then
+		number = exports.sql:query_insertid( "INSERT INTO phones VALUES ()" );
+	else
+		-- we create a row for the one that didn't exist yet but where we have the number for.
+		local highestNumber = exports.sql:query_assoc_single( "SELECT MAX(phoneNumber) AS max FROM phones" )
+		if highestNumber then
+			if highestNumber.max == nil or number == highestNumber.max + 1 then
+				-- no current phones OR the new phone number is the new max.
+				return createPhone( )
+			elseif number < highestNumber.max then
+				-- we have a phone number that's below the maximum
+				if not exports.sql:query_free( "INSERT INTO phones (phoneNumber) VALUES (" .. number .. ")" ) then
+					 -- if this fails, the phone number does exist
+					return false
+				end
+			else
+				-- number is too high, ignore
+				return false
+			end
+		else
+			return createPhone( )
+		end
+	end
 	return number -- we don't want to return the MySQL error if that failed
 end
 

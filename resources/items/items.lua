@@ -359,9 +359,6 @@ addCommandHandler( "giveitem",
 			if other then
 				-- check if it's a valid item id
 				if id >= 0 and id <= #item_list then
-					if id == 7 then
-						return -- TODO: Insert it into our phones table if it doesn't exist. Will screw up if using a phone number that's like 1234567890123 cause everything will start from there
-					end
 					-- we need to split our name and value apart
 					local arguments = { ... }
 					local value = { }
@@ -385,6 +382,25 @@ addCommandHandler( "giveitem",
 						name = table.concat( name, " " )
 						if #name == 0 then
 							name = nil
+						end
+					end
+					
+					-- phone workaround: we need at this point make sure we have a unique phone with a non-arbitrary number
+					if id == 7 then
+						if type( value ) == "number" then
+							if value <= 0 then
+								-- make it easy, just create a new phone
+								value = createPhone( )
+							else
+								value = createPhone( value )
+								if not value then
+									outputChatBox( "Failed to give phone.", player, 255, 0, 0 )
+									return
+								end
+							end
+						else
+							outputChatBox( "Failed to give phone -- invalid .", player, 255, 0, 0 )
+							return
 						end
 					end
 					
