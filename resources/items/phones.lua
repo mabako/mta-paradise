@@ -66,26 +66,30 @@ addCommandHandler( "call",
 			
 			local otherNumber = tonumber( otherNumber ) or findFromPhoneBook( ownNumber, otherNumber )
 			if ownNumber and otherNumber then
-				local ownPhone = { exports.items:has( player, 7, ownNumber ) }
-				exports.chat:me( player, "takes out a " .. ( ownPhone[3].name or "cellphone" ) .. " and taps a few buttons on it." )
-				
-				for key, value in ipairs( getElementsByType( "player" ) ) do
-					--if value ~= player then
-						local otherPhone = { has( value, 7, otherNumber ) }
-						if otherPhone and otherPhone[1] then
-							p[ player ] = { other = value, number = ownNumber, state = 0 }
-							p[ value ] = { other = player, number = otherNumber, state = 0 }
-							
-							exports.chat:me( value, "'s " .. ( otherPhone[3].name or "phone" ) .. " starts to ring." )
-							outputChatBox( "The phone's display shows " .. ( findInPhoneBook( otherNumber, ownNumber ) or ( "#" .. ownNumber ) ) .. ". (( /pickup to pick up. ))", value, 180, 255, 180 )
-							return
+				if ownNumber == otherNumber then
+					outputChatBox( "You can't call yourself.", player, 255, 0, 0 )
+				else
+					local ownPhone = { exports.items:has( player, 7, ownNumber ) }
+					exports.chat:me( player, "takes out a " .. ( ownPhone[3].name or "cellphone" ) .. " and taps a few buttons on it." )
+					
+					for key, value in ipairs( getElementsByType( "player" ) ) do
+						if value ~= player then
+							local otherPhone = { has( value, 7, otherNumber ) }
+							if otherPhone and otherPhone[1] then
+								p[ player ] = { other = value, number = ownNumber, state = 0 }
+								p[ value ] = { other = player, number = otherNumber, state = 0 }
+								
+								exports.chat:me( value, "'s " .. ( otherPhone[3].name or "phone" ) .. " starts to ring." )
+								outputChatBox( "The phone's display shows " .. ( findInPhoneBook( otherNumber, ownNumber ) or ( "#" .. ownNumber ) ) .. ". (( /pickup to pick up. ))", value, 180, 255, 180 )
+								return
+							end
 						end
-					--end
+					end
+					
+					-- TODO: if the phone is a dropped item, a menu for picking up/hanging up would be nice. and an actual check if it is
+					
+					outputChatBox( "You hear a dead tone.", player, 255, 0, 0 )
 				end
-				
-				-- TODO: if the phone is a dropped item, a menu for picking up/hanging up would be nice. and an actual check if it is
-				
-				outputChatBox( "You hear a dead tone.", player, 255, 0, 0 )
 			else
 				outputChatBox( "Syntax: /call [number] or /call [your number] [other number]", player, 255, 255, 255 )
 			end
@@ -180,23 +184,23 @@ addCommandHandler( "sms",
 			
 			local message = table.concat( args, " " )
 			if ownNumber and otherNumber and message then
-				exports.chat:me( player, "writes a text message." )
-				outputChatBox( "SMS to " .. ( findInPhoneBook( ownNumber, otherNumber ) or ( "#" .. otherNumber ) ) .. ": " .. message, player, 130, 255, 130 )
-				
-				for key, value in ipairs( getElementsByType( "player" ) ) do
-					--if value ~= player then
+				if ownNumber == otherNumber then
+					outputChatBox( "You can't write messages to yourself.", player, 255, 0, 0 )
+				else
+					exports.chat:me( player, "writes a text message." )
+					outputChatBox( "SMS to " .. ( findInPhoneBook( ownNumber, otherNumber ) or ( "#" .. otherNumber ) ) .. ": " .. message, player, 130, 255, 130 )
+					
+					for key, value in ipairs( getElementsByType( "player" ) ) do
 						local otherPhone = { has( value, 7, otherNumber ) }
 						if otherPhone and otherPhone[1] then
 							exports.chat:me( value, "receives a text message." )
 							outputChatBox( "SMS from ((" .. getPlayerName( player ):gsub( "_", " " ) .. ")) " .. ( findInPhoneBook( otherNumber, ownNumber ) or ( "#" .. ownNumber ) ) .. ": " .. message, value, 130, 255, 130 )
 							return
 						end
-					--end
+					end
+					
+					outputChatBox( "((Automated Message)) The recipient is currently not available.", player, 130, 255, 130 )
 				end
-				
-				-- TODO: if the phone is a dropped item, a menu for picking up/hanging up would be nice. and an actual check if it is
-				
-				outputChatBox( "((Automated Message)) The recipient is currently not available.", player, 130, 255, 130 )
 			else
 				outputChatBox( "Syntax: /sms [number] [text] or /call [your number] [other number] [text]", player, 255, 255, 255 )
 			end
