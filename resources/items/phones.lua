@@ -207,3 +207,16 @@ addCommandHandler( "sms",
 		end
 	end
 )
+
+--
+
+addEventHandler( "onResourceStop", resourceRoot,
+	function( )
+		for player, data in pairs( p ) do
+			if data.state == 1 then -- on a call
+				outputChatBox( "Your phone lost the connection...", player, 255, 0, 0 )
+			end
+		end
+		p = { }
+	end
+)
