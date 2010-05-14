@@ -68,4 +68,10 @@ shop_configurations =
 		skin = 168,
 		{ itemID = 3, itemValue = 10, name = "Ice cream stick", description = "Delicious choccolate ice cream.", price = 1 },
 	},
+	electronics =
+	{
+		name = "San Fierro\nElectronics",
+		skin = 217,
+		{ itemID = 7, description = "A modern, black cellphone.", price = 50 },
+	}
 }

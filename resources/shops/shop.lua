@@ -315,8 +315,12 @@ addEventHandler( "shops:buy", root,
 					local item = shop.items and shop.items[ key ] or shop_configurations[ shop.configuration ][ key ]
 					if item then
 						if exports.players:takeMoney( source, item.price ) then
-							if exports.items:give( source, item.itemID, item.itemID == 7 and exports.items:createPhone( ) or item.itemValue, item.name ) then
+							local value = item.itemID == 7 and exports.items:createPhone( ) or item.itemValue
+							if exports.items:give( source, item.itemID, value, item.name ) then
 								outputChatBox( "You've bought a " .. ( item.name or exports.items:getName( item.itemID ) ) .. " for $" .. item.price .. ".", source, 0, 255, 0 )
+								if item.itemID == 7 then
+									outputChatBox( "Your phone number is #" .. value .. ".", source, 0, 255, 0 )
+								end
 							end
 						else
 							outputChatBox( "You can't afford to buy a " .. ( item.name or exports.items:getName( item.itemID ) ) .. ".", source, 0, 255, 0 )
