@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local p = { }
 local factions = { }
-local factionTypes = { police = 1 }
+local factionTypes = { police = 1, medical = 2, news = 3, gang = 4, mafia = 5 }
 local maxRanks = 12
 
 --
