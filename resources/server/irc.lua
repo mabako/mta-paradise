@@ -93,16 +93,6 @@ if sockOpen then
 			end
 		)
 		
-		-- do this cause we want to stay connected
-		addEventHandler( "onSockData", resourceRoot,
-			function( socket, chunk )
-				-- if interested parse more data.
-				if chunk:sub( 1, 4 ) == "PING" then
-					sockWrite( socket, "PONG" .. chunk:sub( 5 ) .. "\r\n" )
-				end
-			end
-		)
-		
 		--
 		
 		local config_channels = get( 'irc-channels' ) -- first channel is our echo channel, rest is meh.
@@ -115,6 +105,39 @@ if sockOpen then
 		assert( config_channels and #config_channels > 0 )
 		assert( config_server and type( config_server ) == "string" and #config_server > 0 )
 		assert( config_port and config_port >= 1024 and config_port <= 65535 )
+		
+		-- do this cause we want to stay connected
+		local function trim( str )
+			return str:gsub("^%s*(.-)%s*$", "%1")
+		end
+
+		addEventHandler( "onSockData", resourceRoot,
+			function( socket, chunk )
+				-- if interested parse more data.
+				if chunk:sub( 1, 4 ) == "PING" then
+					sockWrite( socket, "PONG" .. chunk:sub( 5 ) .. "\r\n" )
+				else
+					chunk = chunk:sub( 2 )
+					local parts = split( chunk, 32 ) -- split at ' '
+					if #parts >= 4 then
+						if parts[2] == "PRIVMSG" and parts[3]:lower() == config_channels[1]:lower() then
+							-- get the name part
+							local name = split( parts[1], string.byte( '!' ) )[1]
+							
+							-- get the message: first 3 parts are name, command, target
+							for i = 1, 3 do
+								table.remove( parts, 1 )
+							end
+							parts[1] = parts[1]:sub( 2 ) -- message starts with :
+							local message = trim( table.concat( parts, " " ):gsub( "\003%d%d", "" ):gsub( "\003%d", "" ):gsub( "\002", "" ) ) -- strip some formatting
+							
+							-- finally send it.
+							outputChatBox( "(( " .. name .. " @ IRC: " .. message .. " ))", root, 196, 255, 255 )
+						end
+					end
+				end
+			end
+		)
 		
 		-- initalize stuff needed, connect bots, stuff
 		addEventHandler( "onResourceStart", resourceRoot,
