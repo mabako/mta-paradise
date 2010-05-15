@@ -190,6 +190,7 @@
         <right name="command.setinteriorprice" access="true" />
         <right name="command.createvehicle" access="true" />
         <right name="command.setwindowstinted" access="true" />
+        <right name="command.setvehiclefaction" access="true" />
         <right name="command.reloadpermissions" access="true" />
         <right name="command.adminchat" access="true" />
         <right name="command.createteleport" access="true" />

@@ -507,7 +507,7 @@ addCommandHandler( { "setvehiclecolor", "setcolor" },
 				if vehicle then
 					local data = vehicles[ vehicle ]
 					if data then
-						if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET color1 = " .. color1 .. ", color2 = " .. color2 .. " WHERE vehicleID = " .. data.vehicleID, state ) then
+						if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET color1 = " .. color1 .. ", color2 = " .. color2 .. " WHERE vehicleID = " .. data.vehicleID ) then
 							setVehicleColor( vehicle, color1, color2, color1, color2 )
 							outputChatBox( "Changed the color of " .. name .. "'s " .. getVehicleName( vehicle ) .. ".", player, 0, 255, 153 )
 						else
@@ -522,6 +522,42 @@ addCommandHandler( { "setvehiclecolor", "setcolor" },
 			end
 		else
 			outputChatBox( "Syntax: /" .. commandName .. " [player] [color 1] [color 2]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+addCommandHandler( "setvehiclefaction",
+	function( player, commandName, other, faction )
+		local faction = tonumber( faction )
+		if other and faction and ( faction == 0 or exports.factions:getFactionName( faction ) ) then
+			local other, name = exports.players:getFromName( player, other )
+			if other then
+				local vehicle = getPedOccupiedVehicle( player )
+				if vehicle then
+					local data = vehicles[ vehicle ]
+					if data then
+						if data.vehicleID > 0 then
+							if data.characterID <= 0 then
+								if exports.sql:query_free( "UPDATE vehicles SET characterID = " .. -faction .. " WHERE vehicleID = " .. data.vehicleID ) then
+									data.characterID = -faction
+									outputChatBox( name .. "'s " .. getVehicleName( vehicle ) .. " does now belong to " .. ( faction == 0 and "no faction" or exports.factions:getFactionName( faction ) ) .. ".", player, 0, 255, 153 )
+								else
+									outputChatBox( "MySQL Query failed.", player, 255, 0, 0 )
+								end
+							else
+								outputChatBox( "This is no civilian/faction vehicle.", player, 255, 0, 0 )
+							end
+						end
+					else
+						outputChatBox( "Vehicle Error.", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( name .. " isn't driving a vehicle.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [faction or 0 for no faction]", player, 255, 255, 255 )
 		end
 	end,
 	true
@@ -650,6 +686,8 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 					else
 						outputDebugString( "Vehicle " .. data.vehicleID .. " (" .. getVehicleName( source ) .. ") has an invalid owner.", 2 )
 					end
+				elseif data.characterID < 0 then
+					outputChatBox( "(( This " .. getVehicleName( source ) .. " belongs to " .. tostring( exports.factions:getFactionName( -data.characterID ) ) .. ". ))", player, 255, 204, 0 )
 				end
 				
 				if not p[ player ] then
@@ -738,7 +776,7 @@ addCommandHandler( "lockvehicle",
 					if dimension == getElementDimension( key ) then
 						local distance = getDistanceBetweenPoints3D( x, y, z, getElementPosition( key ) )
 						if distance < minDistance then
-							if exports.items:has( player, 1, value.vehicleID ) then
+							if exports.items:has( player, 1, value.vehicleID ) or ( value.characterID < 0 and exports.factions:isPlayerInFaction( player, -value.characterID ) ) then
 								minDistance = distance
 								vehicle = key
 							end
