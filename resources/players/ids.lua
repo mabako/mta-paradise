@@ -53,7 +53,7 @@ addEventHandler( "onPlayerQuit", root,
 						type = type .. " - " .. getPlayerName( responsible )
 					end
 				end
-				exports.server:irc( "%C04[" .. i .. "]%C %B" .. getPlayerName( source ):gsub( "_", " " ) .. "%B left the server. (" .. type .. ")" )
+				exports.server:message( "%C04[" .. i .. "]%C %B" .. getPlayerName( source ):gsub( "_", " " ) .. "%B left the server. (" .. type .. ")" )
 				
 				break
 			end
