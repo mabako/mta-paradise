@@ -45,6 +45,7 @@ interiorPositions =
 	['24/7-4'] = { x = -25.77, y = -141.55, z = 1003.55, interior = 16 },
 	['24/7-5'] = { x = -27.30, y =  -31.76, z = 1003.56, interior = 4 },
 	['24/7-6'] = { x = -27.34, y =  -58.26, z = 1003.55, interior = 6 },
+	bar =        { x = 501.99, y =  -67.56, z =  998.75, interior = 11, blip = 49 },
 	burgershot = { x = 362.84, y =  -75.13, z = 1001.50, interior = 10, blip = 10 },
 	club =       { x = 493.50, y =  -24.95, z = 1000.67, interior = 17, blip = 48 },
 	cluckinbell = { x = 364.98, y = -11.84, z = 1001.85, interior = 9, blip = 14 },
