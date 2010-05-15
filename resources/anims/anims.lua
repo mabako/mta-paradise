@@ -48,6 +48,10 @@ local anims =
 		{ block = "crack", anim = "crckidle4", time = -1 },
 		{ block = "crack", anim = "crckidle1", time = -1 },
 	},
+	cpr =
+	{
+		{ block = "medic", anim = "cpr", time = 8000 },
+	},
 	dance =
 	{
 		{ block = "dancing", anim = "dance_loop", time = -1 },
@@ -70,6 +74,52 @@ local anims =
 	{
 		{ block = "car", anim = "flag_drop", time = 3000 },
 	},
+	gsign =
+	{
+		{ block = "ghands", anim = "gsign1", time = 4000 },
+		{ block = "ghands", anim = "gsign1lh", time = 4000 },
+		{ block = "ghands", anim = "gsign2", time = 4000 },
+		{ block = "ghands", anim = "gsign2lh", time = 4000 },
+		{ block = "ghands", anim = "gsign3", time = 4000 },
+		{ block = "ghands", anim = "gsign3lh", time = 4000 },
+		{ block = "ghands", anim = "gsign4", time = 4000 },
+		{ block = "ghands", anim = "gsign4lh", time = 4000 },
+		{ block = "ghands", anim = "gsign5", time = 4000 },
+		{ block = "ghands", anim = "gsign5lh", time = 4000 },
+		{ block = "ghands", anim = "gsign1", time = 4000 },
+	},
+	gtalk =
+	{
+		{ block = "gangs", anim = "prtial_gngtlka", time = 4000 },
+		{ block = "gangs", anim = "prtial_gngtlkb", time = 4000 },
+		{ block = "gangs", anim = "prtial_gngtlkc", time = 4000 },
+		{ block = "gangs", anim = "prtial_gngtlkd", time = 4000 },
+		{ block = "gangs", anim = "prtial_gngtlke", time = 4000 },
+		{ block = "gangs", anim = "prtial_gngtlkf", time = 4000 },
+		{ block = "gangs", anim = "prtial_gngtlkg", time = 4000 },
+		{ block = "gangs", anim = "prtial_gngtlkh", time = 4000 },
+		{ block = "gangs", anim = "prtial_gngtlkh", time = 4000 },
+		{ block = "lowrider", anim = "prtial_gngtlkb", time = 4000 },
+		{ block = "lowrider", anim = "prtial_gngtlkc", time = 4000 },
+		{ block = "lowrider", anim = "prtial_gngtlkd", time = 4000 },
+		{ block = "lowrider", anim = "prtial_gngtlke", time = 4000 },
+		{ block = "lowrider", anim = "prtial_gngtlkf", time = 4000 },
+		{ block = "lowrider", anim = "prtial_gngtlkg", time = 4000 },
+		{ block = "lowrider", anim = "prtial_gngtlkh", time = 4000 },
+		{ block = "lowrider", anim = "prtial_gngtlkh", time = 4000 },
+	},
+	gym =
+	{
+		{ block = "gymnasium", anim = "gym_bike_still", time = -1, updatePosition = false },
+		{ block = "gymnasium", anim = "gym_bike_slow", time = -1, updatePosition = false },
+		{ block = "gymnasium", anim = "gym_bike_pedal", time = -1, updatePosition = false },
+		{ block = "gymnasium", anim = "gym_bike_fast", time = -1, updatePosition = false },
+		{ block = "gymnasium", anim = "gym_bike_faster", time = -1, updatePosition = false },
+		{ block = "gymnasium", anim = "gym_tread_tired", time = -1, updatePosition = false },
+		{ block = "gymnasium", anim = "gym_tread_walk", time = -1, updatePosition = false },
+		{ block = "gymnasium", anim = "gym_tread_jog", time = -1, updatePosition = false },
+		{ block = "gymnasium", anim = "gym_tread_sprint", time = -1, updatePosition = false },
+	},
 	idle =
 	{
 		{ block = "dealer", anim = "dealer_idle", time = -1 },
@@ -77,11 +127,31 @@ local anims =
 		{ block = "dealer", anim = "dealer_idle_02", time = -1 },
 		{ block = "dealer", anim = "dealer_idle_03", time = -1 },
 		{ block = "fat", anim = "fatidle", time = -1 },
+		{ block = "gangs", anim = "dealer_idle", time = -1 },
+	},
+	kiss =
+	{
+		{ block = "kissing", anim = "grlfrd_kiss_01", time = 4000 },
+		{ block = "kissing", anim = "grlfrd_kiss_02", time = 5000 },
+		{ block = "kissing", anim = "grlfrd_kiss_03", time = 6000 },
+		{ block = "kissing", anim = "playa_kiss_01", time = 4000 },
+		{ block = "kissing", anim = "playa_kiss_02", time = 5000 },
+		{ block = "kissing", anim = "playa_kiss_03", time = 6000 },
 	},
 	lay =
 	{
 		{ block = "beach", anim = "sitnwait_loop_w", time = -1 },
 		{ block = "beach", anim = "lay_bac_loop", time = -1 },
+		{ block = "int_house", anim = "bed_loop_l", time = -1 },
+		{ block = "int_house", anim = "bed_loop_r", time = -1 },
+	},
+	lean =
+	{
+		{ block = "gangs", anim = "leanidle", time = -1 },
+	},
+	no =
+	{
+		{ block = "gangs", anim = "invite_yes", time = 4000 },
 	},
 	pose =
 	{
@@ -99,10 +169,28 @@ local anims =
 		{ block = "sunbathe", anim = "parksit_m_idlec", time = -1 },
 		{ block = "sunbathe", anim = "parksit_w_idlea", time = -1 },
 		{ { block = "attractors", anim = "stepsit_in", time = 1200 }, { block = "attractors", anim = "stepsit_loop", time = -1 } },
+		{ block = "int_house", anim = "lou_loop", time = -1 },
+		{ block = "int_office", anim = "off_sit_drink", time = -1 },
+		{ block = "int_office", anim = "off_sit_idle_loop", time = -1 },
+		{ block = "int_office", anim = "off_sit_read", time = -1 },
+		{ block = "int_office", anim = "off_sit_type_loop", time = -1 },
+		{ block = "int_office", anim = "off_sit_watch", time = -1 },
+		{ block = "jst_buisness", anim = "girl_02", time = -1 },
+	},
+	smoke =
+	{
+		{ block = "lowrider", anim = "m_smkstnd_loop", time = -1 },
+		{ block = "lowrider", anim = "m_smklean_loop", time = -1 },
+		{ block = "lowrider", anim = "f_smklean_loop", time = -1 },
+		{ block = "gangs", anim = "smkcig_prtl", time = -1 },
 	},
 	think =
 	{
 		{ block = "cop_ambient", anim = "coplook_think", time = -1 },
+	},
+	throwup =
+	{
+		{ block = "food", anim = "eat_vomit_p", time = 7000 },
 	},
 	tired =
 	{
@@ -111,6 +199,15 @@ local anims =
 	wait =
 	{
 		{ block = "cop_ambient", anim = "coplook_loop", time = -1 },
+	},
+	wave =
+	{
+		{ block = "kissing", anim = "bd_gf_wave", time = 4000 },
+		{ block = "kissing", anim = "gfwave2", time = 2500 },
+	},
+	yes =
+	{
+		{ block = "gangs", anim = "invite_yes", time = 4000 },
 	},
 }
 
