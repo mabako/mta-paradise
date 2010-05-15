@@ -461,7 +461,7 @@ addCommandHandler( "setwindowstinted",
 		if other and state then
 			local other, name = exports.players:getFromName( player, other )
 			if other then
-				local vehicle = getPedOccupiedVehicle( player )
+				local vehicle = getPedOccupiedVehicle( other )
 				if vehicle then
 					local data = vehicles[ vehicle ]
 					if data then
@@ -503,7 +503,7 @@ addCommandHandler( { "setvehiclecolor", "setcolor" },
 		if other and color1 and color2 and color1 >= 0 and color1 <= 255 and color2 >= 0 and color2 <= 255 then
 			local other, name = exports.players:getFromName( player, other )
 			if other then
-				local vehicle = getPedOccupiedVehicle( player )
+				local vehicle = getPedOccupiedVehicle( other )
 				if vehicle then
 					local data = vehicles[ vehicle ]
 					if data then
@@ -533,7 +533,7 @@ addCommandHandler( "setvehiclefaction",
 		if other and faction and ( faction == 0 or exports.factions:getFactionName( faction ) ) then
 			local other, name = exports.players:getFromName( player, other )
 			if other then
-				local vehicle = getPedOccupiedVehicle( player )
+				local vehicle = getPedOccupiedVehicle( other )
 				if vehicle then
 					local data = vehicles[ vehicle ]
 					if data then
