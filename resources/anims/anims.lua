@@ -17,6 +17,79 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local anims =
 {
+	bar =
+	{
+		{ block = "bar", anim = "barcustom_loop", time = -1 },
+		{ block = "bar", anim = "dnk_stndm_loop", time = -1 },
+		{ block = "bar", anim = "dnk_stndf_loop", time = -1 },
+		{ block = "bar", anim = "barman_idle", time = -1 },
+		{ block = "bar", anim = "barserve_bottle", time = 3000 },
+		{ block = "bar", anim = "barserve_give", time = 2000 },
+		{ { block = "bar", anim = "barserve_in", time = 1000 }, { block = "bar", anim = "barserve_loop", time = -1 } },
+	},
+	bat =
+	{
+		{ block = "baseball", anim = "bat_1", time = 1000, updatePosition = true },
+		{ block = "baseball", anim = "bat_2", time = 1000, updatePosition = true },
+		{ block = "baseball", anim = "bat_3", time = 1000, updatePosition = true },
+		{ block = "baseball", anim = "bat_4", time = 1000, updatePosition = true },
+		{ block = "baseball", anim = "bat_hit_1", time = 1000, updatePosition = true },
+		{ block = "baseball", anim = "bat_hit_2", time = 1000, updatePosition = true },
+		{ block = "baseball", anim = "bat_hit_3", time = -1, updatePosition = true, loop = false },
+	},
+	bomb =
+	{
+		{ block = "bomber", anim = "bom_plant", time = 3000 },
+	},
+	crack =
+	{
+		{ block = "crack", anim = "crckidle2", time = -1 },
+		{ block = "crack", anim = "crckidle3", time = -1 },
+		{ block = "crack", anim = "crckidle4", time = -1 },
+		{ block = "crack", anim = "crckidle1", time = -1 },
+	},
+	dance =
+	{
+		{ block = "dancing", anim = "dance_loop", time = -1 },
+		{ block = "dancing", anim = "dan_down_a", time = -1 },
+		{ block = "dancing", anim = "dan_left_a", time = -1 },
+		{ block = "dancing", anim = "dan_loop_a", time = -1 },
+		{ block = "dancing", anim = "dan_right_a", time = -1 },
+		{ block = "dancing", anim = "dan_up_a", time = -1 },
+		{ block = "dancing", anim = "dnce_M_a", time = -1 },
+		{ block = "dancing", anim = "dnce_M_b", time = -1 },
+		{ block = "dancing", anim = "dnce_M_c", time = -1 },
+		{ block = "dancing", anim = "dnce_M_d", time = -1 },
+		{ block = "dancing", anim = "dnce_M_e", time = -1 },
+	},
+	fix =
+	{
+		{ block = "car", anim = "fixn_car_loop", time = -1, updatePosition = false },
+	},
+	flag =
+	{
+		{ block = "car", anim = "flag_drop", time = 3000 },
+	},
+	idle =
+	{
+		{ block = "dealer", anim = "dealer_idle", time = -1 },
+		{ block = "dealer", anim = "dealer_idle_02", time = -1 },
+		{ block = "dealer", anim = "dealer_idle_02", time = -1 },
+		{ block = "dealer", anim = "dealer_idle_03", time = -1 },
+		{ block = "fat", anim = "fatidle", time = -1 },
+	},
+	lay =
+	{
+		{ block = "beach", anim = "sitnwait_loop_w", time = -1 },
+		{ block = "beach", anim = "lay_bac_loop", time = -1 },
+	},
+	pose =
+	{
+		{ block = "clothes", anim = "clo_pose_torso", time = -1 },
+		{ block = "clothes", anim = "clo_pose_shoes", time = -1 },
+		{ block = "clothes", anim = "clo_pose_legs", time = -1 },
+		{ block = "clothes", anim = "clo_pose_watch", time = -1 },
+	},
 	sit =
 	{
 		{ block = "food", anim = "ff_Sit_eat1", time = -1 },
@@ -26,6 +99,18 @@ local anims =
 		{ block = "sunbathe", anim = "parksit_m_idlec", time = -1 },
 		{ block = "sunbathe", anim = "parksit_w_idlea", time = -1 },
 		{ { block = "attractors", anim = "stepsit_in", time = 1200 }, { block = "attractors", anim = "stepsit_loop", time = -1 } },
+	},
+	think =
+	{
+		{ block = "cop_ambient", anim = "coplook_think", time = -1 },
+	},
+	tired =
+	{
+		{ block = "fat", anim = "idle_tired", time = -1 },
+	},
+	wait =
+	{
+		{ block = "cop_ambient", anim = "coplook_loop", time = -1 },
 	},
 }
 
