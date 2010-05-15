@@ -117,22 +117,29 @@ if sockOpen then
 				if chunk:sub( 1, 4 ) == "PING" then
 					sockWrite( socket, "PONG" .. chunk:sub( 5 ) .. "\r\n" )
 				else
-					chunk = chunk:sub( 2 )
-					local parts = split( chunk, 32 ) -- split at ' '
-					if #parts >= 4 then
-						if parts[2] == "PRIVMSG" and parts[3]:lower() == config_channels[1]:lower() then
-							-- get the name part
-							local name = split( parts[1], string.byte( '!' ) )[1]
-							
-							-- get the message: first 3 parts are name, command, target
-							for i = 1, 3 do
-								table.remove( parts, 1 )
+					local lines = split( chunk, 10 ) -- split at \n
+					for key, value in ipairs( lines ) do
+						value = value:gsub( "\r", " " ):sub( 2 )
+						local parts = split( value, 32 ) -- split at ' '
+						if #parts >= 4 then
+							if parts[2] == "PRIVMSG" and parts[3]:lower() == config_channels[1]:lower() then
+								-- get the name part
+								local name = split( parts[1], string.byte( '!' ) )[1]
+								
+								-- get the message: first 3 parts are name, command, target
+								for i = 1, 3 do
+									table.remove( parts, 1 )
+								end
+								parts[1] = parts[1]:sub( 2 ) -- message starts with :
+								local message = trim( table.concat( parts, " " ):gsub( "\003%d%d", "" ):gsub( "\003%d", "" ):gsub( "\002", "" ) ) -- strip some formatting
+								if message:sub( 1, 7 ) == "\001ACTION" then -- /me something
+									message = "/me" .. message:sub( 8 ):gsub( "\001", "" ) -- finishes with a \001, strip that
+								elseif message:sub( 1, 1 ) == "\001" then -- some stupid other stuff we don't care about
+									return
+								end
+								-- finally send it.
+								outputChatBox( "(( " .. name .. " @ IRC: " .. message .. " ))", root, 196, 255, 255 )
 							end
-							parts[1] = parts[1]:sub( 2 ) -- message starts with :
-							local message = trim( table.concat( parts, " " ):gsub( "\003%d%d", "" ):gsub( "\003%d", "" ):gsub( "\002", "" ) ) -- strip some formatting
-							
-							-- finally send it.
-							outputChatBox( "(( " .. name .. " @ IRC: " .. message .. " ))", root, 196, 255, 255 )
 						end
 					end
 				end
