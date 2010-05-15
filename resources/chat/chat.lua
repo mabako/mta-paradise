@@ -75,7 +75,9 @@ end
 -- exported function to send fake-me's
 function me( source, message )
 	if isElement( source ) and getElementType( source ) == "player" and type( message ) == "string" then
-		localMessage( source, " *" .. getPlayerName( source ) .. ( message:sub( 1, 2 ) == "'s" and "" or " " ) .. message, 255, 40, 80 )
+		local message = " *" .. getPlayerName( source ) .. ( message:sub( 1, 2 ) == "'s" and "" or " " ) .. message
+		localMessage( source, message, 255, 40, 80 )
+		exports.server:message( "%C04[" .. exports.players:getID( source ) .. "]" .. message .. "%C" )
 		return true
 	else
 		return false
@@ -97,6 +99,7 @@ addEventHandler( "onPlayerChat", getRootElement( ),
 		if exports.players:isLoggedIn( source ) and not isPedDead( source ) then
 			if type == 0 then
 				localMessage( source, " " .. getPlayerName( source ) .. " says: " .. message, 230, 230, 230, false, 127, 127, 127 )
+				exports.server:message( "%C04[" .. exports.players:getID( source ) .. "]%C  " .. getPlayerName( source ) .. " says: " .. message )
 			elseif type == 1 then
 				me( source, message )
 			elseif type == 2 then
@@ -131,6 +134,7 @@ addCommandHandler( "do",
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
 				localMessage( thePlayer, " *" .. message .. " ((" .. getPlayerName( thePlayer ) .. "))", 255, 40, 80 )
+				exports.server:message( "%C04[" .. exports.players:getID( thePlayer ) .. "] *" .. message .. " ((" .. getPlayerName( thePlayer ) .. "))" )
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [in character text]", thePlayer, 255, 255, 255 )
 			end
@@ -145,6 +149,7 @@ addCommandHandler( "c",
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
 				localMessage( thePlayer, " " .. getPlayerName( thePlayer ) .. " whispers: " .. message, 255, 255, 255, 3 )
+				exports.server:message( "%C04[" .. exports.players:getID( thePlayer ) .. "]%C15  " .. getPlayerName( thePlayer ) .. " whispers: " .. message .. "%C" )
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [local ic text]", thePlayer, 255, 255, 255 )
 			end
@@ -158,7 +163,9 @@ addCommandHandler( { "s", "shout" },
 		if exports.players:isLoggedIn( thePlayer ) and not isPedDead( thePlayer ) then
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
-				localMessage( thePlayer, " " .. getPlayerName( thePlayer ) .. " shouts: " .. message .. ( message:sub( #message ) ~= "." and message:sub( #message ) ~= "!" and message:sub( #message ) ~= "?" and "!" or "" ), 255, 255, 255, 40 )
+				local message = " " .. getPlayerName( thePlayer ) .. " shouts: " .. message .. ( message:sub( #message ) ~= "." and message:sub( #message ) ~= "!" and message:sub( #message ) ~= "?" and "!" or "" )
+				localMessage( thePlayer, message, 255, 255, 255, 40 )
+				exports.server:message( "%C04[" .. exports.players:getID( thePlayer ) .. "]%C " .. message )
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [local ic text]", thePlayer, 255, 255, 255 )
 			end
@@ -187,6 +194,7 @@ addCommandHandler( { "b", "LocalOOC" },
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
 				localMessage( thePlayer, getPlayerName( thePlayer ) ..  ": (( " .. message .. " ))", 196, 255, 255 )
+				exports.server:message( "%C04[" .. exports.players:getID( thePlayer ) .. "]%C12  " .. getPlayerName( thePlayer ) .. ": (( " .. message .. " ))%C" )
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [local ooc text]", thePlayer, 255, 255, 255 )
 			end
@@ -201,6 +209,7 @@ addCommandHandler( { "o", "GlobalOOC" },
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
 				outputChatBox( "(( " .. getPlayerName( thePlayer ) ..  ": " .. message .. " ))", root, 196, 255, 255 )
+				exports.server:message( "%C04[" .. exports.players:getID( thePlayer ) .. "]%C12  (( " .. getPlayerName( thePlayer ) .. ": " .. message .. " ))%C" )
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [local ooc text]", thePlayer, 255, 255, 255 )
 			end
@@ -214,6 +223,7 @@ addCommandHandler( { "announce", "ann" },
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
 				outputChatBox( "*** " .. message .. " ***", root, 0, 255, 153 )
+				exports.server:message( "%C03[" .. exports.players:getID( thePlayer ) .. "] Announcement by " .. getPlayerName( thePlayer ) .. ": " .. message .. "%C" )
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [text]", thePlayer, 255, 255, 255 )
 			end

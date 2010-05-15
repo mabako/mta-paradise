@@ -474,6 +474,7 @@ function performLogin( source, token, isPasswordAuth, ip )
 						end
 						
 						outputServerLog( "PARADISE LOGIN: " .. getPlayerName( source ) .. " logged in as " .. info.username .. " (IP: " .. getPlayerIP( source ) .. ", Serial: " .. getPlayerSerial( source ) .. ")" )
+						exports.server:message( "%C04[" .. getID( source ) .. "]%C %B" .. info.username .. "%B logged in (Nick: %B" .. getPlayerName( source ):gsub( "_", " " ) .. "%B)." )
 						return true
 					end
 				end
@@ -606,6 +607,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					exports.sql:query_free( "UPDATE characters SET lastLogin = NOW() WHERE characterID = " .. tonumber( charID ) )
 					
 					outputServerLog( "PARADISE CHARACTER: " .. p[ source ].username .. " is now playing as " .. char.characterName )
+					exports.server:message( "%C04[" .. getID( source ) .. "]%C %B" .. p[ source ].username .. "%B is now playing in as %B" .. char.characterName .. "%B." )
 				end
 			end
 		end
@@ -695,6 +697,9 @@ function createCharacter( player, name, skin )
 		elseif exports.sql:query_free( "INSERT INTO characters (characterName, userID, x, y, z, interior, dimension, skin, rotation) VALUES ('%s', " .. p[ player ].userID .. ", -1984.5, 138, 27.7, 0, 0, " .. tonumber( skin ) .. ", 90)", name ) then
 			updateCharacters( player )
 			triggerClientEvent( player, "players:characterCreationResult", player, 0 )
+			
+			exports.server:message( "%C04[" .. getID( player ) .. "]%C %B" .. p[ player ].username .. "%B created character %B" .. name .. "%B." )
+			
 			return true
 		end
 	end

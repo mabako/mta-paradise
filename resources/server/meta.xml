@@ -25,4 +25,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="startup.lua"/>
 	
 	<script src="1.0.4.lua"/>
+	
+	<script src="irc.lua"/>
+	
+	<!-- sends a message to the first configured irc channel.
+		parameters:
+			(string) text to send
+	-->
+	<export function="message"/>
 </meta>

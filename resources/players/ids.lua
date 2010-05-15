@@ -23,6 +23,9 @@ addEventHandler( "onPlayerJoin", root,
 			if not ids[ i ] then
 				ids[ i ] = source
 				setElementData( source, "playerid", i )
+				
+				exports.server:message( "%C04[" .. i .. "]%C %B" .. getPlayerName( source ):gsub( "_", " " ) .. "%B joined the server (IP: %B" .. tostring( getPlayerIP( source ):sub(getPlayerIP( source ):find("%d+%.%d+%.")) ) .. "x.x%B)." )
+				
 				break
 			end
 		end
@@ -39,10 +42,19 @@ addEventHandler( "onResourceStart", resourceRoot,
 )
 
 addEventHandler( "onPlayerQuit", root,
-	function( )
+	function( type, reason, responsible )
 		for i = 1, getMaxPlayers( ) do
 			if ids[ i ] == source then
 				ids[ i ] = nil
+				
+				if reason then
+					type = type .. " - " .. reason
+					if isElement( responsible ) and getElementType( responsible ) == "player" then
+						type = type .. " - " .. getPlayerName( responsible )
+					end
+				end
+				exports.server:irc( "%C04[" .. i .. "]%C %B" .. getPlayerName( source ):gsub( "_", " " ) .. "%B left the server. (" .. type .. ")" )
+				
 				break
 			end
 		end

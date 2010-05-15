@@ -335,6 +335,7 @@ addCommandHandler( "respawnvehicles",
 			end
 		end
 		outputChatBox( "*** " .. getPlayerName( player ):gsub( "_", " " ) .. " respawned all vehicles. ***", root, 0, 255, 153 )
+		exports.server:message( "%C03[" .. exports.players:getID( player ) .. "] " .. getPlayerName( player ):gsub( "_", " " ) .. " respawned all vehicles.%C" )
 	end,
 	true
 )
