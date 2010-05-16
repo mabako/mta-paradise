@@ -57,7 +57,7 @@ addEventHandler( getResourceName( resource ) .. ":register", root,
 							end
 							
 							-- create the user
-							if exports.sql:query_free( "INSERT INTO wcf1_user (username,salt,password) VALUES ('%s', '%s', SHA1(CONCAT('%s', SHA1(CONCAT('%s', " .. ( sha1 and ( "'" .. sha1( password ) .. "'" ) or "SHA1('%s')" ) .. ")))))", username, salt, salt, salt, not sha1 and password ) then
+							if exports.sql:query_free( "INSERT INTO wcf1_user (username,salt,password) VALUES ('%s', '%s', SHA1(CONCAT('%s', SHA1(CONCAT('%s', '" .. sha1( password ) .. "')))))", username, salt, salt, salt ) then
 								triggerClientEvent( source, getResourceName( resource ) .. ":registrationResult", source, 0 ) -- will automatically login when this is sent
 							else
 								triggerClientEvent( source, getResourceName( resource ) .. ":registrationResult", source, 4 )

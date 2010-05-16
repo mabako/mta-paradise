@@ -407,7 +407,7 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 		if source == client then
 			triedTokenAuth[ source ] = true
 			if username and password and #username > 0 and #password > 0 then
-				local info = exports.sql:query_assoc_single( "SELECT CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) AS token FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, " .. ( sha1 and ( "'" .. sha1(password) .. "'" ) or "SHA1('%s')" ) .. "))))", getPlayerHash( source ), getPlayerHash( source ), username, not sha1 and password )
+				local info = exports.sql:query_assoc_single( "SELECT CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) AS token FROM wcf1_user WHERE `username` = '%s' AND password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, '" .. sha1(password) .. "'))))", getPlayerHash( source ), getPlayerHash( source ), username )
 				p[ source ] = nil
 				if not info then
 					triggerClientEvent( source, getResourceName( resource ) .. ":loginResult", source, 1 ) -- Wrong username/password
