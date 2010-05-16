@@ -151,7 +151,7 @@ local anims =
 	},
 	no =
 	{
-		{ block = "gangs", anim = "invite_yes", time = 4000 },
+		{ block = "gangs", anim = "invite_no", time = 4000 },
 	},
 	pose =
 	{
