@@ -39,8 +39,8 @@ addEventHandler( "onClientResourceStop", resourceRoot,
 
 addEventHandler( "onClientElementDataChange", resourceRoot,
 	function( name )
-		if source ~= localPlayer and name == "collisionless" then
-				setElementCollisionsEnabled( source, not getElementData( source, name ) )
+		if source ~= localPlayer and getElementType( source ) == "player" and name == "collisionless" then
+			setElementCollisionsEnabled( source, not getElementData( source, name ) )
 		end
 	end
 )
