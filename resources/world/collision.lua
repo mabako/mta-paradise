@@ -15,6 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+-- TODO: Remove this when it works correctly
+local setElementCollisionsEnabled_ = setElementCollisionsEnabled
+      setElementCollisionsEnabled = function( element, state )
+	outputDebugString( "setElementCollisionsEnabled( " .. ( getPlayerName( element ) or tostring( element ) ) .. ", " .. tostring( state ) .. " )" )
+	return setElementCollisionsEnabled_( element, state )
+end
+
+--
+
 local localPlayer = getLocalPlayer( )
 
 addEventHandler( "onClientResourceStart", resourceRoot,
