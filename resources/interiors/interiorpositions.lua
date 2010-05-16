@@ -38,22 +38,36 @@ interiorPositions =
 	madddogg = { x = 1298.95, y = -797.01, z = 1084.01, interior = 5 },
 	
 	-- business
-	atrium = { x = 1727.04, y = -1637.84, z = 20.22, interior = 18 },
 	['24/7-1'] = { x = -25.89, y = -188.24, z = 1003.54, interior = 17 },
 	['24/7-2'] = { x =   6.11, y =  -31.75, z = 1003.54, interior = 10 },
 	['24/7-3'] = { x = -25.89, y = -188.24, z = 1003.54, interior = 17 },
 	['24/7-4'] = { x = -25.77, y = -141.55, z = 1003.55, interior = 16 },
 	['24/7-5'] = { x = -27.30, y =  -31.76, z = 1003.56, interior = 4 },
 	['24/7-6'] = { x = -27.34, y =  -58.26, z = 1003.55, interior = 6 },
+	ammunation1 = { x = 285.50, y =  -41.80, z = 1001.52, interior = 1, blip = 6 },
+	ammunation2 = { x = 285.87, y =  -86.78, z = 1001.52, interior = 4, blip = 6 }, 
+	ammunation3 = { x = 296.84, y = -112.06, z = 1001.52, interior = 6, blip = 6 },
+	ammunation4 = { x = 315.70, y = -143.66, z =  999.60, interior = 7, blip = 6 },
+	ammunation5 = { x = 316.32, y = -170.30, z =  999.60, interior = 6, blip = 6 },
+	atrium = { x = 1727.04, y = -1637.84, z = 20.22, interior = 18 },
 	bar =        { x = 501.99, y =  -67.56, z =  998.75, interior = 11, blip = 49 },
+	bar2 =       { x = -229.3, y = 1401.28, z =   27.76, interior = 18, blip = 49 },
 	burgershot = { x = 362.84, y =  -75.13, z = 1001.50, interior = 10, blip = 10 },
+	clothes1 =   { x = 207.63, y = -111.26, z = 1005.13, interior = 15, blip = 45 }, -- Binco
+	clothes2 =   { x = 204.32, y = -168.85, z = 1000.52, interior = 14, blip = 45 }, -- Pro Laps
+	clothes3 =   { x = 207.07, y = -140.37, z = 1003.51, interior = 3, blip = 45 }, -- Didier Sachs
+	clothes4 =   { x = 203.81, y =  -50.66, z = 1001.80, interior = 1, blip = 45 }, -- Suburban
+	clothes5 =   { x = 227.56, y =   -8.06, z = 1002.21, interior = 5, blip = 45 }, -- Victim
+	clothes6 =   { x = 161.37, y =  -97.11, z = 1001.80, interior = 18, blip = 45 }, -- Zip
 	club =       { x = 493.50, y =  -24.95, z = 1000.67, interior = 17, blip = 48 },
 	cluckinbell = { x = 364.98, y = -11.84, z = 1001.85, interior = 9, blip = 14 },
 	electronics = { x = -2240.77, y = 137.20, z = 1035.41, interior = 6 }, -- Zero's RC
+	meatfactory = { x = 964.93, y = 2160.09, z = 1011.03, interior = 1 },
 	office1 = { x =   390.76, y =   173.79, z = 1008.38, interior = 3 }, -- City Planning Department
 	office2 = { x = -2026.86, y =  -103.60, z = 1035.18, interior = 3 }, -- Driving School
 	office3 = { x =  1494.36, y =  1303.57, z = 1093.28, interior = 3 }, -- Bike School
-	pizza = { x = 372.33, y = -133.52, z = 1001.49, interior = 5, blip = 29 },
+	pizza =   { x =   372.33, y =  -133.52, z = 1001.49, interior = 5, blip = 29 },
+	sexshop = { x =  -100.34, y =   -25.03, z = 1000.72, interior = 3 },
 	
 	-- police departments
 	lspd = { x = 246.75, y =  62.32, z = 1003.64, interior = 6 },
