@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- tricky, tricky. If the module is not loaded, ignore everything
 if sockOpen then
 	-- now let's fetch all irc config we have to take care of
-	local config_bots = get( 'irc-bots' )
+	local config_bots = get( 'bots' )
 	
 	-- if no irc configuration is available, screw it
 	if config_bots then
@@ -38,7 +38,7 @@ if sockOpen then
 				connectedCommands = { }
 			end
 			
-			table.insert( connectedCommands, 1, "USER " .. nickname .. " * * :MTA: Paradise " .. getVersion( ) )
+			table.insert( connectedCommands, 1, "USER " .. nickname .. " * * :MTA: Paradise " .. ( exports.server:getVersion( ) or "" ) )
 			table.insert( connectedCommands, 2, "NICK " .. nickname ) -- handle nick in use errors. some time.
 			
 			-- save the bot
@@ -48,7 +48,7 @@ if sockOpen then
 		local function ircDisconnect( bot )
 			assert( type( bot ) == "table" and bot.socket ) -- bad, bad, still didn't pass a bot
 			if bot.connected then
-				ircRaw( bot, "QUIT :MTA Paradise " .. getVersion( ) )
+				ircRaw( bot, "QUIT :MTA Paradise " .. exports.server:getVersion( ) )
 			end
 			sockClose( bot.socket )
 			bot.socket = nil
@@ -95,10 +95,10 @@ if sockOpen then
 		
 		--
 		
-		local config_channels = get( 'irc-channels' ) -- first channel is our echo channel, rest is meh.
-		local config_server = get( 'irc-server' )
-		local config_port = tonumber( get( 'irc-port' ) or 6667 )
-		local config_nickserv_password = get( 'irc-nickserv-password' )
+		local config_channels = get( 'channels' ) -- first channel is our echo channel, rest is meh.
+		local config_server = get( 'server' )
+		local config_port = tonumber( get( 'port' ) or 6667 )
+		local config_nickserv_password = get( 'nickserv-password' )
 		
 		-- sanity checks
 		assert( config_bots and #config_bots > 0 )
@@ -199,7 +199,10 @@ if sockOpen then
 end
 
 if not message then
-	-- well, if we don't have anything initalized, let's pretend we have functions
-	function message( )
-	end
+	-- we don't want to start this resource now really...
+	addEventHandler( "onResourceStart", resourceRoot,
+		function( )
+			cancelEvent( )
+		end
+	)
 end

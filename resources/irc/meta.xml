@@ -15,20 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <meta>
-	<script src="version.lua"/>
-	<script src="version.lua" type="client"/>
-	<export function="getVersion"/>
-	<export function="getVersion" type="client"/>
-	<script src="showversion.lua" type="client"/>
+	<script src="irc.lua"/>
 	
-	<script src="credits_c.lua" type="client"/>
-	<script src="startup.lua"/>
-	
-	<script src="1.0.4.lua"/>
-	
-	<script src="message.lua"/>
-	
-	<!-- outputs a message to the console and (if running) irc.
+	<!-- sends a message to the first configured irc channel.
 		parameters:
 			(string) text to send
 	-->
