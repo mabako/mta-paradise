@@ -114,11 +114,11 @@ if sockOpen then
 		addEventHandler( "onSockData", resourceRoot,
 			function( socket, chunk )
 				-- if interested parse more data.
-				if chunk:sub( 1, 4 ) == "PING" then
-					sockWrite( socket, "PONG" .. chunk:sub( 5 ) .. "\r\n" )
-				else
-					local lines = split( chunk, 10 ) -- split at \n
-					for key, value in ipairs( lines ) do
+				local lines = split( chunk, 10 ) -- split at \n
+				for key, value in ipairs( lines ) do
+					if value:sub( 1, 4 ) == "PING" then
+						sockWrite( socket, "PONG" .. value:sub( 5 ) .. "\r\n" )
+					else
 						value = value:gsub( "\r", " " ):sub( 2 )
 						local parts = split( value, 32 ) -- split at ' '
 						if #parts >= 4 then
