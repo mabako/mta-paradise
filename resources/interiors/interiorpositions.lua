@@ -37,6 +37,11 @@ interiorPositions =
 	
 	madddogg = { x = 1298.95, y = -797.01, z = 1084.01, interior = 5 },
 	
+	room1 = { x = 243.71, y = 304.95, z = 999.14, interior = 1 }, -- Denise
+	room2 = { x = 266.50, y = 305.01, z = 999.14, interior = 2 }, -- Katie
+	room3 = { x = 322.18, y = 302.35, z = 999.14, interior = 5 }, -- Barbara, some PD stuff
+	room4 = { x = 343.71, y = 304.98, z = 999.14, interior = 6 }, -- Millie/Sex room
+	
 	-- business
 	['24/7-1'] = { x = -25.89, y = -188.24, z = 1003.54, interior = 17 },
 	['24/7-2'] = { x =   6.11, y =  -31.75, z = 1003.54, interior = 10 },
@@ -61,6 +66,8 @@ interiorPositions =
 	clothes6 =   { x = 161.37, y =  -97.11, z = 1001.80, interior = 18, blip = 45 }, -- Zip
 	club =       { x = 493.50, y =  -24.95, z = 1000.67, interior = 17, blip = 48 },
 	cluckinbell = { x = 364.98, y = -11.84, z = 1001.85, interior = 9, blip = 14 },
+	diner      = { x = 460.53, y =  -88.62, z =  999.55, interior = 4, blip = 17 },
+	donut      = { x = 377.08, y = -193.30, z = 1000.63, interior = 17, blip = 17 },
 	electronics = { x = -2240.77, y = 137.20, z = 1035.41, interior = 6 }, -- Zero's RC
 	meatfactory = { x = 964.93, y = 2160.09, z = 1011.03, interior = 1 },
 	office1 = { x =   390.76, y =   173.79, z = 1008.38, interior = 3 }, -- City Planning Department
