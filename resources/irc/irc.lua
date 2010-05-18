@@ -29,7 +29,7 @@ if sockOpen then
 			sockWrite( bot.socket, message .. "\r\n" )
 		end
 		
-		local function ircConnect( server, port, nickname, connectedCommands )
+		local function ircConnect( server, port, nickname, ssl, connectedCommands )
 			assert( server )
 			assert( port )
 			assert( nickname )
@@ -42,7 +42,7 @@ if sockOpen then
 			table.insert( connectedCommands, 2, "NICK " .. nickname ) -- handle nick in use errors. some time.
 			
 			-- save the bot
-			table.insert( bots, { socket = sockOpen( server, port ), connected = false, queue = connectedCommands } )
+			table.insert( bots, { socket = sockOpen( server, port, ssl ), connected = false, queue = connectedCommands } )
 		end
 		
 		local function ircDisconnect( bot )
@@ -99,12 +99,14 @@ if sockOpen then
 		local config_server = get( 'server' )
 		local config_port = tonumber( get( 'port' ) or 6667 )
 		local config_nickserv_password = get( 'nickserv-password' )
+		local config_ssl = get( 'ssl' )
 		
 		-- sanity checks
 		assert( config_bots and #config_bots > 0 )
 		assert( config_channels and #config_channels > 0 )
 		assert( config_server and type( config_server ) == "string" and #config_server > 0 )
 		assert( config_port and config_port >= 1024 and config_port <= 65535 )
+		assert( type( config_ssl ) == 'boolean' )
 		
 		-- do this cause we want to stay connected
 		local function trim( str )
@@ -159,7 +161,7 @@ if sockOpen then
 						table.insert( connectedCommands, "JOIN " .. value )
 					end
 					
-					ircConnect( config_server, config_port, value, connectedCommands )
+					ircConnect( config_server, config_port, value, config_ssl, connectedCommands )
 				end
 			end
 		)
