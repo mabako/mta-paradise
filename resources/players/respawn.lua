@@ -53,7 +53,7 @@ addEventHandler( "onPlayerRespawn", root,
 					setTimer(
 						function( source )
 							if isElement( source ) and isLoggedIn( source ) and isPedDead( source ) then
-								spawnPlayer( source, -2654, 634, 14.5, 180, getElementModel( source ), 0, 0 )
+								spawnPlayer( source, 1607, 1819, 10.8, 0, getElementModel( source ), 0, 0 )
 								fadeCamera( source, true )
 								setCameraTarget( source, source )
 								setCameraInterior( source, 0 )
