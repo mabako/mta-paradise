@@ -59,5 +59,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="toggleLock"/>
 	
+	<script src="indicators.lua"/>
+	<script src="indicators_c.lua" type="client"/>
+	
 	<include resource="sql"/>
 </meta>
