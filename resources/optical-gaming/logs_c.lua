@@ -33,7 +33,7 @@ local function openFile( )
 		xmlFile = xmlCreateFile( fileName, "html" )
 		local head = xmlCreateChild( xmlFile, "head" )
 		local title = xmlCreateChild( head, "title" )
-		xmlNodeSetValue( title, ( "MTA: Paradise :: %04d-%02d-%02d" ):format( time.year + 1900, time.month + 1, time.monthday ) )
+		xmlNodeSetValue( title, ( "Optical-Gaming: Roleplay :: %04d-%02d-%02d" ):format( time.year + 1900, time.month + 1, time.monthday ) )
 		
 		local style = xmlCreateChild( head, "style" )
 		xmlNodeSetAttribute( style, "type", "text/css" )

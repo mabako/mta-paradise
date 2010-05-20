@@ -17,15 +17,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		setGameType( "MTA: Paradise" )
-		setRuleValue( "author", "mabako, Jumba" )
+		setGameType( "Optical-Gaming: Roleplay" )
+		setRuleValue( "author", "sun, mabako, Jumba, Maccer" )
+		--[[
 		setRuleValue( "homepage", "http://paradisegaming.net" )
 		setRuleValue( "forum", "http://forum.paradisegaming.net" )
 		setRuleValue( "license", "GPL Version 3" )
 		setRuleValue( "source", "http://github.com/mabako/mta-paradise" )
 		setRuleValue( "git-url", "git://github.com/mabako/mta-paradise.git" )
+		]]
+		setRuleValue( "homepage", "http://optical-gaming.com" )
 		setRuleValue( "version", getVersion( ) )
+		--[[
 		setMapName( "San Fierro" )
+		]]
+		setMapName( "Las Venturas" )
 		
 		setTimer( 
 			function( )
@@ -46,10 +52,12 @@ addEventHandler( "onResourceStop", resourceRoot,
 	function( )
 		removeRuleValue( "author" )
 		removeRuleValue( "homepage" )
+		--[[
 		removeRuleValue( "forum" )
 		removeRuleValue( "license" )
 		removeRuleValue( "source" )
 		removeRuleValue( "git-url" )
+		]]
 		removeRuleValue( "version" )
 	end
 )

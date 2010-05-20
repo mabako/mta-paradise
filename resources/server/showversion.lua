@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 addEventHandler( "onClientResourceStart", resourceRoot,
 	function( )
 		local screenX, screenY = guiGetScreenSize( )
-		local label = guiCreateLabel( 0, 0, screenX, 15, "MTA: Paradise " .. getVersion( ), false )
+		local label = guiCreateLabel( 0, 0, screenX, 15, "Optical-Gaming: Roleplay " .. getVersion( ), false )
 		guiSetSize( label, guiLabelGetTextExtent( label ) + 5, 14, false )
 		guiSetPosition( label, screenX - guiLabelGetTextExtent( label ) - 5, screenY - 27, false )
 		guiSetAlpha( label, 0.5 )
