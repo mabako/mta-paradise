@@ -29,3 +29,19 @@ addCommandHandler( "freecam",
 	end,
 	true
 )
+
+addEventHandler( "onCharacterLogout", root,
+	function( )
+		if isPlayerFreecamEnabled( source ) then
+			setPlayerFreecamDisabled( source )
+		end
+	end
+)
+
+addEventHandler( "onResourceStop", resourceRoot,
+	function( )
+		if isPlayerFreecamEnabled( source ) then
+			setPlayerFreecamDisabled( source )
+		end
+	end
+)
