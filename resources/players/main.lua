@@ -534,10 +534,16 @@ setTimer( savePlayer, 300000, 0 ) -- Auto-Save every five minutes
 
 addEventHandler( "onResourceStop", resourceRoot,
 	function( )
-		savePlayer( )
-		
 		-- logout all players
 		for key, value in ipairs( getElementsByType( "player" ) ) do
+			savePlayer( value )
+			
+			if p[ value ].charID then
+				triggerEvent( "onCharacterLogout", value )
+				setPlayerTeam( value, nil )
+				takeAllWeapons( value )
+			end
+			
 			if not isGuestAccount( getPlayerAccount( value ) ) then
 				logOut( value )
 			end
