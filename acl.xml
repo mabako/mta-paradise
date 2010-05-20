@@ -9,8 +9,7 @@
         <acl name="Moderator" />
         <acl name="RPC" />
         <object name="resource.admin" />
-        <object name="user.mabako" />
-        <object name="user.Maccer" />
+        <object name="user.sun" />
     </group>
     <group name="Moderator">
         <acl name="Moderator" />
@@ -39,8 +38,7 @@
     </group>
     <group name="Developer">
         <acl name="Developer" />
-        <object name="user.mabako" />
-        <object name="user.Maccer" />
+        <object name="user.sun" />
     </group>
     <acl name="Default">
         <right name="general.ModifyOtherObjects" access="false" />
