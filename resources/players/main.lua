@@ -379,6 +379,7 @@ local function showLoginScreen( player, screenX, screenY, token, ip )
 	
 	-- check for ip/serial bans
 	if exports.sql:query_assoc_single( "SELECT * FROM wcf1_user WHERE banned = 1 AND ( lastIP = '%s' OR lastSerial = '%s' )", getPlayerIP( player ), getPlayerSerial( player ) ) then
+		showChat( player, false )
 		setTimer( triggerClientEvent, 300, 1, player, getResourceName( resource ) .. ":loginResult", player, 2 ) -- Banned
 		return false
 	end
