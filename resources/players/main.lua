@@ -543,7 +543,6 @@ addEventHandler( "onPlayerQuit", root,
 			savePlayer( source )
 			if p[ source ].charID then
 				triggerEvent( "onCharacterLogout", source )
-				setPlayerTeam( source, nil )
 			end
 			p[ source ] = nil
 			loginAttempts[ source ] = nil
