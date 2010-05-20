@@ -271,6 +271,52 @@ addCommandHandler( "kick",
 	true
 )
 
+addCommandHandler( "ban",
+	function( player, commandName, otherPlayer, hours, ... )
+		hours = tonumber( hours )
+		if otherPlayer and hours and hours >= 0 and ( ... ) then
+			local other, name = exports.players:getFromName( player, otherPlayer )
+			if other then
+				if true or not hasObjectPermissionTo( other, "command.ban", false ) then
+					local reason = table.concat( { ... }, " " ) .. " (" .. ( hours == 0 and "Permanent" or ( hours < 1 and ( math.ceil( hours * 60 ) .. " minutes" ) or ( hours .. " hours" ) ) ) .. ")"
+					
+					if exports.sql:query_free( "UPDATE wcf1_user SET banned = 1, banReason = '%s', banUser = " .. exports.players:getUserID( player ) .. " WHERE userID = " .. exports.players:getUserID( other ), reason ) then 
+						local serial = getPlayerSerial( other )
+						
+						banPlayer( other, true, false, false, player, reason, math.ceil( hours * 60 ) )
+						if serial then
+							addBan( nil, nil, serial, player, reason, math.ceil( hours * 60 ) )
+						end
+					end
+				else
+					outputChatBox( "You can't ban this player.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [time in hours, 0 for infinite] [reason]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+addEventHandler( "onUnban", root,
+	function( ban )
+		if getBanReason( ban ) ~= "Too many login attempts." then -- that certainly qualifies as nice try.
+			local ip = getBanIP( ban )
+			if ip then
+				outputDebugString( "IP " .. ip .. " was unbanned by script." )
+				exports.sql:query_free( "UPDATE wcf1_user SET banned = 0 WHERE lastIP = '%s'", ip )
+			end
+			
+			local serial = getBanIP( ban )
+			if serial then
+				outputDebugString( "Serial " .. serial .. " was unbanned by script." )
+				exports.sql:query_free( "UPDATE wcf1_user SET banned = 0 WHERE lastSerial = '%s'", serial )
+			end
+		end
+	end
+)
+
 --
 
 local function contains( t, s )

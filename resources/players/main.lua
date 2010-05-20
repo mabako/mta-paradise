@@ -298,6 +298,10 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'salt', type = 'varchar(40)' },
 				{ name = 'banned', type = 'tinyint(1) unsigned', default = 0 },
 				{ name = 'activationCode', type = 'int(10) unsigned', default = 0 },
+				{ name = 'banReason', type = 'mediumtext', null = true },
+				{ name = 'banUser', type = 'int(10) unsigned', null = true },
+				{ name = 'lastIP', type = 'varchar(15)', null = true },
+				{ name = 'lastSerial', type = 'varchar(32)', null = true },
 			} ) then cancelEvent( ) return end
 		
 		local success, didCreateTable = exports.sql:create_table( 'wcf1_group',
@@ -373,6 +377,12 @@ local function showLoginScreen( player, screenX, screenY, token, ip )
 	
 	setPlayerNametagColor( source, 127, 127, 127 )
 	
+	-- check for ip/serial bans
+	if exports.sql:query_assoc_single( "SELECT * FROM wcf1_user WHERE banned = 1 AND ( lastIP = '%s' OR lastSerial = '%s' )", getPlayerIP( player ), getPlayerSerial( player ) ) then
+		setTimer( triggerClientEvent, 300, 1, player, getResourceName( resource ) .. ":loginResult", player, 2 ) -- Banned
+		return false
+	end
+	
 	triggerClientEvent( player, getResourceName( resource ) .. ":spawnscreen", player )
 	if token and #token > 0 then
 		performLogin( source, token, false, ip )
@@ -414,7 +424,6 @@ addEventHandler( getResourceName( resource ) .. ":login", root,
 					loginAttempts[ source ] = ( loginAttempts[ source ] or 0 ) + 1
 					if loginAttempts[ source ] >= 5 then
 						-- ban for 15 minutes
-						local ip = getPlayerIP( source )
 						local serial = getPlayerSerial( source )
 						
 						banPlayer( source, true, false, false, root, "Too many login attempts.", 900 )
@@ -475,6 +484,8 @@ function performLogin( source, token, isPasswordAuth, ip )
 						
 						outputServerLog( "PARADISE LOGIN: " .. getPlayerName( source ) .. " logged in as " .. info.username .. " (IP: " .. getPlayerIP( source ) .. ", Serial: " .. getPlayerSerial( source ) .. ")" )
 						exports.server:message( "%C04[" .. getID( source ) .. "]%C %B" .. info.username .. "%B logged in (Nick: %B" .. getPlayerName( source ):gsub( "_", " " ) .. "%B)." )
+						exports.sql:query_free( "UPDATE wcf1_user SET lastIP = '%s', lastSerial = '%s' WHERE userID = " .. tonumber( info.userID ), getPlayerIP( source ), getPlayerSerial( source ) )
+						
 						return true
 					end
 				end
