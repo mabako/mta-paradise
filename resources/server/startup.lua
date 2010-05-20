@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		setGameType( "Optical-Gaming: Roleplay" )
+		setGameType( "Roleplay" )
 		setRuleValue( "author", "sun, mabako, Jumba, Maccer" )
 		--[[
 		setRuleValue( "homepage", "http://paradisegaming.net" )
