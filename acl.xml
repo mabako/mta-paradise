@@ -23,6 +23,7 @@
     </group>
     <group name="RPC">
         <acl name="RPC" />
+        <object name="resource.world" />
     </group>
     <group name="sql">
         <acl name="sql" />
