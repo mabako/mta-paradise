@@ -288,6 +288,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'money', type = 'bigint(20) unsigned', default = 100 },
 				{ name = 'created', type = 'timestamp', default = 'CURRENT_TIMESTAMP' },
 				{ name = 'lastLogin', type = 'timestamp', default = '0000-00-00 00:00:00' },
+				{ name = 'weapons', type = 'varchar(255)', default = 100 },
 			} ) then cancelEvent( ) return end
 		
 		if not exports.sql:create_table( 'wcf1_user',
@@ -496,6 +497,26 @@ function performLogin( source, token, isPasswordAuth, ip )
 	return false
 end
 
+local function getWeaponString( player )
+	local weapons = { }
+	local hasAnyWeapons = false
+	for slot = 0, 12 do
+		local weapon = getPedWeapon( player, slot )
+		if weapon > 0 then
+			local ammo = getPedTotalAmmo( player, slot )
+			if ammo > 0 then
+				weapons[weapon] = ammo
+				hasAnyWeapons = true
+			end
+		end
+	end
+	if hasAnyWeapons then
+		return "'" .. exports.sql:escape_string( toJSON( weapons ):gsub( " ", "" ) ) .. "'"
+	else
+		return "NULL"
+	end
+end
+
 local function savePlayer( player )
 	if not player then
 		for key, value in ipairs( getElementsByType( "player" ) ) do
@@ -505,7 +526,7 @@ local function savePlayer( player )
 		if isLoggedIn( player ) then
 			-- save character since it's logged in
 			local x, y, z = getElementPosition( player )
-			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( player ) .. ", interior = " .. getElementInterior( player ) .. ", rotation = " .. getPedRotation( player ) .. ", health = " .. math.floor( getElementHealth( player ) ) .. ", armor = " .. math.floor( getPedArmor( player ) ) .. ", lastLogin = NOW() WHERE characterID = " .. tonumber( getCharacterID( player ) ) )
+			exports.sql:query_free( "UPDATE characters SET x = " .. x .. ", y = " .. y .. ", z = " .. z .. ", dimension = " .. getElementDimension( player ) .. ", interior = " .. getElementInterior( player ) .. ", rotation = " .. getPedRotation( player ) .. ", health = " .. math.floor( getElementHealth( player ) ) .. ", armor = " .. math.floor( getPedArmor( player ) ) .. ", weapons = " .. getWeaponString( player ) .. ", lastLogin = NOW() WHERE characterID = " .. tonumber( getCharacterID( player ) ) )
 		end
 	end
 end
@@ -532,6 +553,7 @@ addEventHandler( getResourceName( resource ) .. ":logout", root,
 			if p[ source ].charID then
 				triggerEvent( "onCharacterLogout", source )
 				setPlayerTeam( source, nil )
+				takeAllWeapons( source )
 			end
 			p[ source ] = nil
 			showLoginScreen( source )
@@ -575,6 +597,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 				if p[ source ].charID then
 					triggerEvent( "onCharacterLogout", source )
 					setPlayerTeam( source, nil )
+					takeAllWeapons( source )
 					p[ source ].charID = nil
 					p[ source ].money = nil
 				end
@@ -608,6 +631,16 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					p[ source ].charID = tonumber( charID )
 					p[ source ].characterName = char.characterName
 					updateNametag( source )
+					
+					-- restore weapons
+					if char.weapons then
+						local weapons = fromJSON( char.weapons )
+						if weapons then
+							for weapon, ammo in pairs( weapons ) do
+								giveWeapon( source, weapon, ammo )
+							end
+						end
+					end
 					
 					setPlayerTeam( source, team )
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
