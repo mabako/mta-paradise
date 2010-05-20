@@ -214,9 +214,9 @@ local function aclUpdate( player, saveAclIfChanged )
 					
 					-- remove account from all ACL groups we use
 					for key, value in ipairs( groups ) do
-						if aclGroupRemoveObject( aclGetGroup( value.aclGroup ), "user." .. info.username ) then
+						if aclGroupRemoveObject( aclGetGroup( value.aclGroup ), "user." .. p[ player ].username ) then
 							saveAcl = true
-							outputDebugString( "Removed account " .. info.username .. " from " .. value.aclGroup .. " ACL", 3 )
+							outputDebugString( "Removed account " .. p[ player ].username .. " from " .. value.aclGroup .. " ACL", 3 )
 							
 							if player then
 								outputChatBox( "You are no longer logged in as " .. group.displayName .. ".", player, 255, 0, 0 )
@@ -229,7 +229,7 @@ local function aclUpdate( player, saveAclIfChanged )
 						logOut( player )
 					end
 					removeAccount( account )
-					outputDebugString( "Removed account " .. info.username, 3 )
+					outputDebugString( "Removed account " .. p[ player ].username, 3 )
 				end
 			end
 		end
