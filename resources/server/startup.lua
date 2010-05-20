@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
 		setGameType( "MTA: Paradise" )
-		setRuleValue( "author", "mabako, Jumba" )
+		setRuleValue( "author", "mabako, Jumba, Maccer" )
 		setRuleValue( "homepage", "http://paradisegaming.net" )
 		setRuleValue( "forum", "http://forum.paradisegaming.net" )
 		setRuleValue( "license", "GPL Version 3" )
