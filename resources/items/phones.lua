@@ -55,11 +55,17 @@ end
 --
 
 local function findFromPhoneBook( number, name )
+	if name:lower( ) == "cab" or name:lower( ) == "taxi" then
+		return 222
+	end
 	-- TODO: this should once in near future return the number associated to a certain name in the phone book - implies we have a phone book
 	return false
 end
 
 local function findInPhoneBook( number, otherNumber )
+	if otherNumber == 222 then
+		return "Cab"
+	end
 	-- TODO: this should once in near future return the name of the phonebook entry assigned to that number - implies we have a phone book
 	return false
 end
@@ -68,14 +74,101 @@ end
 
 local p = { }
 
+--[[
+Quick Guide
+-----------
+	type		effect
+	
+	function	executes the function, uses the first return value to determinate whetever to continue the call (true) or not (false),
+				all return values beyond that are messages shown to the player.
+				parameters for this are the player who calls, his phone number and the past input of this call.
+	bool(true)	waits for the player input (/p)
+	text		Show that message to the player
+
+]]
+
+local function getTaxiDrivers( )
+	if getResourceFromName( "job-taxi" ) and getResourceState( getResourceFromName( "job-taxi" ) ) then
+		return exports["job-taxi"]:getDrivers( ) or { }
+	end
+	return { }
+end
+
+local services =
+{
+	[222] =
+	{
+		function( player, phoneNumber, input )
+			local drivers = getTaxiDrivers( )
+			if #drivers > 0 then
+				return true, "LV Cab Operator says: Welcome to Las Venturas Cabs! Please state your location."
+			else
+				return false, "LV Cab Operator says: There are currently no Taxis available. Call later!"
+			end	
+		end,
+		true,
+		function( player, phoneNumber, input )
+			local drivers = getTaxiDrivers( )
+			if #drivers > 0 then
+				for key, value in ipairs( drivers ) do
+					exports.chat:me( value, "receives a text message." )
+					outputChatBox( "SMS from ((" .. getPlayerName( player ):gsub( "_", " " ) .. ")) LV Cabs: Fare - Phone #" .. phoneNumber .. " - Location: " .. input[1], value, 130, 255, 130 )
+				end
+				return false, "LV Cab Operator says: We've dispatched one of our " .. #drivers .. " cab" .. ( #drivers > 1 and "s" or "" ) .. " to your location. It should arrive soon!"
+			else
+				return false, "LV Cab Operator says: There are currently no Taxis available. Call later!"
+			end
+		end
+	}
+}
+
+local function advanceService( player, text )
+	local call = p[ player ]
+	if call.service then
+		local state = services[ call.service ][ call.serviceState ]
+		if state then
+			if text then
+				if type( state ) == "boolean" then
+					table.insert( call.input, text )
+					call.serviceState = call.serviceState + 1
+					advanceService( player )
+				end
+			else
+				if type( state ) == "function" then
+					local ret = { state( player, call.number, call.input ) }
+					if #ret >= 2 then
+						for i = 2, #ret do
+							outputChatBox( ret[ i ], player, 180, 255, 180 )
+						end
+					end
+					if ( #ret >= 1 and ret[1] == false ) or #ret == 0 then
+						outputChatBox( "They hung up.", player, 180, 255, 180 )
+						p[ player ] = nil
+						return
+					end
+				elseif type( state ) == "string" then
+					outputChatBox( state, player, 180, 255, 180 )
+				elseif type( state ) == "boolean" then
+					return -- we need to stop here to prevent us from getting too far.
+				end
+				call.serviceState = call.serviceState + 1
+				advanceService( player )
+			end
+		else
+			outputChatBox( "They hung up.", player, 180, 255, 180 )
+			p[ player ] = nil
+			return
+		end
+	end
+end
+
 --
 
 addCommandHandler( "call",
 	function( player, commandName, ownNumber, otherNumber )
 		if exports.players:isLoggedIn( player ) then
-			local ownNumber = tonumber( ownNumber )
-			if ownNumber and otherNumber and exports.items:has( player, 7, ownNumber ) then
-				-- do nothing?
+			if tonumber( ownNumber ) and otherNumber and exports.items:has( player, 7, tonumber( ownNumber ) ) then
+				ownNumber = tonumber( ownNumber )
 			else
 				local has, key, item = exports.items:has( player, 7 )
 				if has then
@@ -94,20 +187,25 @@ addCommandHandler( "call",
 					local ownPhone = { exports.items:has( player, 7, ownNumber ) }
 					exports.chat:me( player, "takes out a " .. ( ownPhone[3].name or "cellphone" ) .. " and taps a few buttons on it." )
 					
-					for key, value in ipairs( getElementsByType( "player" ) ) do
-						if value ~= player then
-							local otherPhone = { has( value, 7, otherNumber ) }
-							if otherPhone and otherPhone[1] then
-								p[ player ] = { other = value, number = ownNumber, state = 0 }
-								p[ value ] = { other = player, number = otherNumber, state = 0 }
+					if services[ otherNumber ] then
+						p[ player ] = { other = false, service = otherNumber, number = ownNumber, state = 2, input = { }, serviceState = 1 }
+						advanceService( player )
+						return
+					else
+						for key, value in ipairs( getElementsByType( "player" ) ) do
+							if value ~= player then
+								local otherPhone = { has( value, 7, otherNumber ) }
+								if otherPhone and otherPhone[1] then
+									p[ player ] = { other = value, number = ownNumber, state = 0 }
+									p[ value ] = { other = player, number = otherNumber, state = 0 }
 								
-								exports.chat:me( value, "'s " .. ( otherPhone[3].name or "phone" ) .. " starts to ring." )
-								outputChatBox( "The phone's display shows " .. ( findInPhoneBook( otherNumber, ownNumber ) or ( "#" .. ownNumber ) ) .. ". (( /pickup to pick up. ))", value, 180, 255, 180 )
-								return
+									exports.chat:me( value, "'s " .. ( otherPhone[3].name or "phone" ) .. " starts to ring." )
+									outputChatBox( "The phone's display shows " .. ( findInPhoneBook( otherNumber, ownNumber ) or ( "#" .. ownNumber ) ) .. ". (( /pickup to pick up. ))", value, 180, 255, 180 )
+									return
+								end
 							end
 						end
 					end
-					
 					-- TODO: if the phone is a dropped item, a menu for picking up/hanging up would be nice. and an actual check if it is
 					
 					outputChatBox( "You hear a dead tone.", player, 255, 0, 0 )
@@ -136,10 +234,14 @@ addCommandHandler( "pickup" ,
 addCommandHandler( "p" ,
 	function( player, commandName, ... )
 		if ( ... ) then
-			if p[ player ] and p[ player ].state == 1 then
+			if p[ player ] then
 				local message = table.concat( { ... }, " " )
-				outputChatBox( "((You)) " .. ( findInPhoneBook( p[ player ].number, p[ p[ player ].other ].number ) or ( "#" .. p[ p[ player ].other ].number ) ) .. " said: " .. message, player, 180, 255, 180 )
-				outputChatBox( "((" .. getPlayerName( player ):gsub( "_", " " ) .. ")) " .. ( findInPhoneBook( p[ p[ player ].other ].number, p[ player ].number ) or ( "#" .. p[ player ].number ) ) .. " says: " .. message, p[ player ].other, 180, 255, 180 )
+				if p[ player ].state == 1 then
+					outputChatBox( "((You)) " .. ( findInPhoneBook( p[ player ].number, p[ p[ player ].other ].number ) or ( "#" .. p[ p[ player ].other ].number ) ) .. " said: " .. message, player, 180, 255, 180 )
+					outputChatBox( "((" .. getPlayerName( player ):gsub( "_", " " ) .. ")) " .. ( findInPhoneBook( p[ p[ player ].other ].number, p[ player ].number ) or ( "#" .. p[ player ].number ) ) .. " says: " .. message, p[ player ].other, 180, 255, 180 )
+				elseif p[ player ].state == 2 then
+					advanceService( player, message )
+				end
 			else
 				outputChatBox( "You are not on a call.", player, 255, 0, 0 )
 			end
@@ -235,7 +337,7 @@ addCommandHandler( "sms",
 addEventHandler( "onResourceStop", resourceRoot,
 	function( )
 		for player, data in pairs( p ) do
-			if data.state == 1 then -- on a call
+			if data.state == 1 or data.state == 2 then -- on a call
 				outputChatBox( "Your phone lost the connection...", player, 255, 0, 0 )
 			end
 		end
