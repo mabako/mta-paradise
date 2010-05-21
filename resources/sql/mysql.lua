@@ -29,9 +29,10 @@ local function connect( )
 	local password = get( "password" ) or ""
 	local db = get( "database" ) or "mta"
 	local port = get( "port" ) or 3306
+	local socket = get( "socket" ) or nil
 	
 	-- connect
-	connection = mysql_connect ( server, user, password, db, port )
+	connection = mysql_connect ( server, user, password, db, port, socket )
 	if connection then
 		if user == "root" then
 			setTimer( outputDebugString, 100, 1, "Connecting to your MySQL as 'root' is strongly discouraged.", 2 )
