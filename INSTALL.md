@@ -15,6 +15,8 @@ To make your server use your MySQL database, edit your *settings.xml* to at leas
         <setting name="@sql.database" value="database"/>
         <setting name="@sql.hostname" value="localhost"/>
         <setting name="@sql.port" value="3306"/>
+        <!-- Only use this on Linux if the normal connection does fail even though using the correct username & password. -->
+        <setting name="@sql.socket" value="/var/run/mysqld/mysqld.sock"/>
         
         <!-- Registration -->
         <setting name="@players.allow_registration" value="1"/><!-- Change to 0 to disable registration and show an error message -->
