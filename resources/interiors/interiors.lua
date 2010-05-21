@@ -140,8 +140,8 @@ addEventHandler( "onResourceStart", resourceRoot,
 addCommandHandler( "createinterior",
 	function( player, commandName, id, price, type, ... )
 		if id and tonumber( price ) and tonumber( type ) and ( ... ) then
-			name = table.concat( { ... }, " " )
-			interior = interiorPositions[ id:lower( ) ]
+			local name = table.concat( { ... }, " " )
+			local interior = interiorPositions[ id:lower( ) ]
 			if interior then
 				local x, y, z = getElementPosition( player )
 				local insertid = exports.sql:query_insertid( "INSERT INTO interiors (outsideX, outsideY, outsideZ, outsideInterior, outsideDimension, insideX, insideY, insideZ, insideInterior, interiorName, interiorType, interiorPrice) VALUES (" .. table.concat( { x, y, z, getElementInterior( player ), getElementDimension( player ), interior.x, interior.y, interior.z, interior.interior, '"%s"', tonumber( type ), tonumber( price ) }, ", " ) .. ")", name )
