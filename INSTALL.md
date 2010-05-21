@@ -2,8 +2,8 @@
 
 ## MySQL configuration
 
-### Importing the database layout
-Create a new database and import the file *database_layout.sql* into it, this should contain everything required to get started.
+### Creating the database.
+Create a new database, the server should automatically create all required tables if it can login and the needed privilegies are granted.
 
 ### Configuring the server
 To make your server use your MySQL database, edit your *settings.xml* to at least contain the following settings - of course, replace the example values with the MySQL data to connect to the server.
