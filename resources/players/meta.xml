@@ -463,4 +463,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<script src="respawn.lua"/>
 	<script src="respawn_c.lua" type="client"/>
+	
+	<script src="afk.lua"/>
+	<script src="afk_c.lua" type="client"/>
 </meta>
