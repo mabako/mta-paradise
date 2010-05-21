@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local vehicles = get( "vehicles" ) or { "Mule" } -- load the civilian vehicles that'll automatically trigger the delivery mission if being entered
+local vehicles = get( "vehicles" ) or { "Bus" } -- load the civilian vehicles that'll automatically trigger the delivery mission if being entered
 local max_earnings = tonumber( get( "earnings" ) ) or 7
 local delay = tonumber( get( "delay" ) ) or 5
 
