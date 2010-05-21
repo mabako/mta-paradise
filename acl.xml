@@ -245,6 +245,7 @@
         <right name="function.aclGroupRemoveObject" access="true" />
     </acl>
     <acl name="Developer">
+        <right name="general.WillNotBeAfkKicked" access="true" />
         <right name="command.srun" access="true" />
         <right name="command.crun" access="true" />
         <right name="command.debugscript" access="true" />

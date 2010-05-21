@@ -16,12 +16,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 local afkTime = 0
-local timer = setTimer(
+timer = setTimer(
 	function( )
-		-- this runs once every 10 seconds, thus might not be completely accurate
-		afkTime = afkTime + 10
-		if afkTime > getElementData( resourceRoot, "afk_time" ) then
-			triggerServerEvent( getResourceName( resource ) .. ":afk", getLocalPlayer( ) )
+		if isLoggedIn( ) then
+			-- this runs once every 10 seconds, thus might not be completely accurate
+			afkTime = afkTime + 10
+			if afkTime > getElementData( resourceRoot, "afk_time" ) then
+				killTimer( timer )
+				triggerServerEvent( getResourceName( resource ) .. ":afk", getLocalPlayer( ) )
+			end
+		else
+			afkTime = 0
 		end
 	end,
 	10000,
@@ -42,6 +47,9 @@ addEventHandler( "onClientResourceStart", resourceRoot,
 		for key, value in ipairs( controls ) do
 			bindKey( value, "both", reset )
 		end
+		
+		-- writing something in console is definitively worth a small notice
+		addEventHandler( "onClientConsole", root, reset )
 	end
 )
 
