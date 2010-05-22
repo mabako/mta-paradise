@@ -16,5 +16,5 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 function getVersion( )
-	return "1.0"
+	return "1.00"
 end
