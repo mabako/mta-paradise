@@ -320,6 +320,8 @@ addEventHandler( "items:use", root,
 								outputChatBox( "(( These clothes do not fit you. ))", source, 255, 0, 0 )
 							end
 						end
+					elseif id == 7 then
+						outputChatBox( "This phone has the number #" .. tostring( value ) .. ".", source, 255, 255, 255 )
 					else
 						-- the original idea was to have the items run ("The wild Vehicle key ran away.") away yet I could convince myself players would like it that much
 						exports.chat:me( source, "looks at the " .. name .. ". Nothing happens..." )
