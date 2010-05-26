@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,17 +13,22 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<script src="taxi.lua"/>
-	<script src="taxi_c.lua" type="client"/>
-	
-	<!-- Returns a table of Taxi Drivers -->
-	<export function="getDrivers"/>
-	
-	<include resource="vehicles"/>
-	<settings>
-		<!-- (Civilian) Vehicles you can use for the taxi job -->
-		<setting name="#vehicles" value="[['Taxi', 'Cabbie']]" />
-	</settings>
-</meta>
+]]
+
+local hornTime = nil
+
+bindKey( "horn", "both",
+	function( button, state )
+		if state == "down" then
+			hornTime = getTickCount( )
+		elseif hornTime then
+			if getTickCount( ) - hornTime < 200 then
+				local vehicle = getPedOccupiedVehicle( getLocalPlayer( ) )
+				if vehicle and getVehicleOccupant( vehicle ) == getLocalPlayer( ) then
+					triggerServerEvent( getResourceName( resource ) .. ":toggleLights", vehicle )
+				end
+			end
+			hornTime = nil
+		end
+	end
+)

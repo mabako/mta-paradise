@@ -38,10 +38,10 @@ end
 
 --
 
-local function hasPassengers( vehicle )
+local function hasPassengers( vehicle, ignoreSeat )
 	if vehicle then
 		for i = 1, getVehicleMaxPassengers( vehicle ) do
-			if getVehicleOccupant( vehicle, i ) then
+			if i ~= ignoreSeat and getVehicleOccupant( vehicle, i ) then
 				return true
 			end
 		end
@@ -55,9 +55,32 @@ addEventHandler( "onVehicleEnter", root,
 			if seat == 0 then
 				if not hasPassengers( source ) then
 					outputChatBox( "(( Wait until someone calls a taxi via /call taxi. ))", player, 255, 204, 0 )
+					if not isVehicleTaxiLightOn( source ) then
+						setVehicleTaxiLightOn( source, true )
+					end
 				end
 			else
 				-- passenger
+				if isVehicleTaxiLightOn( source ) then
+					setVehicleTaxiLightOn( source, false )
+				end
+			end
+		end
+	end
+)
+
+addEventHandler( "onVehicleExit", root,
+	function( player, seat )
+		if isJobVehicle( source ) then
+			if seat == 0 then
+				if isVehicleTaxiLightOn( source ) then
+					setVehicleTaxiLightOn( source, false )
+				end
+			else
+				-- passenger
+				if getVehicleOccupant( source ) and not hasPassengers( source, seat ) then
+					setVehicleTaxiLightOn( source, true )
+				end
 			end
 		end
 	end
@@ -69,8 +92,9 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 		if source == client then
 			if isJobVehicle( getPedOccupiedVehicle( source ) ) then
 				if getPedOccupiedVehicleSeat( source ) == 0 then
-					if not hasPassengers( source ) then
+					if not hasPassengers( getPedOccupiedVehicle( source ) ) then
 						outputChatBox( "(( Wait until someone calls a taxi via /call taxi. ))", player, 255, 204, 0 )
+						setVehicleTaxiLightOn( getPedOccupiedVehicle( source ), true )
 					else
 						-- continue the fare
 					end
@@ -95,3 +119,14 @@ function getDrivers( )
 	end
 	return t
 end
+
+--
+
+addEvent( getResourceName( resource ) .. ":toggleLights", true )
+addEventHandler( getResourceName( resource ) .. ":toggleLights", root,
+	function( )
+		if source == getPedOccupiedVehicle( client ) and getVehicleOccupant( source ) == client then
+			setVehicleTaxiLightOn( source, not isVehicleTaxiLightOn( source ) )
+		end
+	end
+)
