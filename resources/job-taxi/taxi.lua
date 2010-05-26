@@ -65,6 +65,7 @@ addEventHandler( "onVehicleEnter", root,
 					setVehicleTaxiLightOn( source, false )
 				end
 			end
+			triggerClientEvent( player, getResourceName( resource ) .. ":show", source )
 		end
 	end
 )
@@ -82,6 +83,7 @@ addEventHandler( "onVehicleExit", root,
 					setVehicleTaxiLightOn( source, true )
 				end
 			end
+			triggerClientEvent( player, getResourceName( resource ) .. ":hide", source )
 		end
 	end
 )
@@ -93,7 +95,7 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 			if isJobVehicle( getPedOccupiedVehicle( source ) ) then
 				if getPedOccupiedVehicleSeat( source ) == 0 then
 					if not hasPassengers( getPedOccupiedVehicle( source ) ) then
-						outputChatBox( "(( Wait until someone calls a taxi via /call taxi. ))", player, 255, 204, 0 )
+						outputChatBox( "(( Wait until someone calls a taxi via /call taxi. ))", source, 255, 204, 0 )
 						setVehicleTaxiLightOn( getPedOccupiedVehicle( source ), true )
 					else
 						-- continue the fare
@@ -101,6 +103,7 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 				else
 					-- passenger
 				end
+				triggerClientEvent( source, getResourceName( resource ) .. ":show", getPedOccupiedVehicle( source ) )
 			end
 		end
 	end
@@ -127,6 +130,35 @@ addEventHandler( getResourceName( resource ) .. ":toggleLights", root,
 	function( )
 		if source == getPedOccupiedVehicle( client ) and getVehicleOccupant( source ) == client then
 			setVehicleTaxiLightOn( source, not isVehicleTaxiLightOn( source ) )
+		end
+	end
+)
+
+--
+
+addCommandHandler( "taximeter",
+	function( player, commandName )
+		local vehicle = getPedOccupiedVehicle( player )
+		if vehicle and getVehicleOccupant( vehicle ) == player then
+			setElementData( vehicle, "taxi:distance", type( getElementData( vehicle, "taxi:distance" ) ) ~= "number" and 0 or false )
+		end
+	end
+)
+
+addCommandHandler( "resettaxi",
+	function( player, commandName )
+		local vehicle = getPedOccupiedVehicle( player )
+		if vehicle and getVehicleOccupant( vehicle ) == player then
+			setElementData( vehicle, "taxi:distance", type( getElementData( vehicle, "taxi:distance" ) ) == "number" and 0 or false )
+		end
+	end
+)
+
+addEvent( getResourceName( resource ) .. ":update", true )
+addEventHandler( getResourceName( resource ) .. ":update", root,
+	function( distance )
+		if source == getPedOccupiedVehicle( client ) and getVehicleOccupant( source ) == client and getElementData( source, "taxi:distance" ) and type( distance ) == "number" and distance > 0.001 and distance < 40 then
+			setElementData( source, "taxi:distance", getElementData( source, "taxi:distance" ) + distance )
 		end
 	end
 )
