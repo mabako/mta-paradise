@@ -34,7 +34,7 @@ function drawWaitingText( )
 			if diff >= 0 then
 				text = ( "Please wait %.1f seconds" ):format( diff / 1000 )
 			else
-				triggerServerEvent( "job-delivery:complete", localPlayer )
+				triggerServerEvent( getResourceName( resource ) .. ":complete", localPlayer )
 				wait = 0
 			end
 		end
@@ -76,11 +76,11 @@ local function showDropOff( )
 	end
 end
 
-addEvent( "job-delivery:showdropoff", true )
-addEventHandler( "job-delivery:showdropoff", localPlayer, showDropOff )
+addEvent( getResourceName( resource ) .. ":showdropoff", true )
+addEventHandler( getResourceName( resource ) .. ":showdropoff", localPlayer, showDropOff )
 
-addEvent( "job-delivery:setdropoff", true )
-addEventHandler( "job-delivery:setdropoff", localPlayer,
+addEvent( getResourceName( resource ) .. ":setdropoff", true )
+addEventHandler( getResourceName( resource ) .. ":setdropoff", localPlayer,
 	function( x, y, z )
 		if x and y and z then
 			position = { x = x, y = y, z = z }
@@ -96,7 +96,7 @@ addEventHandler( "onClientPlayerVehicleExit", localPlayer, hideDropOff )
 
 addEventHandler( "onClientResourceStart", resourceRoot,
 	function( )
-		triggerServerEvent( "job-delivery:ready", localPlayer )
+		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer )
 	end
 )
 
