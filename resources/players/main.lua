@@ -289,6 +289,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'created', type = 'timestamp', default = 'CURRENT_TIMESTAMP' },
 				{ name = 'lastLogin', type = 'timestamp', default = '0000-00-00 00:00:00' },
 				{ name = 'weapons', type = 'varchar(255)', default = 100 },
+				{ name = 'job', type = 'varchar(20)', null = true },
 			} ) then cancelEvent( ) return end
 		
 		if not exports.sql:create_table( 'wcf1_user',
@@ -605,6 +606,7 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					takeAllWeapons( source )
 					p[ source ].charID = nil
 					p[ source ].money = nil
+					p[ source ].job = nil
 				end
 				
 				--
@@ -646,6 +648,8 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 							end
 						end
 					end
+					
+					p[ source ].job = char.job
 					
 					setPlayerTeam( source, team )
 					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
@@ -770,6 +774,21 @@ function updateNametag( player )
 		
 		setPlayerNametagText( player, tostring( text ) )
 		updateNametagColor( player )
+		return true
+	end
+	return false
+end
+
+--
+
+function getJob( player )
+	return isLoggedIn( player ) and p[ player ].job or nil
+end
+
+function setJob( player, job )
+	local charID = getCharacterID( player )
+	if charID and exports.sql:query_free( "UPDATE characters SET job = '%s' WHERE characterID = " .. charID, job ) then
+		p[ player ].job = job
 		return true
 	end
 	return false

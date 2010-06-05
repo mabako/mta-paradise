@@ -30,6 +30,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="updateShopContent" type="client"/>
 	
+	<script src="windows/jobs.lua" type="client"/>
+	
+	<!-- Updates the job list
+		parameters:
+			(table) new content - [1..n] = name table
+	-->
+	<export function="updateJobs" type="client"/>
+	
 	<script src="verify/create_character.lua"/>
 	<script src="verify/create_character.lua" type="client"/>
 	<script src="windows/create_character_s.lua"/>

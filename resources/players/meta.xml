@@ -138,6 +138,23 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="updateNametag"/>
 	
+	<!-- Returns the player's current job.
+		parameters:
+			(player) player to check.
+		returns:
+			(string) job (e.g. 'taxi') or (nil) if none.
+	-->
+	<export function="getJob"/>
+	
+	<!-- Sets a player's job.
+		parameters:
+			(player) player to set the job of.
+			(string) job (e.g. 'taxi') or (nil) if none.
+		returns:
+			(bool) true if successful, false otherwise.
+	-->
+	<export function="setJob"/>
+	
 	<script src="registration.lua"/>
 	
 	<script src="ids.lua"/>

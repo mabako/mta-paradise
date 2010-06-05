@@ -267,10 +267,6 @@ local function draw( window, y )
 		if not window.button then
 			window.button = guiCreateButton( x + width / 4, y + 3, width / 2, line_height - 4, tostring( window.text ), false )
 			
-			if window.masked then
-				guiEditSetMasked( window.button, true )
-			end
-			
 			addEventHandler( "onClientElementDestroy", window.button, function( ) window.button = nil end, false )
 			if window.onClick then
 				addEventHandler( "onClientGUIClick", window.button,
@@ -325,8 +321,10 @@ local function draw( window, y )
 			
 			-- draw the pane
 			dxDrawImage( x, y, 64, 64, value.image, 0, 0, 0, tocolor( 255, 255, 255, 255 ), true )
-			dxDrawText( value.title, x + 65, y, x + width, y + 18, tocolor( 255, 255, 255, 255 ), 0.6, "bankgothic", "left", "top", true, false, true )
-			dxDrawText( tostring( type( value.text ) == "function" and value.text( ) or value.text ), x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, value.wordBreak or false, true )
+			dxDrawText( value.title, x + 65, y, x + width, y + ( value.text and 18 or 64 ), tocolor( 255, 255, 255, 255 ), 0.6, "bankgothic", "left", value.text and "top" or "center", true, false, true )
+			if value.text ~= nil then
+				dxDrawText( tostring( type( value.text ) == "function" and value.text( ) or value.text ), x + 70, y + 18, x + width, y + 64, tocolor( 255, 255, 255, 255 ), 1, "default", "left", "top", true, value.wordBreak or false, true )
+			end
 			y = y + 65
 		end
 	elseif window.type == "vpane" then

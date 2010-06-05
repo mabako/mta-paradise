@@ -162,3 +162,14 @@ addEventHandler( getResourceName( resource ) .. ":update", root,
 		end
 	end
 )
+
+--
+
+addEventHandler( "onVehicleStartEnter", root,
+	function( player, seat )
+		if seat == 0 and isJobVehicle( source ) and "job-" .. tostring( exports.players:getJob( player ) ) ~= getResourceName( resource ) then
+			outputChatBox( "(( You can get this job at the City Hall. ))", player, 255, 0, 0 )
+			cancelEvent( )
+		end
+	end
+)

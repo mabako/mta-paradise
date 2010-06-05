@@ -282,3 +282,15 @@ addCommandHandler( "setdropoff",
 	end,
 	true
 )
+
+--
+
+
+addEventHandler( "onVehicleStartEnter", root,
+	function( player, seat )
+		if seat == 0 and isDeliveryVehicle( source ) and "job-" .. tostring( exports.players:getJob( player ) ) ~= getResourceName( resource ) then
+			outputChatBox( "(( You can get this job at the City Hall. ))", player, 255, 0, 0 )
+			cancelEvent( )
+		end
+	end
+)
