@@ -48,7 +48,7 @@ function updateCharacters( characters )
 	end
 	
 	for key, value in ipairs( characters ) do
-		add( value.characterName, "", value.skin, value.characterID )
+		add( value.characterName, nil, value.skin, value.characterID )
 	end
 	
 	-- add new char & logout
