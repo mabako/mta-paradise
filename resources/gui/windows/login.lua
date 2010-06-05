@@ -56,6 +56,8 @@ setTimer(
 		
 		windows.login =
 		{
+			snapTop = true,
+			snapBottom = true,
 			{
 				type = "label",
 				text = "Welcome!",

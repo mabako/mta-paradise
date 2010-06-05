@@ -423,7 +423,7 @@ addEventHandler( "onClientRender", root,
 				break
 			end
 			
-			dxDrawRectangle( x - 5, y - 5, width + 10, height + 10, tocolor( 0, 0, 0, 127 ), backgroundPostGui )
+			dxDrawRectangle( x - 5, window.snapTop and 0 or ( y - 5 ), width + 10, window.snapTop and window.snapBottom and screenY or not window.snapTop and window.snapBottom and ( screenY - x + 5 ) or ( height + 10 ), tocolor( 0, 0, 0, 127 ), backgroundPostGui )
 			draw( window, y )
 			
 			-- draw left/right if it's the scoreboard/char selection and is not forced
