@@ -117,8 +117,8 @@ addEventHandler( "onResourceStart", resourceRoot,
 				loadShop( data.shopID, data.x, data.y, data.z, data.rotation, data.interior, data.dimension, data.configuration, data.skin )
 				
 				dimensions[ data.dimension ] = true
-				if exports['job-delivery'] then
-					exports['job-delivery']:addDropOff( data.dimension )
+				if exports['job-carrier'] then
+					exports['job-carrier']:addDropOff( data.dimension )
 				end
 			end
 		end
@@ -154,7 +154,7 @@ addCommandHandler( "createshop",
 					loadShop( shopID, x, y, z, rotation, interior, dimension, config, 0 )
 					
 					outputChatBox( "Created new shop with ID " .. shopID .. ", type is " .. config .. ".", player, 0, 255, 0 )
-					exports['job-delivery']:addDropOff( dimension )
+					exports['job-carrier']:addDropOff( dimension )
 				else
 					outputChatBox( "Shop creation failed (SQL-Error).", player, 255, 0, 0 )
 				end
@@ -197,9 +197,9 @@ local function deleteShop( shopID )
 			end
 		end
 		
-		if not stillHasAShop and exports['job-delivery'] then
+		if not stillHasAShop and exports['job-carrier'] then
 			dimensions[ shop.dimension ] = nil
-			exports['job-delivery']:removeDropOff( shop.dimension )
+			exports['job-carrier']:removeDropOff( shop.dimension )
 		end
 	end
 end

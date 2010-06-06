@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <meta>
-	<script src="delivery.lua"/>
-	<script src="delivery_c.lua" type="client"/>
+	<script src="carrier.lua"/>
+	<script src="carrier_c.lua" type="client"/>
 	
 	<include resource="vehicles"/>
 	<include resource="shops"/>
@@ -34,8 +34,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="removeDropOff"/>
 	
+	<script src="help_c.lua" type="client"/>
+	<export function="introduce"/>
+	
 	<settings>
 		<!-- (Civilian) Vehicles you can use for the delivery job -->
-		<setting name="#vehicles" value="[['Mule', 'Yankee']]" />
+		<setting name="#vehicles" value="[['Boxville']]" />
 	</settings>
 </meta>

@@ -131,13 +131,13 @@ local function newDropOff( player, earnings )
 	local id, x, y, z, name = getNextDropOffPoint( p[ player ].dropOff )
 	if id then
 		p[ player ] = { dropOff = id, x = x, y = y, z = z, name = name }
-		triggerClientEvent( player, "job-delivery:setdropoff", player, x, y, z )
+		triggerClientEvent( player, getResourceName( resource ) .. ":setdropoff", player, x, y, z )
 		outputChatBox( "(( " .. ( earnings and ( "You earned $" .. earnings .. ". " ) or "" ) .. "Next Drop-Off: " .. name .. " ))", player, 255, 204, 0 )
 		return true
 	else
 		outputDebugString( "No dropoff found, leaving " .. getPlayerName( player ) .. " without another task...", 2 )
 		p[ player ] = { }
-		triggerClientEvent( player, "job-delivery:setdropoff", player )
+		triggerClientEvent( player, getResourceName( resource ) .. ":setdropoff", player )
 		return false
 	end
 end
@@ -152,7 +152,7 @@ addEventHandler( "onVehicleEnter", root,
 			if not p[ player ].dropOff then
 				newDropOff( player )
 			else
-				triggerClientEvent( player, "job-delivery:showdropoff", player )
+				triggerClientEvent( player, getResourceName( resource ) .. ":showdropoff", player )
 			end
 		end
 	end
@@ -190,8 +190,8 @@ addEventHandler( "onResourceStart", resourceRoot,
 	end
 )
 
-addEvent( "job-delivery:ready", true )
-addEventHandler( "job-delivery:ready", root,
+addEvent( getResourceName( resource ) .. ":ready", true )
+addEventHandler( getResourceName( resource ) .. ":ready", root,
 	function( )
 		if source == client then
 			if p[ source ] and getPedOccupiedVehicle( source ) == p[ source ].vehicleOnResourceStart and getPedOccupiedVehicleSeat( source ) == 0 then
@@ -203,8 +203,8 @@ addEventHandler( "job-delivery:ready", root,
 
 --
 
-addEvent( "job-delivery:complete", true )
-addEventHandler( "job-delivery:complete", root,
+addEvent( getResourceName( resource ) .. ":complete", true )
+addEventHandler( getResourceName( resource ) .. ":complete", root,
 	function( )
 		if source == client then
 			local vehicle = getPedOccupiedVehicle( source )
@@ -229,7 +229,7 @@ addEventHandler( "job-delivery:complete", root,
 addEventHandler( "onCharacterLogout", root,
 	function( )
 		if p[ source ] and p[ source ].dropOff then
-			triggerClientEvent( source, "job-delivery:setdropoff", source )
+			triggerClientEvent( source, getResourceName( resource ) .. ":setdropoff", source )
 		end
 		p[ source ] = nil
 	end
@@ -294,3 +294,9 @@ addEventHandler( "onVehicleStartEnter", root,
 		end
 	end
 )
+
+--
+
+function introduce( player )
+	triggerClientEvent( player, getResourceName( resource ) .. ":introduce", player )
+end
