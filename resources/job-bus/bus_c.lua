@@ -130,6 +130,7 @@ addEventHandler( "onClientMarkerLeave", resourceRoot,
 		if matching and element == localPlayer then
 			wait = false
 			removeEventHandler( "onClientRender", root, drawWaitingText )
+			exports.gui:hint( "Your Job: Bus Driver", "Not so fast, though a driver's always in a rush you should leave everyone around enough time to enter, alright?", 3 )
 		end
 	end
 )

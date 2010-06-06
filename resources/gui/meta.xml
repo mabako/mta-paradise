@@ -88,7 +88,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 		optional parameters:
 			(bool) forced - if set to true, the player can't close the window unless hide() is called. - default: false
 			(bool) don't enable input - if set to true, this will leave the input disabled thus you can use any key binds, walk etc. Has no effect if the window is not forced. - default: false
-			(bool) show mouse -- if set to true, it'll show the mouse cursor when opening the GUI. Has no effect when input is enabled or the window is forced. - default: false
+			(bool) show mouse - if set to true, it'll show the mouse cursor when opening the GUI. Has no effect when input is enabled or the window is forced. - default: false
 		returns:
 			(bool) true if the window creation was successful, false otherwise.
 	-->
@@ -103,4 +103,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			(bool) true if the window was forced, false otherwise
 	-->
 	<export function="getShowing" type="client"/>
+	
+	<!-- Hints, boxes, stuff -->
+	<script src="hint_c.lua" type="client"/>
+	<file src="images/error.png"/>
+	<file src="images/info.png"/>
+	<file src="images/okay.png"/>
+	<file src="images/warning.png"/>
+	
+	<!-- Shows a hint-box at the bottom of the screen
+		parameters:
+			(string) title of the box
+			(string) text of the box
+			(number) icon - 1 = okay, 2 = warning, 3 = error, 4 = info
+			(number) duration in ms
+		returns:
+			(bool) true
+	-->
+	<export function="hint" type="client"/>
 </meta>

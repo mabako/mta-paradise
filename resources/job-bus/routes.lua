@@ -18,12 +18,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 routes =
 {
 	{
-		{ x=2829.58, y=1410.03, z=10.44 },
+		{ x=2829.58, y=1410.03, z=10.44, hint = "It's plain simple, follow the route ahead until you reach the first stop. For all yellow checkpoints it's sufficient enough to drive through them." },
 		{ x=2784.04, y=1525.18, z=9.68 },
 		{ x=2729.75, y=1713.80, z=6.46 },
 		{ x=2743.99, y=2005.23, z=6.44 },
 		{ x=2764.64, y=2115.40, z=11.30 },
-		{ x=2685.89, y=2115.83, z=12.39 },
+		{ x=2685.89, y=2115.83, z=12.39, hint = "Slow down! There's a stop ahead and you need to wait for a bit before continuing your route. If any passenger enters, you earn a little extra money." },
 		{ x=2580.48, y=2115.96, z=10.40, stop = true },
 		{ x=2530.04, y=2124.24, z=10.40 },
 		{ x=2529.80, y=2210.20, z=10.40 },
@@ -96,7 +96,7 @@ routes =
 		{ x=1864.66, y=758.71, z=10.40 },
 		{ x=1865.15, y=643.14, z=10.40 },
 		{ x=1976.42, y=630.56, z=10.40, stop = true },
-		{ x=2023.23, y=670.67, z=10.40, stop = true },
+		{ x=2023.23, y=670.67, z=10.40, stop = true, hint = "That's it, the last Stop. Drive your Bus back to the Depot and you're done!" },
 		{ x=2125.00, y=670.84, z=10.40 },
 		{ x=2163.19, y=630.34, z=10.40 },
 		{ x=2289.89, y=640.98, z=10.52 },

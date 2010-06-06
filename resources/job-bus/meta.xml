@@ -19,6 +19,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="bus.lua"/>
 	<script src="bus_c.lua" type="client"/>
 	
+	<script src="help_c.lua" type="client"/>
+	<export function="introduce"/>
+	
 	<include resource="vehicles"/>
 	<settings>
 		<!-- (Civilian) Vehicles you can use for the bus job -->

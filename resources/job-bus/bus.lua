@@ -46,8 +46,14 @@ local function advanceRoute( player, earnings )
 		local c = p[ player ].route[ cp ]
 		local n = p[ player ].route[ cp + 1 ]
 		if c then
-			if p[ player ].route[ p[ player ].checkpoint ] and p[ player ].route[ p[ player ].checkpoint ].stop and earnings and earnings > 0 then
-				exports.players:giveMoney( player, earnings )
+			if p[ player ].route[ p[ player ].checkpoint ] then
+				if p[ player ].route[ p[ player ].checkpoint ].stop and earnings and earnings > 0 then
+					exports.players:giveMoney( player, earnings )
+				end
+				
+				if p[ player ].route[ p[ player ].checkpoint ].hint then
+					triggerClientEvent( player, "gui:hint", player, "Your Job: Bus Driver", p[ player ].route[ p[ player ].checkpoint ].hint )
+				end
 			end
 			
 			if not n then
@@ -186,3 +192,9 @@ addEventHandler( "onVehicleStartEnter", root,
 		end
 	end
 )
+
+--
+
+function introduce( player )
+	triggerClientEvent( player, getResourceName( resource ) .. ":introduce", player )
+end
