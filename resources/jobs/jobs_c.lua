@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 addEventHandler( "onClientElementStreamIn", resourceRoot,
 	function( )
 		setPedAnimation( source, "ped", "seat_idle", -1, true, false, true )
+		exports.gui:hint( "Las Venturas City Hall", "If you're in need of a job or want to change the one you have right now, talk to the Lady at the Front Desk. (( Press 'm' and Click her. ))" )
 	end
 )
 
