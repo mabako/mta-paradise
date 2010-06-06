@@ -21,7 +21,7 @@ local defaultWidth = 360
 local width = defaultWidth
 local height = 70
 local x = ( screenX - width ) / 2
-local y = screenY - height - 20
+local y = screenY - height - 60
 local line_height = 16
 
 --
@@ -41,6 +41,8 @@ addEventHandler( "onClientRender", root,
 				color = nil
 				start = nil
 				duration = nil
+				
+				showPlayerHudComponent( "area_name", true )
 			else
 				local alpha = 1
 				if start + duration / 2 < tick then

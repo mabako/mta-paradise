@@ -18,6 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="taxi.lua"/>
 	<script src="taxi_c.lua" type="client"/>
 	
+	<script src="help_c.lua" type="client"/>
+	<export function="introduce"/>
+	
 	<!-- Returns a table of Taxi Drivers -->
 	<export function="getDrivers"/>
 	

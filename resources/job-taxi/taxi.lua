@@ -173,3 +173,9 @@ addEventHandler( "onVehicleStartEnter", root,
 		end
 	end
 )
+
+--
+
+function introduce( player )
+	triggerClientEvent( player, getResourceName( resource ) .. ":introduce", player )
+end

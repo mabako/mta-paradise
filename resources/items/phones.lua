@@ -113,8 +113,9 @@ local services =
 				for key, value in ipairs( drivers ) do
 					exports.chat:me( value, "receives a text message." )
 					outputChatBox( "SMS from ((" .. getPlayerName( player ):gsub( "_", " " ) .. ")) LV Cabs: Fare - Phone #" .. phoneNumber .. " - Location: " .. input[1], value, 130, 255, 130 )
+					triggerClientEvent( value, "gui:hint", value, "Your Job: Taxi Driver - New Fare", "Someone needs a Cab:\nPhone: #" .. phoneNumber .. " (( " .. getPlayerName( player ):gsub( "_", " " ) .. " ))\nLocation: " .. input[1] )
 				end
-				return false, "LV Cab Operator says: We've dispatched one of our " .. #drivers .. " cab" .. ( #drivers > 1 and "s" or "" ) .. " to your location. It should arrive soon!"
+				return false, "LV Cab Operator says: We've dispatched a cab to your location. It should arrive soon!"
 			else
 				return false, "LV Cab Operator says: There are currently no Taxis available. Call later!"
 			end
