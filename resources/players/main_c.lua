@@ -169,6 +169,15 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 		
 		outputChatBox( " " )
 		outputChatBox( "You are now playing as " .. getPlayerName( localPlayer ):gsub( "_", " " ) .. ".", 0, 255, 0 )
+		
+		local xml = xmlLoadFile( "tutorial.xml" )
+		if not xml then
+			xml = xmlCreateFile( "tutorial.xml", "tutorial" )
+			xmlSaveFile( xml )
+			
+			tutorial( )
+		end
+		xmlUnloadFile( xml )
 	end
 )
 
