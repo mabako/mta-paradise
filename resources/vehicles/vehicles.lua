@@ -120,6 +120,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'engineState', type = 'tinyint(3) unsigned', default = 0 },
 				{ name = 'lightsState', type = 'tinyint(3) unsigned', default = 0 },
 				{ name = 'tintedWindows', type = 'tinyint(3) unsigned', default = 0 },
+				{ name = 'fuel', type = 'float unsigned', default = 100 },
 			} ) then cancelEvent( ) return end
 		
 		-- load all vehicles
@@ -130,7 +131,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				
 				-- tables for ID -> vehicle and vehicle -> data
 				vehicleIDs[ data.vehicleID ] = vehicle
-				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension, characterID = data.characterID, engineState = data.engineState == 1, tintedWindows = data.tintedWindows == 1 }
+				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension, characterID = data.characterID, engineState = data.engineState == 1, tintedWindows = data.tintedWindows == 1, fuel = data.fuel }
 				
 				-- some properties
 				setElementHealth( vehicle, data.health )
@@ -141,6 +142,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				setVehicleLocked( vehicle, data.locked == 1 )
 				setVehicleEngineState( vehicle, data.engineState == 1 )
 				setVehicleOverrideLights( vehicle, data.lightsState + 1 )
+				setElementData( vehicle, "fuel", data.fuel )
 			end
 		end
 		
@@ -150,6 +152,37 @@ addEventHandler( "onResourceStart", resourceRoot,
 			bindKey( value, "j", "down", "toggleengine" )
 			bindKey( value, "l", "down", "togglelights" )
 		end
+		
+		--
+		
+		-- Fuel update
+		setTimer(
+			function( )
+				for vehicle, data in pairs( vehicles ) do
+					if data.engineState and data.fuel and not isVehicleEmpty( vehicle ) then
+						local vx, vy, vz = getElementVelocity( vehicle )
+						local loss = math.sqrt( vx * vx + vy * vy ) * 0.4 + 0.05
+						
+						data.fuel = math.max( data.fuel - loss, 0 )
+						if math.floor( data.fuel + 0.5 ) ~= getElementData( vehicle, "fuel" ) then
+							setElementData( vehicle, "fuel", math.floor( data.fuel + 0.5 ) )
+						end
+						
+						if data.fuel == 0 then
+							setVehicleEngineState( vehicle, false )
+							for seat = 0, getVehicleMaxPassengers( vehicle ) do
+								local player = getVehicleOccupant( vehicle, seat )
+								if player then
+									triggerClientEvent( player, "gui:hint", player, "Out of Fuel", "Your " .. getVehicleName( vehicle ) .. " ran out of fuel!\nTo prevent this from happening, refill it regulary.", 3 )
+								end
+							end
+						end
+					end
+				end
+			end,
+			2000,
+			0
+		)
 	end
 )
 
@@ -167,13 +200,14 @@ addCommandHandler( { "createvehicle", "makevehicle" },
 				if vehicleID then
 					-- tables for ID -> vehicle and vehicle -> data
 					vehicleIDs[ vehicleID ] = vehicle
-					vehicles[ vehicle ] = { vehicleID = vehicleID, respawnInterior = getElementInterior( player ), respawnDimension = getElementDimension( player ), characterID = 0, engineState = false, tintedWindows = false }
+					vehicles[ vehicle ] = { vehicleID = vehicleID, respawnInterior = getElementInterior( player ), respawnDimension = getElementDimension( player ), characterID = 0, engineState = false, tintedWindows = false, fuel = 100 }
 					
 					-- some properties
 					setElementInterior( vehicle, getElementInterior( player ) )
 					setElementDimension( vehicle, getElementDimension( player ) )
 					setVehicleEngineState( vehicle, false )
 					setVehicleOverrideLights( vehicle, 1 )
+					setElementData( vehicle, "fuel", 100 )
 					
 					-- success message
 					outputChatBox( "Created " .. getVehicleName( vehicle ) .. " (ID " .. vehicleID .. ")", player, 0, 255, 0 )
@@ -217,6 +251,7 @@ function create( player, vehicle )
 				setElementDimension( newVehicle, dimension )
 				setVehicleEngineState( newVehicle, false )
 				setVehicleOverrideLights( newVehicle, 1 )
+				setElementData( newVehicle, "fuel", 100 )
 				
 				return newVehicle, vehicleID
 			end
@@ -571,7 +606,7 @@ function saveVehicle( vehicle )
 		if data and data.vehicleID > 0 then
 			local x, y, z = getElementPosition( vehicle )
 			local rx, ry, rz = getVehicleRotation( vehicle )
-			local success, error = exports.sql:query_free( "UPDATE vehicles SET posX = " .. x .. ", posY = " .. y .. ", posZ = " .. z .. ", rotX = " .. rx .. ", rotY = " .. ry .. ", rotZ = " .. rz .. ", health = " .. math.min( 1000, math.ceil( getElementHealth( vehicle ) ) ) .. ", interior = " .. getElementInterior( vehicle ) .. ", dimension = " .. getElementDimension( vehicle ) .. " WHERE vehicleID = " .. data.vehicleID )			
+			local success, error = exports.sql:query_free( "UPDATE vehicles SET posX = " .. x .. ", posY = " .. y .. ", posZ = " .. z .. ", rotX = " .. rx .. ", rotY = " .. ry .. ", rotZ = " .. rz .. ", health = " .. math.min( 1000, math.ceil( getElementHealth( vehicle ) ) ) .. ", interior = " .. getElementInterior( vehicle ) .. ", dimension = " .. getElementDimension( vehicle ) .. ", fuel = " .. data.fuel .. " WHERE vehicleID = " .. data.vehicleID )			
 			if error then
 				outputDebugString( error )
 			end
@@ -860,13 +895,14 @@ addCommandHandler( { "temporaryvehicle", "tempvehicle", "vehicle" },
 				
 				-- tables for ID -> vehicle and vehicle -> data
 				vehicleIDs[ vehicleID ] = vehicle
-				vehicles[ vehicle ] = { vehicleID = vehicleID, characterID = 0, engineState = true, tintedWindows = false }
+				vehicles[ vehicle ] = { vehicleID = vehicleID, characterID = 0, engineState = true, tintedWindows = false, fuel = 100 }
 				
 				-- some properties
 				setElementInterior( vehicle, getElementInterior( player ) )
 				setElementDimension( vehicle, getElementDimension( player ) )
 				setVehicleEngineState( vehicle, true )
 				setVehicleOverrideLights( vehicle, 1 )
+				setElementData( vehicle, "fuel", 100 )
 				
 				-- success message
 				outputChatBox( "Created " .. getVehicleName( vehicle ) .. " (ID " .. vehicleID .. ")", player, 0, 255, 0 )
