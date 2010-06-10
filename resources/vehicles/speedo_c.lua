@@ -49,6 +49,7 @@ addEventHandler( "onClientRender", root,
 			guiSetPosition( label2, screenX - guiLabelGetTextExtent( label2 ) - 5, screenY - 51, false )
 		else
 			guiSetText( label, "" )
+			guiSetText( label2, "" )
 		end
 	end
 )
