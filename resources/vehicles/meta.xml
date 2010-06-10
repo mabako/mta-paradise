@@ -62,5 +62,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="indicators.lua"/>
 	<script src="indicators_c.lua" type="client"/>
 	
+	<script src="speedo_c.lua" type="client"/>
+	
 	<include resource="sql"/>
 </meta>
