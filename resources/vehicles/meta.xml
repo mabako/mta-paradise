@@ -64,5 +64,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<script src="speedo_c.lua" type="client"/>
 	
+	<script src="fuel.lua"/>
+	<script src="fuel_c.lua" type="client"/>
+	<file src="fuelpoint.png"/>
+	
 	<include resource="sql"/>
 </meta>

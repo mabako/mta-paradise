@@ -161,7 +161,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				for vehicle, data in pairs( vehicles ) do
 					if data.engineState and data.fuel and not isVehicleEmpty( vehicle ) then
 						local vx, vy, vz = getElementVelocity( vehicle )
-						local loss = math.sqrt( vx * vx + vy * vy ) * 0.4 + 0.05
+						local loss = math.sqrt( vx * vx + vy * vy ) * 0.4 + 0.01
 						
 						data.fuel = math.max( data.fuel - loss, 0 )
 						if math.floor( data.fuel + 0.5 ) ~= getElementData( vehicle, "fuel" ) then
@@ -915,3 +915,15 @@ addCommandHandler( { "temporaryvehicle", "tempvehicle", "vehicle" },
 	end,
 	true
 )
+
+--
+
+function increaseFuel( vehicle, amount )
+	local data = vehicles[ vehicle ]
+	if data then
+		if data.fuel + amount <= 100 then
+			data.fuel = data.fuel + amount
+			setElementData( vehicle, "fuel", math.floor( data.fuel + 0.5 ) )
+		end
+	end
+end

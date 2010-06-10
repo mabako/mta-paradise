@@ -204,6 +204,7 @@
         <right name="command.setfactionrank" access="true" />
         <right name="command.createtext" access="true" />
         <right name="command.deletetext" access="true" />
+        <right name="command.createfuelpoint" access="true" />
         <right name="function.executeCommandHandler" access="true" />
         <right name="function.setPlayerMuted" access="true" />
         <right name="function.addAccount" access="true" />
