@@ -25,6 +25,7 @@ local texts =
 	{ "Factions I", "There's a few factions around town, the most important one being the Police Department, among that a handful of legal and illegal ones.", 1 }, 
 	{ "Factions II", "If you're interested to roleplay with and eventually in a faction, have a look at their forum for more details.", 1 },
 	{ "The End", "Now though that wasn't much, that's the end of our few tips. If you have any remaining questions or want to contact an admin, press 'F2' or type /report.", 1 },
+	{ "The actual End", "For more information, visit our forums at http://optical-gaming.net", 1 },
 }
 
 function tutorial( )
@@ -32,5 +33,3 @@ function tutorial( )
 		setTimer( function( ... ) exports.gui:hint( ... ) end, 50 + 7000 * ( key - 1 ), 1, unpack( value ) )
 	end
 end
-
-addCommandHandler( "tut", tutorial )
