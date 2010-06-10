@@ -19,7 +19,7 @@ local texts =
 {
 	{ "Welcome", "Welcome to Optical-Gaming Roleplay - let us just introduce the server, it won't take long!", 1 },
 	{ "The Rules", "You can access the rules at any time by just pressing 'F1', we recommend you to look at it as soon as possible to avoid any problems.", 2 },
-	{ "The Setting", "This server is set in Las Venturas surrounded by a few small towns in the Desert. The current year is " .. ( getRealTime().year ) .. " - present time.", 1 },
+	{ "The Setting", "This server is set in Las Venturas surrounded by a few small towns in the Desert. The current year is " .. ( getRealTime().year + 1900 ) .. " - present time.", 1 },
 	{ "Vehicles", "A number of freely accessible Vehicles (Civilian, as they do not have an owner) is placed around the city, you can buy your own Vehicle at any time.", 1 },
 	{ "Legal Jobs", "Okay, everyone wants to make some money. A good idea to get started is to get a Job from City Hall. Press 'F11', see the Yellow Marker.", 1 },
 	{ "Factions I", "There's a few factions around town, the most important one being the Police Department, among that a handful of legal and illegal ones.", 1 }, 
