@@ -722,11 +722,11 @@ function setMoney( player, amount )
 end
 
 function giveMoney( player, amount )
-	return setMoney( player, p[ player ].money + amount )
+	return amount >= 0 and setMoney( player, getMoney( player ) + amount )
 end
 
 function takeMoney( player, amount )
-	return setMoney( player, p[ player ].money - amount )
+	return amount >= 0 and setMoney( player, getMoney( player ) - amount )
 end
 
 function getMoney( player, amount )

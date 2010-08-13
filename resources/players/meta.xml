@@ -485,4 +485,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="afk_c.lua" type="client"/>
 	
 	<script src="tutorial_c.lua" type="client"/>
+	
+	<script src="pay.lua"/>
 </meta>
