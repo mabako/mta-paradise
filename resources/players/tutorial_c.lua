@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local texts =
 {
-	{ "Welcome", "Welcome to Optical-Gaming Roleplay - let us just introduce the server, it won't take long!", 1 },
+	{ "Welcome", "Welcome to MTA: Paradise - let us just introduce the server, it won't take long!", 1 },
 	{ "The Rules", "You can access the rules at any time by just pressing 'F1', we recommend you to look at it as soon as possible to avoid any problems.", 2 },
 	{ "The Setting", "This server is set in Las Venturas surrounded by a few small towns in the Desert. The current year is " .. ( getRealTime().year + 1900 ) .. " - present time.", 1 },
 	{ "Vehicles", "A number of freely accessible Vehicles (Civilian, as they do not have an owner) is placed around the city, you can buy your own Vehicle at any time.", 1 },
@@ -25,7 +25,7 @@ local texts =
 	{ "Factions I", "There's a few factions around town, the most important one being the Police Department, among that a handful of legal and illegal ones.", 1 }, 
 	{ "Factions II", "If you're interested to roleplay with and eventually in a faction, have a look at their forum for more details.", 1 },
 	{ "The End", "Now though that wasn't much, that's the end of our few tips. If you have any remaining questions or want to contact an admin, press 'F2' or type /report.", 1 },
-	{ "The actual End", "For more information, visit our forums at http://optical-gaming.net", 1 },
+	{ "The actual End", "For more information, visit our forums at http://forum.paradisegaming.net", 1 },
 }
 
 function tutorial( )

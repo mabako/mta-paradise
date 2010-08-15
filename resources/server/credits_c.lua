@@ -17,13 +17,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 local function showCredits( )
 	outputChatBox( " " )
-	outputChatBox( "Optical-Gaming: Roleplay " .. getVersion( ), 0, 255, 255 )
-	outputChatBox( "  sun <sun@optical-gaming.com>", 193, 255, 255 )
-	outputChatBox( " " )
 	outputChatBox( "MTA: Paradise Contributors", 0, 255, 255 )
 	outputChatBox( "  mabako <mabako@gmail.com>", 193, 255, 255 )
 	outputChatBox( "  Calvin Wong Loi Sing <jumba990@gmail.com>", 193, 255, 255 )
 	outputChatBox( "  Fedor Sinev <fedorsinev@gmail.com>", 193, 255, 255 )
+	outputChatBox( "  sun <sun@optical-gaming.com>", 193, 255, 255 )
 	outputChatBox( " " )
 end
 addCommandHandler( "credits", showCredits )

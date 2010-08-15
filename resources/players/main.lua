@@ -370,12 +370,12 @@ local function showLoginScreen( player, screenX, screenY, token, ip )
 	toggleAllControls( player, false, true, false )
 	
 	-- spawn the player etc.
-	spawnPlayer( source, 2000.6, 1577.6, 16.5, 10, 0, 0, 1 )
+	spawnPlayer( source, -1504, 1376, 3.75, 315, 0, 0, 1 )
 	setPedFrozen( source, true )
 	setElementAlpha( source, 0 )
 	
 	setCameraInterior( source, 0 )
-	setCameraMatrix( source, 1999.8, 1580.95, 17.6, 2000, 1580, 17.5 )
+	setCameraMatrix( source, -1461.4, 1415.7, 67.5, -1523.5, 1337, 66.5 )
 	
 	setPlayerNametagColor( source, 127, 127, 127 )
 	
