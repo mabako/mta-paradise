@@ -769,7 +769,7 @@ function updateNametag( player )
 		if vehicle and exports.vehicles:hasTintedWindows( vehicle ) then
 			text = text .. "? (Tinted Windows)"
 		else
-			text = text .. ( p[ player ].characterName or getPlayerName( player ):gsub( "_", " " ) )
+			text = text .. ( p[ player ] and p[ player ].characterName or getPlayerName( player ):gsub( "_", " " ) )
 		end
 		
 		if getPlayerNametagText( player ) ~= tostring( text ) then
