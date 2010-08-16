@@ -161,7 +161,8 @@ addEventHandler( "onResourceStart", resourceRoot,
 				for vehicle, data in pairs( vehicles ) do
 					if data.engineState and data.fuel and not isVehicleEmpty( vehicle ) then
 						local vx, vy, vz = getElementVelocity( vehicle )
-						local loss = math.sqrt( vx * vx + vy * vy ) * 0.4 + 0.01
+						local speed = math.sqrt( vx * vx + vy * vy )
+						local loss = ( speed > 0.65 and 2 * speed or speed ) * 0.1 + 0.005
 						
 						data.fuel = math.max( data.fuel - loss, 0 )
 						if math.floor( data.fuel + 0.5 ) ~= getElementData( vehicle, "fuel" ) then
