@@ -58,11 +58,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="isLoggedIn" type="client"/>
 	
-	<!-- Returns the user ID. (not character ID, one user can have multiple characters)
+	<!-- Returns true if the player is logged in.
 		parameters:
-			(player) the player to retrieve the user ID from.
+			(player) the player to check.
 		returns:
-			(number) user ID if he's logged in into any user, (bool) false otherwise.
+			(bool) true if he's logged in into any user, (bool) false otherwise.
 	-->
 	<export function="getUserID"/>
 	
