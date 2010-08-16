@@ -28,7 +28,7 @@ function getPositionInFrontOf( element, distance, rotation )
 	local x, y, z = getElementPosition( element )
 	rz = 0
 	if getElementType( element ) == "vehicle" then
-		_, _, rz = getVehicleRotation( element )
+		_, _, rz = getElementRotation( element )
 	elseif getElementType( element ) == "player" then
 		rz = getPedRotation( element )
 	end
