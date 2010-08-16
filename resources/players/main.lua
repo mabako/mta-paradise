@@ -288,7 +288,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'money', type = 'bigint(20) unsigned', default = 100 },
 				{ name = 'created', type = 'timestamp', default = 'CURRENT_TIMESTAMP' },
 				{ name = 'lastLogin', type = 'timestamp', default = '0000-00-00 00:00:00' },
-				{ name = 'weapons', type = 'varchar(255)', default = 100 },
+				{ name = 'weapons', type = 'varchar(255)', null = true },
 				{ name = 'job', type = 'varchar(20)', null = true },
 			} ) then cancelEvent( ) return end
 		
