@@ -429,7 +429,7 @@ addCommandHandler( "park",
 			if data then
 				if data.vehicleID < 0 then
 					outputChatBox( "Your temporary vehicle " .. data.vehicleID .. " (" .. getVehicleName( vehicle ) .. ") can't be parked.", player, 255, 0, 0 )
-				elseif exports.players:getCharacterID( player ) == data.characterID or hasObjectPermissionTo( player, "command.createvehicle", false ) then
+				elseif ( data.characterID > 0 and exports.players:getCharacterID( player ) == data.characterID or exports.factions:isPlayerInFaction( player, -data.characterID, 1 ) ) or hasObjectPermissionTo( player, "command.createvehicle", false ) then
 					local x, y, z = getElementPosition( vehicle )
 					local rx, ry, rz = getVehicleRotation( vehicle )
 					local success, error = exports.sql:query_free( "UPDATE vehicles SET respawnPosX = " .. x .. ", respawnPosY = " .. y .. ", respawnPosZ = " .. z .. ", respawnRotX = " .. rx .. ", respawnRotY = " .. ry .. ", respawnRotZ = " .. rz .. ", respawnInterior = " .. getElementInterior( vehicle ) .. ", respawnDimension = " .. getElementDimension( vehicle ) .. " WHERE vehicleID = " .. data.vehicleID )

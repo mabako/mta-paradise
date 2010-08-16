@@ -163,8 +163,8 @@ function sendMessageToFaction( factionID, message, ... )
 	return false
 end
 
-function isPlayerInFaction( player, faction )
-	return factions[ faction ] and p[ player ] and p[ player ].rfactions and p[ player ].rfactions[ faction ] and true or false
+function isPlayerInFaction( player, faction, leader )
+	return factions[ faction ] and p[ player ] and p[ player ].rfactions and p[ player ].rfactions[ faction ] and ( type( leader ) ~= "number" or p[ player ].rfactions[ faction ].leader >= leader ) and true or false
 end
 
 function isPlayerInFactionType( player, type )
