@@ -40,3 +40,9 @@ local vehiclesWithFuel = { Automobile = true, Bike = true, ["Monster Truck"] = t
 function doesVehicleHaveFuel( vehicle )
 	return isElement( vehicle ) and getElementType( vehicle ) == "vehicle" and vehiclesWithFuel[ getVehicleType( vehicle ) ] or false
 end
+
+local vehiclesWithEngine = { Automobile = true, Plane = true, Bike = true, Helicopter = true, Boat = true, Train = true, Trailer = false, BMX = false, ["Monster Truck"] = true, Quad = true }
+function doesVehicleHaveEngine( vehicle )
+	return isElement( vehicle ) and getElementType( vehicle ) == "vehicle" and vehiclesWithEngine[ getVehicleType( vehicle ) ] or false
+
+end

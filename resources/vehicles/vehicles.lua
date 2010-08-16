@@ -131,7 +131,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				
 				-- tables for ID -> vehicle and vehicle -> data
 				vehicleIDs[ data.vehicleID ] = vehicle
-				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension, characterID = data.characterID, engineState = data.engineState == 1, tintedWindows = data.tintedWindows == 1, fuel = data.fuel }
+				vehicles[ vehicle ] = { vehicleID = data.vehicleID, respawnInterior = data.respawnInterior, respawnDimension = data.respawnDimension, characterID = data.characterID, engineState = not doesVehicleHaveEngine( vehicle ) or data.engineState == 1, tintedWindows = data.tintedWindows == 1, fuel = data.fuel }
 				
 				-- some properties
 				setElementHealth( vehicle, data.health )
@@ -159,7 +159,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		setTimer(
 			function( )
 				for vehicle, data in pairs( vehicles ) do
-					if data.engineState and data.fuel and not isVehicleEmpty( vehicle ) and doesVehicleHaveFuel( vehicle ) then
+					if data.engineState and data.fuel and not isVehicleEmpty( vehicle ) and doesVehicleHaveEngine( vehicle ) and doesVehicleHaveFuel( vehicle ) then
 						local vx, vy, vz = getElementVelocity( vehicle )
 						local speed = math.sqrt( vx * vx + vy * vy )
 						local loss = ( speed > 0.65 and 2 * speed or speed ) * 0.1 + 0.005
@@ -776,7 +776,7 @@ addEventHandler( "onVehicleEnter", resourceRoot,
 				end
 				p[ player ].vehicle = source
 				
-				setVehicleEngineState( source, data.engineState )
+				setVehicleEngineState( source, not doesVehicleHaveEngine( source ) or data.engineState )
 				
 				if hasTintedWindows( source ) then
 					exports.players:updateNametag( player )
@@ -877,7 +877,7 @@ addCommandHandler( "toggleengine",
 	function( player, commandName )
 		if exports.players:isLoggedIn( player ) then
 			local vehicle = getPedOccupiedVehicle( player )
-			if vehicle and getVehicleOccupant( vehicle ) == player then
+			if vehicle and getVehicleOccupant( vehicle ) == player and doesVehicleHaveEngine( vehicle ) then
 				local data = vehicles[ vehicle ]
 				if data then
 					if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET engineState = 1 - engineState WHERE vehicleID = " .. data.vehicleID ) then
