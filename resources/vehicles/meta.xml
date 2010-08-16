@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="vehicles.lua"/>
 	<script src="vehicles_c.lua" type="client"/>
 	<script src="util.lua"/>
+	<script src="util.lua" type="client"/>
 	
 	<!-- Creates a new vehicle based off an old one (clones the vehicle & creates it permanently)
 		parameters:

@@ -66,7 +66,7 @@ addEventHandler( "vehicles:fill", fuelRoot,
 	function( amount )
 		if client and isElementWithinColShape( client, source ) and type( amount ) == 'number' and amount == math.ceil( amount ) and amount > 0 then
 			local vehicle = getPedOccupiedVehicle( client )
-			if vehicle and getVehicleOccupant( vehicle ) == client and not getVehicleEngineState( vehicle ) then
+			if vehicle and getVehicleOccupant( vehicle ) == client and doesVehicleHaveFuel( vehicle ) and not getVehicleEngineState( vehicle ) then
 				if exports.players:takeMoney( client, math.ceil( amount * 0.25 ) ) then
 					increaseFuel( vehicle, amount )
 				end

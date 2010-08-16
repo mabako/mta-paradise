@@ -159,7 +159,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 		setTimer(
 			function( )
 				for vehicle, data in pairs( vehicles ) do
-					if data.engineState and data.fuel and not isVehicleEmpty( vehicle ) then
+					if data.engineState and data.fuel and not isVehicleEmpty( vehicle ) and doesVehicleHaveFuel( vehicle ) then
 						local vx, vy, vz = getElementVelocity( vehicle )
 						local speed = math.sqrt( vx * vx + vy * vy )
 						local loss = ( speed > 0.65 and 2 * speed or speed ) * 0.1 + 0.005
@@ -340,7 +340,7 @@ addCommandHandler( { "fillvehicle", "fuelvehicle", "refillvehicle" },
 			local vehicle = getPedOccupiedVehicle( target )
 			if vehicle then
 				local data = vehicles[ vehicle ]
-				if data then
+				if doesVehicleHaveFuel( vehicle ) and data then
 					data.fuel = 100
 					setElementData( vehicle, "fuel", data.fuel )
 					
@@ -362,7 +362,7 @@ addCommandHandler( { "fillvehicle", "fuelvehicle", "refillvehicle" },
 addCommandHandler( { "fillvehicles", "fuelvehicles", "refillvehicles" },
 	function( player, commandName )
 		for vehicle, data in pairs( vehicles ) do
-			if getElementData( vehicle, "fuel" ) < 100 then
+			if doesVehicleHaveFuel( vehicle ) and getElementData( vehicle, "fuel" ) < 100 then
 				data.fuel = 100
 				setElementData( vehicle, "fuel", data.fuel )
 			end
@@ -966,7 +966,7 @@ addCommandHandler( { "temporaryvehicle", "tempvehicle", "vehicle" },
 
 function increaseFuel( vehicle, amount )
 	local data = vehicles[ vehicle ]
-	if data then
+	if data and doesVehicleHaveFuel( vehicle ) then
 		if data.fuel + amount <= 100 then
 			data.fuel = data.fuel + amount
 			setElementData( vehicle, "fuel", math.floor( data.fuel + 0.5 ) )

@@ -31,14 +31,18 @@ addEventHandler( "onClientRender", root,
 	function( )
 		local vehicle = getPedOccupiedVehicle( getLocalPlayer( ) )
 		if vehicle then
-			local fuel = getElementData( vehicle, "fuel" ) or "N/A"
-			if type( fuel ) == 'number' then
-				fuel = fuel .. '%'
+			if doesVehicleHaveFuel( vehicle ) then
+				local fuel = getElementData( vehicle, "fuel" ) or "N/A"
+				if type( fuel ) == 'number' then
+					fuel = fuel .. '%'
+				end
+				
+				guiSetText( label, "Fuel: " .. fuel, false )
+				guiSetSize( label, guiLabelGetTextExtent( label ) + 5, 14, false )
+				guiSetPosition( label, screenX - guiLabelGetTextExtent( label ) - 5, screenY - 51, false )
+			else
+				guiSetText( label, "" )
 			end
-			
-			guiSetText( label, "Fuel: " .. fuel, false )
-			guiSetSize( label, guiLabelGetTextExtent( label ) + 5, 14, false )
-			guiSetPosition( label, screenX - guiLabelGetTextExtent( label ) - 5, screenY - 39, false )
 			
 			--
 			
@@ -46,7 +50,7 @@ addEventHandler( "onClientRender", root,
 			
 			guiSetText( label2, "Speed: " .. speed, false )
 			guiSetSize( label2, guiLabelGetTextExtent( label2 ) + 5, 14, false )
-			guiSetPosition( label2, screenX - guiLabelGetTextExtent( label2 ) - 5, screenY - 51, false )
+			guiSetPosition( label2, screenX - guiLabelGetTextExtent( label2 ) - 5, screenY - 39, false )
 		else
 			guiSetText( label, "" )
 			guiSetText( label2, "" )

@@ -24,7 +24,7 @@ local tick = false
 
 local function renderFuelStation( )
 	local vehicle = getPedOccupiedVehicle( getLocalPlayer( ) )
-	if vehicle and getVehicleOccupant( vehicle ) == getLocalPlayer( ) then
+	if vehicle and getVehicleOccupant( vehicle ) == getLocalPlayer( ) and doesVehicleHaveFuel( vehicle ) then
 		local fuel = xfuel or getElementData( vehicle, "fuel" )
 		
 		dxDrawRectangle( screenX - 160, screenY - 200, 140, 200, tocolor( 0, 0, 0, 193 ) )

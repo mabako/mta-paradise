@@ -35,3 +35,8 @@ function getPositionInFrontOf( element, distance, rotation )
 	rz = rz + ( rotation or 90 )
 	return x + ( ( math.cos ( math.rad ( rz ) ) ) * ( distance or 3 ) ), y + ( ( math.sin ( math.rad ( rz ) ) ) * ( distance or 3 ) ), z, rz
 end
+
+local vehiclesWithFuel = { Automobile = true, Bike = true, ["Monster Truck"] = true, Quad = true }
+function doesVehicleHaveFuel( vehicle )
+	return isElement( vehicle ) and getElementType( vehicle ) == "vehicle" and vehiclesWithFuel[ getVehicleType( vehicle ) ] or false
+end
