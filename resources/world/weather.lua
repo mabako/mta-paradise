@@ -59,16 +59,20 @@ local function setWeatherFromRemote( w, e )
 end
 
 local function updateWeather( )
-	-- find a new weather
-	callRemote( remoteAddress, setWeatherFromRemote )
+	if remoteAddress then
+		-- find a new weather
+		callRemote( remoteAddress, setWeatherFromRemote )
+	end
 end
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		-- create an initial weather
-		updateWeather( )
-		
-		-- change it after three hours
-		setTimer( updateWeather, 180 * 60000, 0 )
+		if remoteAddress then
+			-- create an initial weather
+			updateWeather( )
+			
+			-- change it after three hours
+			setTimer( updateWeather, 180 * 60000, 0 )
+		end
 	end
 )
