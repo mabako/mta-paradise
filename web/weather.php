@@ -3,7 +3,7 @@
 ob_start( );
 
 // Load the Weather data
-$xml = simplexml_load_file( 'http://www.google.com/ig/api?weather=Las+Vegas,+NV' );
+$xml = simplexml_load_file( 'http://www.google.com/ig/api?weather=San+Francisco,+CA' );
 
 // current weather
 $value = array( );
