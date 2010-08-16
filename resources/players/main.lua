@@ -772,12 +772,30 @@ function updateNametag( player )
 			text = text .. ( p[ player ].characterName or getPlayerName( player ):gsub( "_", " " ) )
 		end
 		
-		setPlayerNametagText( player, tostring( text ) )
+		if getPlayerNametagText( player ) ~= tostring( text ) then
+			setPlayerNametagText( player, tostring( text ) )
+		end
 		updateNametagColor( player )
 		return true
 	end
 	return false
 end
+
+addEventHandler( "onPlayerSpawn", root,
+	function( )
+		updateNametag( source )
+	end
+)
+
+setTimer(
+	function( )
+		for player in pairs( p ) do
+			updateNametag( player )
+		end
+	end,
+	15000,
+	0
+)
 
 --
 
