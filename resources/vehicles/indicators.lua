@@ -27,7 +27,6 @@ addEventHandler( "i:left", resourceRoot,
 addEvent( "i:right", true )
 addEventHandler( "i:right", resourceRoot,
 	function( state )
-		outputChatBox( tostring( state ) )
 		if client and source == getPedOccupiedVehicle( client ) then
 			setElementData( source, "i:right", state )
 		end
