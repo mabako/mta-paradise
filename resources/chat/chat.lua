@@ -280,6 +280,24 @@ addCommandHandler( { "modchat", "m" },
 	true
 )
 
+-- /ad to send a global advertisement
+addCommandHandler( { "ad", "advertisement" },
+	function( thePlayer, commandName, ... )
+		if exports.players:isLoggedIn( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				if exports.players:takeMoney( thePlayer, 3 ) then
+					outputChatBox( "[AD] (( " .. getPlayerName( thePlayer ) ..  " )) " .. message .. ".", root, 106, 255, 255 )
+				else
+					outputChatBox( "You don't have enough money for this advertisement.", thePlayer, 255, 0, 0 )
+				end
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [advertisement]", thePlayer, 255, 255, 255 )
+			end
+		end
+	end
+)
+
 -- /pm to message other players
 local function pm( player, target, message )
 	outputChatBox( "PM to [" .. exports.players:getID( target ) .. "] " .. getPlayerName( target ) .. ": " .. message, player, 255, 255, 0 )
