@@ -57,9 +57,9 @@ addEventHandler( "onClientRender", root,
 			
 			if getVehicleOccupant( vehicle ) == getLocalPlayer( ) and getVehicleType( vehicle ) == "BMX" then
 				if speed then
-					if speed >= 40 then
+					if speed >= 45 then
 						toggleControl( "accelerate", false )
-					elseif forwards then
+					else
 						toggleControl( "accelerate", true )
 					end
 				end
