@@ -46,14 +46,35 @@ addEventHandler( "onClientRender", root,
 			
 			--
 			
-			local speed = ( function( x, y, z ) return math.floor( math.sqrt( x*x + y*y + z*z ) * 155 ) .. " km/h" end )( getElementVelocity( vehicle ) ) or "N/A"
-			
-			guiSetText( label2, "Speed: " .. speed, false )
+			local speed = ( function( x, y, z ) return math.floor( math.sqrt( x*x + y*y + z*z ) * 155 ) end )( getElementVelocity( vehicle ) )
+			if speed then
+				guiSetText( label2, "Speed: " .. speed .. " km/h", false )
+			else
+				guiSetText( label2, "Speed: N/A", false )
+			end
 			guiSetSize( label2, guiLabelGetTextExtent( label2 ) + 5, 14, false )
 			guiSetPosition( label2, screenX - guiLabelGetTextExtent( label2 ) - 5, screenY - 39, false )
+			
+			if getVehicleOccupant( vehicle ) == getLocalPlayer( ) and getVehicleType( vehicle ) == "BMX" then
+				if speed then
+					if speed >= 40 then
+						toggleControl( "accelerate", false )
+					elseif forwards then
+						toggleControl( "accelerate", true )
+					end
+				end
+			end
 		else
 			guiSetText( label, "" )
 			guiSetText( label2, "" )
+		end
+	end
+)
+
+addEventHandler( "onClientVehicleEnter", resourceRoot,
+	function( player, seat )
+		if seat == 0 and player == localPlayer and not forwards then
+			toggleControl( "accelerate", true )
 		end
 	end
 )
