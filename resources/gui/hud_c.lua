@@ -43,7 +43,7 @@ addEventHandler( "onClientRender", root,
 			local x, y, z = getCameraMatrix( )
 			local zone = getZoneName( x, y, z )
 			
-			if zone and zone ~= "San Andreas" then
+			if zone and zone ~= "San Andreas" and zone ~= "Unknown" and getElementDimension( getLocalPlayer( ) ) == 0 then
 				dxDrawText( zone, 0, 0, screenX - offsetX - 10, screenY + 1, tocolor( 255, 255, 255, 127 ), 1, "pricedown", "right", "bottom" )
 			end
 		end
