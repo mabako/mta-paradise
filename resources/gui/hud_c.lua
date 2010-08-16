@@ -38,11 +38,14 @@ addEventHandler( "onClientResourceStop", resourceRoot,
 
 addEventHandler( "onClientRender", root,
 	function( )
-		local x, y, z = getCameraMatrix( )
-		local zone = getZoneName( x, y, z )
-		
-		if zone and zone ~= "San Andreas" then
-			dxDrawText( zone, 0, 0, screenX - offsetX - 10, screenY + 1, tocolor( 255, 255, 255, 127 ), 1, "pricedown", "right", "bottom" )
+		if exports.players:isLoggedIn( ) then
+			-- zone name
+			local x, y, z = getCameraMatrix( )
+			local zone = getZoneName( x, y, z )
+			
+			if zone and zone ~= "San Andreas" then
+				dxDrawText( zone, 0, 0, screenX - offsetX - 10, screenY + 1, tocolor( 255, 255, 255, 127 ), 1, "pricedown", "right", "bottom" )
+			end
 		end
 	end
 )
