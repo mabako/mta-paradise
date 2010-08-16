@@ -539,7 +539,7 @@ addEventHandler( "onResourceStop", resourceRoot,
 		for key, value in ipairs( getElementsByType( "player" ) ) do
 			savePlayer( value )
 			
-			if p[ value ].charID then
+			if p[ value ] and p[ value ].charID then
 				triggerEvent( "onCharacterLogout", value )
 				setPlayerTeam( value, nil )
 				takeAllWeapons( value )
