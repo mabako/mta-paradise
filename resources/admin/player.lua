@@ -277,15 +277,15 @@ addCommandHandler( "ban",
 		if otherPlayer and hours and hours >= 0 and ( ... ) then
 			local other, name = exports.players:getFromName( player, otherPlayer )
 			if other then
-				if true or not hasObjectPermissionTo( other, "command.ban", false ) then
+				if not hasObjectPermissionTo( other, "command.ban", false ) then
 					local reason = table.concat( { ... }, " " ) .. " (" .. ( hours == 0 and "Permanent" or ( hours < 1 and ( math.ceil( hours * 60 ) .. " minutes" ) or ( hours .. " hours" ) ) ) .. ")"
 					
 					if exports.sql:query_free( "UPDATE wcf1_user SET banned = 1, banReason = '%s', banUser = " .. exports.players:getUserID( player ) .. " WHERE userID = " .. exports.players:getUserID( other ), reason ) then 
 						local serial = getPlayerSerial( other )
 						
-						banPlayer( other, true, false, false, player, reason, math.ceil( hours * 60 ) )
+						banPlayer( other, true, false, false, player, reason, math.ceil( hours * 60 * 60 ) )
 						if serial then
-							addBan( nil, nil, serial, player, reason, math.ceil( hours * 60 ) )
+							addBan( nil, nil, serial, player, reason .. " (" .. name .. ")", math.ceil( hours * 60 * 60 ) )
 						end
 					end
 				else
