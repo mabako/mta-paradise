@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local afkTime = tonumber( get( 'afk_time' ) ) or 30 -- Time you can be away (in seconds) before you'll be kicked from the server.
+local afkTime = tonumber( get( 'afk_time' ) ) or 300 -- Time you can be away (in seconds) before you'll be kicked from the server.
 
 addEventHandler( "onResourceStart", resourceRoot,
 	function( )
