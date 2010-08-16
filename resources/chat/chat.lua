@@ -298,6 +298,20 @@ addCommandHandler( { "ad", "advertisement" },
 	end
 )
 
+-- /sr SAN radio chat
+addCommandHandler( { "sr", "san" },
+	function( thePlayer, commandName, ... )
+		if exports.players:isLoggedIn( thePlayer ) then
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				outputChatBox( "[SAN] " .. getPlayerName( thePlayer ) ..  " says: " .. message, root, 62, 184, 255 )
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [radio message]", thePlayer, 255, 255, 255 )
+			end
+		end
+	end
+)
+
 -- /pm to message other players
 local function pm( player, target, message )
 	outputChatBox( "PM to [" .. exports.players:getID( target ) .. "] " .. getPlayerName( target ) .. ": " .. message, player, 255, 255, 0 )
