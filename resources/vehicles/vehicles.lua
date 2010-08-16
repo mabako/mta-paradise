@@ -327,6 +327,51 @@ addCommandHandler( { "repairvehicles", "fixvehicles" },
 	true
 )
 
+addCommandHandler( { "fillvehicle", "fuelvehicle", "refillvehicle" },
+	function( player, commandName, otherPlayer )
+		if otherPlayer then
+			target, targetName = exports.players:getFromName( player, otherPlayer )
+		else
+			target = player
+			targetName = getPlayerName( player ):gsub( "_", " " )
+		end
+		
+		if target then
+			local vehicle = getPedOccupiedVehicle( target )
+			if vehicle then
+				local data = vehicles[ vehicle ]
+				if data then
+					data.fuel = 100
+					setElementData( vehicle, "fuel", data.fuel )
+					
+					outputChatBox( "Your vehicle has been refilled by " .. getPlayerName( player ):gsub( "_", " " ) .. ".", target, 0, 255, 153 )
+					if player ~= target then
+						outputChatBox( "You refilled " .. targetName .. "'s vehicle.", player, 0, 255, 153 )
+					end
+				else
+					outputChatBox( targetName .. " has no vehicle with fuel.", player, 255, 0, 0 )
+				end
+			else
+				outputChatBox( targetName .. " is not in a vehicle.", player, 255, 0, 0 )
+			end
+		end
+	end,
+	true
+)
+
+addCommandHandler( { "fillvehicles", "fuelvehicles", "refillvehicles" },
+	function( player, commandName )
+		for vehicle, data in pairs( vehicles ) do
+			if getElementData( vehicle, "fuel" ) < 100 then
+				data.fuel = 100
+				setElementData( vehicle, "fuel", data.fuel )
+			end
+		end
+		outputChatBox( "*** " .. getPlayerName( player ):gsub( "_", " " ) .. " refilled all vehicles. ***", root, 0, 255, 153 )
+	end,
+	true
+)
+
 addCommandHandler( "respawnvehicle",
 	function( player, commandName, vehicleID )
 		vehicleID = tonumber( vehicleID )

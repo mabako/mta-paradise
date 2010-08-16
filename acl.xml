@@ -9,7 +9,7 @@
         <acl name="Moderator" />
         <acl name="RPC" />
         <object name="resource.admin" />
-        <object name="user.sun" />
+        <object name="user.mabako" />
     </group>
     <group name="Moderator">
         <acl name="Moderator" />
@@ -38,7 +38,7 @@
     </group>
     <group name="Developer">
         <acl name="Developer" />
-        <object name="user.sun" />
+        <object name="user.mabako" />
     </group>
     <acl name="Default">
         <right name="general.ModifyOtherObjects" access="false" />
@@ -142,6 +142,8 @@
     <acl name="Moderator">
         <right name="command.repairvehicle" access="true" />
         <right name="command.repairvehicles" access="true" />
+        <right name="command.fillvehicle" access="true" />
+        <right name="command.fillvehicles" access="true" />
         <right name="command.respawnvehicle" access="true" />
         <right name="command.respawnvehicles" access="true" />
         <right name="command.getvehicle" access="true" />
