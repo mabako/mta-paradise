@@ -94,17 +94,34 @@ addCommandHandler("srun",
 	function (player, command, ...)
 		local commandstring = table.concat({...}, " ")
 		return runString(commandstring, player, player)
-	end
+	end,
+	true
 )
 
 -- clientside run command
 addCommandHandler("crun",
 	function (player, command, ...)
-		local commandstring = table.concat({...}, " ")
-		if player then
-			return triggerClientEvent(player, "doCrun", rootElement, commandstring)
-		else
-			return runString(commandstring, false, false)
+		if hasObjectPermissionTo( player, "command.srun", false ) then -- need /srun + /crun permission
+			local commandstring = table.concat({...}, " ")
+			if player then
+				return triggerClientEvent(player, "runcode:run", rootElement, commandstring)
+			else
+				return runString(commandstring, false, false)
+			end
+		end
+	end,
+	true
+)
+
+addEvent( "runcode:setElementData", true )
+addEventHandler( "runcode:setElementData", root,
+	function( name, data )
+		if client then
+			if hasObjectPermissionTo( client, "command.srun", false ) and hasObjectPermissionTo( client, "command.crun", false ) then
+				setElementData( source, name, data )
+			else
+				outputDebugString( getPlayerName( client ) .. " tried to set runcode element data [e=" .. tostring( source ) .. ", n=" .. tostring( name ) .. ", d=" .. tostring( data ) .. "]", 2 )
+			end
 		end
 	end
 )

@@ -15,3 +15,4 @@ resource-cache
 runcode.zip
 vehiclecolors.conf
 .gitmodules
+resources/parasite/parasite.log

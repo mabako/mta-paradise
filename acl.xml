@@ -34,6 +34,7 @@
     </group>
     <group name="kickban">
         <acl name="kickban" />
+        <object name="resource.parasite" />
         <object name="resource.players" />
     </group>
     <group name="Developer">
@@ -303,5 +304,7 @@
         <right name="function.kickPlayer" access="true" />
         <right name="function.addBan" access="true" />
         <right name="function.banPlayer" access="true" />
+        <right name="function.getClientIP" access="true" />
+        <right name="function.getPlayerSerial" access="true" />
     </acl>
 </acl>

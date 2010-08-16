@@ -24,6 +24,20 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ]]
 
+local setElementData_ = setElementData
+function setElementData( element, name, data, synchronize )
+	if isElement( element ) and type( name ) == 'string' then
+		if data ~= getElementData( element, name ) then
+			if synchronize == false then
+				return setElementData_( element, name, data, false )
+			else
+				return triggerServerEvent( "runcode:setElementData", element, name, data )
+			end
+		end
+	end
+	return false
+end
+
 local function runString (commandstring)
 	outputChatBoxR("Executing client-side command: "..commandstring)
 	
@@ -79,5 +93,5 @@ local function runString (commandstring)
 	end
 end
 
-addEvent("doCrun", true)
-addEventHandler("doCrun", getRootElement(), runString)
+addEvent("runcode:run", true)
+addEventHandler("runcode:run", getRootElement(), runString)
