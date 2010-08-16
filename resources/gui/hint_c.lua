@@ -41,8 +41,6 @@ addEventHandler( "onClientRender", root,
 				color = nil
 				start = nil
 				duration = nil
-				
-				showPlayerHudComponent( "area_name", true )
 			else
 				local alpha = 1
 				if start + duration / 2 < tick then
@@ -84,8 +82,6 @@ function hint( ti, te, ic, dur )
 	
 	title = ti
 	text = te
-	
-	showPlayerHudComponent( "area_name", false )
 	
 	return true
 end

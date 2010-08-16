@@ -163,7 +163,6 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 		
 		showChat( true )
 		showPlayerHudComponent( "radar", true )
-		showPlayerHudComponent( "area_name", true )
 		loggedIn = true
 		exports.gui:updateCharacters( characters )
 		
