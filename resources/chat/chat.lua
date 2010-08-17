@@ -73,9 +73,9 @@ local function localMessage( from, message, r, g, b, range, r2, g2, b2 )
 end
 
 -- exported function to send fake-me's
-function me( source, message )
+function me( source, message, prefix )
 	if isElement( source ) and getElementType( source ) == "player" and type( message ) == "string" then
-		local message = " *" .. getPlayerName( source ) .. ( message:sub( 1, 2 ) == "'s" and "" or " " ) .. message
+		local message = ( prefix or "" ) .. " *" .. getPlayerName( source ) .. ( message:sub( 1, 2 ) == "'s" and "" or " " ) .. message
 		localMessage( source, message, 255, 40, 80 )
 		exports.server:message( "%C04[" .. exports.players:getID( source ) .. "]" .. message .. "%C" )
 		return true
@@ -340,5 +340,27 @@ addEventHandler( "onPlayerPrivateMessage", root,
 			pm( source, recipent, message )
 		end
 		cancelEvent( )
+	end
+)
+
+-- /dice
+addCommandHandler( "dice", 
+	function( thePlayer, commandName )
+		if exports.players:isLoggedIn( thePlayer ) and not isPedDead( thePlayer ) then
+			me( thePlayer, "rolls a dice. It shows " .. math.random( 6 ) .. ".", "(Dice)" )
+		end
+	end
+)
+
+-- /coin
+addCommandHandler( "coin", 
+	function( thePlayer, commandName )
+		if exports.players:isLoggedIn( thePlayer ) and not isPedDead( thePlayer ) then
+			if exports.players:getMoney( thePlayer ) >= 1 then
+				me( thePlayer, "flips a coin. It shows " .. ( math.random( 2 ) == 1 and "Heads" or "Tails" ) .. ".", "(Coin)" )
+			else
+				outputChatBox( "You don't have a coin.", thePlayer, 255, 0, 0 )
+			end
+		end
 	end
 )
