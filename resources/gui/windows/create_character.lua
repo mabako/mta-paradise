@@ -18,6 +18,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 local selectedSkin = false
 local messageTimer
 local messageCount = 0
+local timer
+
 local function setMessage( text )
 	windows.create_character[#windows.create_character].text = text
 	if messageTimer then
@@ -100,9 +102,15 @@ windows.create_character =
 	}
 }
 
-setTimer(
+timer = setTimer(
 	function( )
-		for k, skin in ipairs( exports.players:getSkins( ) ) do
+		local skins = exports.players:getSkins( )
+		if not skins then
+			return
+		end
+		
+		killTimer( timer )
+		for k, skin in ipairs( skins ) do
 			table.insert( windows.create_character[3].panes,
 				{
 					image = ":players/images/skins/" .. skin .. ".png",
@@ -123,7 +131,7 @@ setTimer(
 		end
 	end,
 	500,
-	1
+	0
 )
 
 addEvent( "players:characterCreationResult", true )
