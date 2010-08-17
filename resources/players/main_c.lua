@@ -20,6 +20,7 @@ local loggedIn = false
 local screenX, screenY = guiGetScreenSize( )
 local characters = false
 local localIP = nil
+local serverToken = nil
 
 addEvent( getResourceName( resource ) .. ":spawnscreen", true )
 addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
@@ -27,10 +28,12 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 		setTimer(
 			function( )
 				if not characters then
-					local xml = xmlCreateFile( "login.xml", "login" )
-					if xml then
-						xmlSaveFile( xml )
-						xmlUnloadFile( xml )
+					if serverToken then
+						local xml = xmlCreateFile( "login-" .. serverToken .. ".xml", "login" )
+						if xml then
+							xmlSaveFile( xml )
+							xmlUnloadFile( xml )
+						end
 					end
 					exports.gui:show( 'login', true )
 				end
@@ -48,15 +51,25 @@ addEventHandler( getResourceName( resource ) .. ":spawnscreen", localPlayer,
 
 addEventHandler( "onClientResourceStart", getResourceRootElement( ),
 	function( )
+		triggerServerEvent( getResourceName( resource ) .. ":requestServerToken", localPlayer )
+	end
+)
+
+addEvent( getResourceName( resource ) .. ":receiveServerToken", true )
+addEventHandler( getResourceName( resource ) .. ":receiveServerToken", root,
+	function( serverToken_ )
+		serverToken = serverToken_
 		local token = nil
 		local ip = nil
-		local xml = xmlLoadFile( "login.xml" )
-		if xml then
-			token = xmlNodeGetValue( xml )
-			ip = xmlNodeGetAttribute( xml, "ip" )
-			localIP = ip
-			xmlUnloadFile( xml )
-			xml = nil
+		if serverToken then
+			local xml = xmlLoadFile( "login-" .. serverToken .. ".xml" )
+			if xml then
+				token = xmlNodeGetValue( xml )
+				ip = xmlNodeGetAttribute( xml, "ip" )
+				localIP = ip
+				xmlUnloadFile( xml )
+				xml = nil
+			end
 		end
 		triggerServerEvent( getResourceName( resource ) .. ":ready", localPlayer, screenX, screenY, token and #token > 0 and token, ip and #ip > 0 and ip )
 	end
@@ -111,8 +124,8 @@ addEventHandler( getResourceName( resource ) .. ":characters", localPlayer,
 		end
 		
 		-- auto-login
-		if token then
-			local xml = xmlCreateFile( "login.xml", "login" )
+		if token and serverToken then
+			local xml = xmlCreateFile( "login-" .. serverToken .. ".xml", "login" )
 			if xml then
 				xmlNodeSetValue( xml, token )
 				if ip then

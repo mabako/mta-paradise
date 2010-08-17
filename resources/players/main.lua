@@ -402,6 +402,49 @@ addEventHandler( getResourceName( resource ) .. ":ready", root,
 )
 
 --
+-- tweak to allow multiple servers running paradise without interfering login files. 
+-- this is also used to calculate an individual player's hash so even players with same ip/serial/username/password on two servers won't get the same hash to login with.
+-- If it's ever stolen/abused - if that's even possible? -, simply delete the token.xml file and restart this resource, this is going to prompt each player to login again.
+--
+
+local serverToken = nil
+addEventHandler( "onResourceStart", resourceRoot,
+	function( )
+		local xml = xmlLoadFile( "token.xml" )
+		if xml then
+			serverToken = xmlNodeGetValue( xml )
+			xmlUnloadFile( xml )
+		end
+		
+		if not serverToken then
+			-- this should ideally be unique
+			serverToken = md5( getServerName( ) .. math.random( 1, 2^30 ) .. getServerPort( ) .. "~paradise" ):lower( )
+			local xml = xmlCreateFile( "token.xml", "token" )
+			if xml then
+				if xmlNodeSetValue( xml, serverToken ) then
+					xmlSaveFile( xml )
+					setTimer( outputConsole, 100, 1, "Created Server Token: " .. serverToken )
+				else
+					serverToken = nil
+				end
+				xmlUnloadFile( xml )
+			else
+				serverToken = nil
+			end
+		end
+		
+		addEvent( getResourceName( resource ) .. ":requestServerToken", true )
+		addEventHandler( getResourceName( resource ) .. ":requestServerToken", root,
+			function( ... )
+				if source == client then
+					triggerClientEvent( source, getResourceName( resource ) .. ":receiveServerToken", source, serverToken and md5( serverToken ):lower( ) )
+				end
+			end
+		)
+	end
+)
+
+--
 
 local loginAttempts = { }
 local triedTokenAuth = { }
@@ -411,7 +454,7 @@ local function getPlayerHash( player, remoteIP )
 	if ip == "127.0.0.1" and remoteIP then -- we don't really care about a provided ip unless we want to connect from localhost
 		ip = exports.sql:escape_string( remoteIP )
 	end
-	return ip:sub(ip:find("%d+%.%d+%.")) .. ( getPlayerSerial( player ) or "R0FLR0FLR0FLR0FLR0FLR0FLR0FLR0FL" )
+	return ip:sub(ip:find("%d+%.%d+%.")) .. ( getPlayerSerial( player ) or "R0FLR0FLR0FLR0FLR0FLR0FLR0FLR0FL" ) .. tostring( serverToken )
 end
 
 addEvent( getResourceName( resource ) .. ":login", true )
