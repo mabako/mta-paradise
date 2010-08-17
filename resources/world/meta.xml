@@ -39,4 +39,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="custom_blip.lua" type="client"/>
 	
 	<script src="weather.lua"/>
+	
+	<script src="blur.lua" type="client"/>
 </meta>
