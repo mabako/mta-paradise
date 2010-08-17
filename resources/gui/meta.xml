@@ -123,4 +123,5 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="hint" type="client"/>
 	
 	<script src="hud_c.lua" type="client"/>
+	<include resource="server"/>
 </meta>

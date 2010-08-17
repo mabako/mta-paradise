@@ -38,7 +38,8 @@ addEventHandler( "onClientResourceStop", resourceRoot,
 
 addEventHandler( "onClientRender", root,
 	function( )
-		if exports.players:isLoggedIn( ) then
+		local res = getResourceFromName( "players" )
+		if res and call( res, "isLoggedIn" ) then
 			-- zone name
 			local x, y, z = getCameraMatrix( )
 			local zone = getZoneName( x, y, z )
