@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-addCommandHandler( "pay"
+addCommandHandler( "pay",
 	function( player, commandName, otherPlayer, amount )
 		local amount = tonumber( amount )
 		if otherPlayer and amount and math.ceil( amount ) == amount and amount > 0 then
