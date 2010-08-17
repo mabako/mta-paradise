@@ -181,6 +181,41 @@ addCommandHandler( "goto",
 
 --
 
+addCommandHandler( "setname",
+	function( player, commandName, otherPlayer, ... )
+		if otherPlayer and ( ... ) then
+			local newName = table.concat( { ... }, " " ):gsub( "_", " " )
+			local other, name = exports.players:getFromName( player, otherPlayer )
+			if other then
+				if name == newName then
+					outputChatBox( name .. " is already using that name.", player, 255, 0, 0 )
+				elseif newName:lower( ) == name:lower( ) or not exports.sql:query_assoc_single( "SELECT characterID FROM characters WHERE characterName = '%s'", newName ) then
+					-- check if another player uses that name
+					if exports.sql:query_free( "UPDATE characters SET characterName = '%s' WHERE characterID = " .. exports.players:getCharacterID( other ), newName ) then
+						if setPlayerName( other, newName:gsub( " ", "_" ) ) then
+							exports.players:updateNametag( other )
+							triggerClientEvent( other, "updateCharacterName", other, exports.players:getCharacterID( other ), newName )
+							outputChatBox( "You changed " .. name .. "'s name to " .. newName .. ".", player, 0, 255, 0 )
+						else
+							exports.sql:query_free( "UPDATE characters SET characterName = '%s' WHERE characterID = " .. exports.players:getCharacterID( other ), name )
+							outputChatBox( "Failed to change " .. name .. "'s name to " .. newName .. ".", player, 255, 0, 0 )
+						end
+					else
+						outputChatBox( "Failed to change " .. name .. "'s name to " .. newName .. ".", player, 255, 0, 0 )
+					end
+				else
+					outputChatBox( "Another player already uses that name.", player, 255, 0, 0 )
+				end
+			end
+		else
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [new name]", player, 255, 255, 255 )
+		end
+	end,
+	true
+)
+
+--
+
 addCommandHandler( { "freeze", "unfreeze" },
 	function( player, commandName, otherPlayer )
 		if otherPlayer then

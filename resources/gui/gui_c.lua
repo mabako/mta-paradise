@@ -601,3 +601,11 @@ addEventHandler( "onClientResourceStop", resourceRoot,
 		hide( )
 	end
 )
+
+function getWindowTable( )
+	return window
+end
+
+function setWindowTable( t )
+	window = t
+end

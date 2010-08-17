@@ -18,6 +18,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 windows.characters = { }
 
 function updateCharacters( characters )
+	local set = false
+	if getWindowTable( ) == windows.characters then
+		set = true
+	end
+	
 	windows.characters = { type = "pane", panes = { } }
 	
 	-- helper function
@@ -54,5 +59,9 @@ function updateCharacters( characters )
 	-- add new char & logout
 	add( "New Character", "Select this option to create a new character.", -1, -1 )
 	add( "Logout", "Logs you out.\nYou will be prompted to login again before you can continue playing.", -2, -2 )
+	
+	if set then
+		setWindowTable( windows.characters )
+	end
 end
 

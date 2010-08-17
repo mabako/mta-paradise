@@ -196,3 +196,18 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 function isLoggedIn( )
 	return loggedIn
 end
+
+addEvent( "updateCharacterName", true )
+addEventHandler( "updateCharacterName", localPlayer,
+	function( id, name )
+		if characters then
+			for key, value in ipairs( characters ) do
+				if value.characterID == id then
+					characters[key].characterName = name
+					exports.gui:updateCharacters( characters )
+					return
+				end
+			end
+		end
+	end
+)
