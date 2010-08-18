@@ -243,7 +243,7 @@ function create( player, vehicle )
 				
 				-- tables for ID -> vehicle and vehicle -> data
 				vehicleIDs[ vehicleID ] = newVehicle
-				vehicles[ newVehicle ] = { vehicleID = vehicleID, respawnInterior = interior, respawnDimension = dimension, characterID = characterID, engineState = false, tintedWindows = false }
+				vehicles[ newVehicle ] = { vehicleID = vehicleID, respawnInterior = interior, respawnDimension = dimension, characterID = characterID, engineState = false, tintedWindows = false, fuel = 100 }
 				
 				-- some properties
 				setVehicleColor( newVehicle, color1, color2, color1, color2 ) -- most vehicles don't use second/third color anyway
