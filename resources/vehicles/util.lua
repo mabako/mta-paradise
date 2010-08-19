@@ -16,9 +16,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 function isVehicleEmpty( vehicle )
-	for seat = 0, getVehicleMaxPassengers( vehicle ) do
-		if getVehicleOccupant( vehicle, seat ) then
-			return false
+	if not isElement( vehicle ) or getElementType( vehicle ) ~= "vehicle" then
+		return true
+	end
+	
+	local passengers = getVehicleMaxPassengers( vehicle )
+	if type( passengers ) == 'number' then
+		for seat = 0, passengers do
+			if getVehicleOccupant( vehicle, seat ) then
+				return false
+			end
 		end
 	end
 	return true
