@@ -21,4 +21,5 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="player.lua"/>
 	<script src="resources.lua"/>
 	<script src="pos.lua"/>
+	<script src="spectate.lua"/>
 </meta>
