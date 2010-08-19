@@ -165,6 +165,7 @@
         <right name="command.setvehiclecolor" access="true" />
         <right name="command.giveitem" access="true" />
         <right name="command.freecam" access="true" />
+        <right name="command.getpos" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />

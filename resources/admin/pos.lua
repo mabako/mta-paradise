@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,12 +13,13 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<info author="mabako" name="Admin-Script via Commands" version="1.0"/>
-	
-	<script src="acl.lua"/>
-	<script src="player.lua"/>
-	<script src="resources.lua"/>
-	<script src="pos.lua"/>
-</meta>
+]]
+
+addCommandHandler( { "getpos", "pos" },
+	function( player, commandName )
+		local x, y, z = getElementPosition( player )
+		outputChatBox( "Position: " .. ( math.floor( x * 100 ) / 100 ) .. ", " .. ( math.floor( y * 100 ) / 100 ) .. ", " .. ( math.floor( z * 100 ) / 100 ), player, 0, 255, 153 )
+		outputChatBox( "Interior: " .. getElementInterior( player ) .. ", Dimension: " .. getElementDimension( player ), player, 0, 255, 153 )
+	end,
+	true
+)
