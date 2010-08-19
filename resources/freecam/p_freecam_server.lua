@@ -27,18 +27,24 @@ OTHER DEALINGS IN THE SOFTWARE.
 local p = { }
 
 function setPlayerFreecamEnabled(player, x, y, z, dontChangeFixedMode)
-	p[ player ] = true
-	setElementData(player, "collisionless", true)
-	setElementAlpha(player, 0)
-	return triggerClientEvent(player,"doSetFreecamEnabled", getRootElement(), x, y, z, dontChangeFixedMode)
+	if not isPlayerFreecamEnabled( player ) then
+		p[ player ] = true
+		setElementData(player, "collisionless", true)
+		setElementAlpha(player, 0)
+		return triggerClientEvent(player,"doSetFreecamEnabled", getRootElement(), x, y, z, dontChangeFixedMode)
+	end
+	return false
 end
 
 
 function setPlayerFreecamDisabled(player, dontChangeFixedMode)
-	p[ player ] = nil
-	removeElementData(player, "collisionless")
-	setElementAlpha(player, 255)
-	return triggerClientEvent(player,"doSetFreecamDisabled", getRootElement(), dontChangeFixedMode)
+	if isPlayerFreecamEnabled( player ) then
+		p[ player ] = nil
+		removeElementData(player, "collisionless")
+		setElementAlpha(player, 255)
+		return triggerClientEvent(player,"doSetFreecamDisabled", getRootElement(), dontChangeFixedMode)
+	end
+	return false
 end
 
 

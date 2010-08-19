@@ -20,6 +20,8 @@ addCommandHandler( "freecam",
 		if not isPedInVehicle( player ) then
 			if isPlayerFreecamEnabled( player ) then
 				setPlayerFreecamDisabled( player )
+			elseif isElementAttached( player ) then
+				outputChatBox( "You can't use this function at the moment.", player, 255, 0, 0 )
 			else
 				setPlayerFreecamEnabled( player )
 			end

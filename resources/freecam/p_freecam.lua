@@ -273,32 +273,28 @@ function setFreecamEnabled (x, y, z)
 	end
 	addEventHandler("onClientRender", rootElement, freecamFrame)
 	addEventHandler("onClientCursorMove",rootElement, freecamMouse)
-	-- setElementData(localPlayer, "freecam:state", true)
 	
 	return true
 end
 
 -- param:  dontChangeFixedMode  leaves toggleCameraFixedMode alone if true, disables it if false or nil (optional)
 function setFreecamDisabled(dontChangeFixedMode)
-	velocityX,velocityY,velocityZ = 0,0,0
-	speed = 0
-	strafespeed = 0
-	removeEventHandler("onClientRender", rootElement, freecamFrame)
-	removeEventHandler("onClientCursorMove",rootElement, freecamMouse)
-	-- setElementData(localPlayer, "freecam:state", false)
-	
-	if not dontChangeFixedMode then
-		setCameraTarget( localPlayer )
+	if removeEventHandler("onClientRender", rootElement, freecamFrame) then
+		velocityX,velocityY,velocityZ = 0,0,0
+		speed = 0
+		strafespeed = 0
+		removeEventHandler("onClientCursorMove",rootElement, freecamMouse)
+		
+		if not dontChangeFixedMode then
+			setCameraTarget( localPlayer )
+		end
+		
+		return true
 	end
-	
-	return true
+	return false
 end
 
 --[[
-function isFreecamEnabled()
-	return getElementData(localPlayer,"freecam:state")
-end
-
 function getFreecamOption(theOption, value)
 	return options[theOption]
 end
