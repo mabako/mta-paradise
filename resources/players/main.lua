@@ -32,8 +32,9 @@ local groups = {
 }
 
 local function updateNametagColor( player )
-	local nametagColor = { 255, 255, 255, priority = 0 }
-	if p[ player ] then
+	local nametagColor = { 127, 127, 127, priority = 0 }
+	if p[ player ] and isLoggedIn( player ) then
+		nametagColor = { 255, 255, 255, priority = 0 }
 		for key, value in ipairs( groups ) do
 			if isObjectInACLGroup( "user." .. p[ player ].username, aclGetGroup( value.aclGroup ) ) and value.nametagColor then
 				if value.priority > nametagColor.priority then
