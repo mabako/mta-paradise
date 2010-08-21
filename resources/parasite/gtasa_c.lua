@@ -16,17 +16,26 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 local resourceName = getResourceName( resource )
+
 local localPlayer = getLocalPlayer( )
+local triggerServerEvent_ = triggerServerEvent
+local setTimer_ = setTimer
+local isWorldSpecialPropertyEnabled_ = isWorldSpecialPropertyEnabled
+local getGameSpeed_ = getGameSpeed
+local getGravity_ = getGravity
+local ipairs_ = ipairs
+local math_ = math
+
 local worldProperties = { "hovercars", "aircars", "extrabunny", "extrajump" }
 
 local function performWorldCheck( )
-	for _, prop in ipairs( worldProperties ) do
-		if isWorldSpecialPropertyEnabled( prop ) then
-			triggerServerEvent( resourceName .. ":gtasa", localPlayer, prop )
+	for _, prop in ipairs_( worldProperties ) do
+		if isWorldSpecialPropertyEnabled_( prop ) then
+			triggerServerEvent_( resourceName .. ":gtasa", localPlayer, prop )
 		end
 	end
 	
-	triggerServerEvent( resourceName .. ":update", localPlayer, getGameSpeed( ), getGameSpeed( ) == 1, getGravity( ) )
-	setTimer( performWorldCheck, math.random( 1, 300 ) * 1000, 1 )
+	triggerServerEvent_( resourceName .. ":update", localPlayer, getGameSpeed_( ), getGameSpeed_( ) == 1, getGravity_( ) )
+	setTimer_( performWorldCheck, math_.random( 1, 300 ) * 1000, 1 )
 end
-setTimer( performWorldCheck, math.random( 10, 30 ) * 1000, 1 )
+setTimer_( performWorldCheck, math_.random( 10, 30 ) * 1000, 1 )
