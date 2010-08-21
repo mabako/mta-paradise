@@ -279,10 +279,8 @@ addCommandHandler( { "sethealth", "sethp" },
 
 addEventHandler( "onPlayerQuit", root,
 	function( type, reason, player )
-		if player and getElementType( player ) == "player" then
-			if type == "Kicked" or type == "Banned" then
-				outputChatBox( ( getElementType( player ) == "player" and getPlayerName( player ):gsub( "_", " " ) or "Console" ) .. " " .. type:lower( ) .. " " .. getPlayerName( source ):gsub( "_", " " ) .. "." .. ( reason and #reason > 0 and ( " Reason: " .. reason ) or "" ), root, 255, 0, 0 )
-			end
+		if type == "Kicked" or type == "Banned" then
+			outputChatBox( ( isElement( player ) and getElementType( player ) == "player" and getPlayerName( player ):gsub( "_", " " ) or "Console" ) .. " " .. type:lower( ) .. " " .. getPlayerName( source ):gsub( "_", " " ) .. "." .. ( reason and #reason > 0 and ( " Reason: " .. reason ) or "" ), root, 255, 0, 0 )
 		end
 	end
 )
