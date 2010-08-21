@@ -15,6 +15,33 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local tostring_ = tostring
+local tostring = function( data )
+	if type( data ) == "table" then
+		local function tabletostring( data )
+			local t = {}
+			for k, v in pairs( data ) do
+				if type( v ) == "table" then
+					t[k] = tabletostring( v )
+				elseif isElement( v ) then
+					if getElmentType( v ) == "player" then
+						t[k] = getPlayerName( v ) .. " [" .. getElementType( v ) .. "]"
+					else
+						t[k] = tostring_( v ) .. " [" .. getElementType( v ) .. "]"
+					end
+				else
+					t[k] = v
+				end
+			end
+			return t
+		end
+		return toJSON( tabletostring( data ) )
+	elseif isElement( data ) and getElmentType( data ) == "player" then
+		return getPlayerName( data )
+	end
+	return tostring_( data )
+end
+
 addEventHandler( "onElementDataChange", root,
 	function( name, old )
 		-- we don't allow any client to change element data
