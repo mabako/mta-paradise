@@ -135,6 +135,10 @@ addEventHandler( "onResourceStart", resourceRoot,
 				
 				-- some properties
 				setElementHealth( vehicle, data.health )
+				if data.health <= 300 then
+					setVehicleDamageProof( vehicle, true )
+					vehicles[ vehicle ].engineState = false
+				end
 				setVehicleColor( vehicle, data.color1, data.color2, data.color1, data.color2 ) -- most vehicles don't use second/third color anyway
 				setVehicleRespawnPosition( vehicle, data.respawnPosX, data.respawnPosY, data.respawnPosZ, data.respawnRotX, data.respawnRotY, data.respawnRotZ )
 				setElementInterior( vehicle, data.interior )
@@ -307,6 +311,9 @@ addCommandHandler( { "repairvehicle", "fixvehicle" },
 			local vehicle = getPedOccupiedVehicle( target )
 			if vehicle then
 				fixVehicle( vehicle )
+				if isVehicleDamageProof( vehicle ) then
+					setVehicleDamageProof( vehicle, false )
+				end
 				outputChatBox( "Your vehicle has been repaired by " .. getPlayerName( player ):gsub( "_", " " ) .. ".", target, 0, 255, 153 )
 				if player ~= target then
 					outputChatBox( "You repaired " .. targetName .. "'s vehicle.", player, 0, 255, 153 )
@@ -323,6 +330,9 @@ addCommandHandler( { "repairvehicles", "fixvehicles" },
 	function( player, commandName )
 		for vehicle in pairs( vehicles ) do
 			fixVehicle( vehicle )
+			if isVehicleDamageProof( vehicle ) then
+				setVehicleDamageProof( vehicle, false )
+			end
 		end
 		outputChatBox( "*** " .. getPlayerName( player ):gsub( "_", " " ) .. " repaired all vehicles. ***", root, 0, 255, 153 )
 	end,
@@ -382,6 +392,9 @@ addCommandHandler( "respawnvehicle",
 			if vehicle then
 				if vehicleID < 0 then
 					fixVehicle( vehicle )
+					if isVehicleDamageProof( vehicle ) then
+						setVehicleDamageProof( vehicle, false )
+					end
 				else
 					respawnVehicle( vehicle )
 					saveVehicle( vehicle )
@@ -883,8 +896,12 @@ addCommandHandler( "toggleengine",
 				local data = vehicles[ vehicle ]
 				if data then
 					if data.vehicleID < 0 or exports.sql:query_free( "UPDATE vehicles SET engineState = 1 - engineState WHERE vehicleID = " .. data.vehicleID ) then
-						setVehicleEngineState( vehicle, not data.engineState )
-						data.engineState = not data.engineState
+						if math.floor( getElementHealth( vehicle ) + 0.5 ) > 301 then
+							setVehicleEngineState( vehicle, not data.engineState )
+							data.engineState = not data.engineState
+						else
+							outputChatBox( "(( The engine is broken. ))", player, 255, 0, 0 )
+						end
 					end
 				end
 			end
@@ -975,3 +992,34 @@ function increaseFuel( vehicle, amount )
 		end
 	end
 end
+
+--
+
+addEventHandler( "onVehicleDamage", root,
+	function( loss )
+		if getElementHealth( source ) <= 301 then
+			setElementHealth( source, 300 )
+			setVehicleDamageProof( source, true )
+			setVehicleEngineState( source, false )
+			vehicles[ source ].engineState = false
+			
+			if getVehicleOccupant( source ) then
+				outputChatBox( "(( Your engine broke down. ))", getVehicleOccupant( source ), 255, 204, 0 )
+			end
+		end
+	end
+)
+
+addEventHandler( "onVehicleRespawn", root,
+	function( )
+		setVehicleDamageProof( source, false )
+	end
+)
+
+addEventHandler( "onVehicleEnter", root,
+	function( )
+		if isVehicleDamageProof( source ) and math.floor( getElementHealth( source ) + 0.5 ) > 301 then
+			setVehicleDamageProof( source, false )
+		end
+	end
+)
