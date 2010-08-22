@@ -70,6 +70,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<file src="fuelpoint.png"/>
 	
 	<script src="bike_c.lua" type="client"/>
+	<script src="jump_c.lua" type="client"/>
 	
 	<include resource="sql"/>
 </meta>
