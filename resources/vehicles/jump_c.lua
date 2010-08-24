@@ -29,7 +29,6 @@ local damageMultiplier =
 
 local function damage( vehicle )
 	local damage = highest * ( ( getTickCount( ) - startTime ) / 45 ) * ( damageMultiplier[ getVehicleName( vehicle ) ] or damageMultiplier[ getVehicleType( vehicle ) ] or 0 )
-	outputChatBox( damage .. " " )
 	if damage > 0 then
 		setElementHealth( vehicle, math.max( 250, getElementHealth( vehicle ) - damage ) )
 	end
