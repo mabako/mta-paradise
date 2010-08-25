@@ -284,8 +284,15 @@ addCommandHandler( { "announce", "ann" },
 		if exports.players:isLoggedIn( thePlayer ) then
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
-				outputChatBox( "*** " .. message .. " ***", root, 0, 255, 153 )
-				exports.server:message( "%C03[" .. exports.players:getID( thePlayer ) .. "] Announcement by " .. getPlayerName( thePlayer ) .. ": " .. message .. "%C" )
+				for key, value in ipairs( getElementsByType( "player" ) ) do
+					if hasObjectPermissionTo( value, "command.announce", false ) then
+						outputChatBox( "*** " .. getPlayerName( thePlayer ):gsub( "_", " " ) .. ": " .. message .. " ***", value, 0, 255, 153 )
+					elseif not silent then
+						outputChatBox( "*** " .. message .. " ***", value, 0, 255, 153 )
+					end
+				end
+				
+				exports.server:message( "%C03[" .. exports.players:getID( thePlayer ) .. "] Announcement by " .. getPlayerName( thePlayer ):gsub( "_", " " ) .. ": " .. message .. "%C" )
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [text]", thePlayer, 255, 255, 255 )
 			end
