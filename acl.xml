@@ -167,6 +167,7 @@
         <right name="command.freecam" access="true" />
         <right name="command.spectate" access="true" />
         <right name="command.getpos" access="true" />
+        <right name="command.toggleooc" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />
