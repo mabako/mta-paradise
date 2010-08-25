@@ -308,7 +308,7 @@ addCommandHandler( "ban",
 	function( player, commandName, otherPlayer, hours, ... )
 		hours = tonumber( hours )
 		if otherPlayer and hours and hours >= 0 and ( ... ) then
-			local other, name = exports.players:getFromName( player, otherPlayer )
+			local other, name = exports.players:getFromName( player, otherPlayer, true )
 			if other then
 				if not hasObjectPermissionTo( other, "command.ban", false ) then
 					local reason = table.concat( { ... }, " " ) .. " (" .. ( hours == 0 and "Permanent" or ( hours < 1 and ( math.ceil( hours * 60 ) .. " minutes" ) or ( hours .. " hours" ) ) ) .. ")"
