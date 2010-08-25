@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 -- send a message to irc
 function message( message )
-	outputServerLog( message:gsub( "%%C", "" ):gsub( "%%C%d%d", "" ):gsub( "%%B", "" ) )
+	outputServerLog( message:gsub( "%%C%d%d", "" ):gsub( "%%C", "" ):gsub( "%%B", "" ) )
 	if getResourceFromName( "irc" ) and getResourceState( getResourceFromName( "irc" ) ) == "running" then
 		exports.irc:message( message )
 	end
