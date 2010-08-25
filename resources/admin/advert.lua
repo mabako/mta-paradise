@@ -1,4 +1,4 @@
-<!--
+--[[
 Copyright (c) 2010 MTA: Paradise
 
 This program is free software; you can redistribute it and/or modify
@@ -13,14 +13,30 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-<meta>
-	<info author="mabako" name="Admin-Script via Commands" version="1.0"/>
-	
-	<script src="acl.lua"/>
-	<script src="player.lua"/>
-	<script src="resources.lua"/>
-	<script src="pos.lua"/>
-	<script src="spectate.lua"/>
-	<script src="advert.lua"/>
-</meta>
+]]
+
+local advertisement = { "www.", "mtasa.tk" }
+
+--
+
+addEventHandler( "onPlayerConnect", root,
+	function( nick, ip, username, serial, version )
+		for key, value in ipairs( advertisement ) do
+			if nick == value or nick:find( value ) then
+				cancelEvent( true, "'" .. nick .. "' is not allowed as nick. Go to Settings > Multiplayer to change it.")
+				return
+			end
+		end
+	end
+)
+
+addEventHandler( "onPlayerChangeNick", root,
+	function( old, nick )
+		for key, value in ipairs( advertisement ) do
+			if nick == value or nick:find( value ) then
+				cancelEvent( )
+				return
+			end
+		end
+	end
+)
