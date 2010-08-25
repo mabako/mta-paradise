@@ -57,6 +57,20 @@ local function getPlayersInRange( from, range )
 			end
 		end
 	end
+	if getElementType( from ) == "player" then
+		local vehicle = getPedOccupiedVehicle( from )
+		if vehicle then
+			local passengers = getVehicleMaxPassengers( vehicle )
+			if type( passengers ) == 'number' then
+				for seat = 0, passengers do
+					local value = getVehicleOccupant( vehicle, seat )
+					if value then
+						t[ value ] = 0
+					end
+				end
+			end
+		end
+	end
 	return t
 end
 
