@@ -409,7 +409,7 @@ addEventHandler( "faction:kick", root,
 					return
 				end
 				
-				if exports.sql:query_affected_rows( "DELETE cf FROM character_to_factions cf LEFT JOIN characters c ON c.characterID = cf.characterID WHERE cf.factionID = 1 AND c.characterName = '%s' AND cf.factionLeader < " .. p[ source ].rfactions[ faction ].leader, name ) == 1 then
+				if exports.sql:query_affected_rows( "DELETE cf FROM character_to_factions cf LEFT JOIN characters c ON c.characterID = cf.characterID WHERE cf.factionID = " .. faction .. " AND c.characterName = '%s' AND cf.factionLeader < " .. p[ source ].rfactions[ faction ].leader, name ) == 1 then
 					sendMessageToFaction( faction, "(( " .. factions[ faction ].tag .. " - " .. getPlayerName( source ):gsub( "_", " " ) .. " kicked " .. name .. ". ))", 255, 127, 0 )
 					if player then
 						-- remove him from the tables
