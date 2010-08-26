@@ -370,14 +370,19 @@ addCommandHandler( { "ad", "advertisement" },
 )
 
 -- /sr SAN radio chat
-addCommandHandler( { "sr", "san" },
+addCommandHandler( { "news", "n", "sr", "san" },
 	function( thePlayer, commandName, ... )
 		if exports.players:isLoggedIn( thePlayer ) then
-			local message = table.concat( { ... }, " " )
-			if #message > 0 then
-				outputChatBox( "[SAN] " .. getPlayerName( thePlayer ) ..  " says: " .. message, root, 62, 184, 255 )
+			local inNews, factionID, factionName, factionTag = exports.factions:isPlayerInFactionType( thePlayer, 3 )
+			if inNews and factionTag then
+				local message = table.concat( { ... }, " " )
+				if #message > 0 then
+					outputChatBox( "[" .. tostring( factionTag ) .. "] " .. getPlayerName( thePlayer ) ..  " says: " .. message, root, 62, 184, 255 )
+				else
+					outputChatBox( "Syntax: /" .. commandName .. " [radio message]", thePlayer, 255, 255, 255 )
+				end
 			else
-				outputChatBox( "Syntax: /" .. commandName .. " [radio message]", thePlayer, 255, 255, 255 )
+				outputChatBox( "(( You are not in a news faction. ))", thePlayer, 255, 0, 0 )
 			end
 		end
 	end

@@ -167,8 +167,21 @@ function isPlayerInFaction( player, faction, leader )
 	return factions[ faction ] and p[ player ] and p[ player ].rfactions and p[ player ].rfactions[ faction ] and ( type( leader ) ~= "number" or p[ player ].rfactions[ faction ].leader >= leader ) and true or false
 end
 
-function isPlayerInFactionType( player, type )
-	return factionTypes[ type ] and p[ player ] and p[ player ].types and p[ player ].types[ factionTypes[ type ] ] or false
+function isPlayerInFactionType( player, type_ )
+	type_ = factionTypes[ type_ ] or type_
+	if not type_ then
+		return false
+	end
+	
+	local f = p[ player ] and p[ player ].factions
+	if f then
+		for _, value in pairs( f ) do
+			if factions[ value ] and factions[ value ].type == type_ then
+				return true, value, factions[ value ].name, factions[ value ].tag
+			end
+		end
+	end
+	return false
 end
 
 --
