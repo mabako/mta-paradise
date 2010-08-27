@@ -57,6 +57,11 @@ shops =
 			{ model = "Virgo", price = 17500 },
 			{ model = "Washington", price = 21000 },
 			{ model = "Windsor", price = 22500 },
+			{ model = "Faggio", price = 2200 },
+			{ model = "Bf-400", price = 4600 },
+			{ model = "PCJ-600", price = 6000 },
+			{ model = "FCR-900", price = 11000 },
+			{ model = "Freeway", price = 14000 },
 		}
 	}
 }
