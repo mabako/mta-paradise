@@ -48,7 +48,7 @@ addEventHandler( 'onClientRender', root,
 			if getElementDimension( player ) == dimension and getElementInterior( player ) == interior and isElementOnScreen( player ) then
 				local px, py, pz = getElementPosition( player )
 				local distance = getDistanceBetweenPoints3D( px, py, pz, cx, cy, cz )
-				if distance <= _max_distance and isLineOfSightClear( cx, cy, cz, px, py, pz, true, true, false, true, false, false, true, getPedOccupiedVehicle( player ) ) then
+				if distance <= _max_distance and ( getElementData( localPlayer, "collisionless" ) or isLineOfSightClear( cx, cy, cz, px, py, pz, true, true, false, true, false, false, true, getPedOccupiedVehicle( player ) ) ) then
 					local dz = 1 + 2 * math.min( 1, distance / _min_distance ) * _scale
 					if isPedDucked( player ) then
 						dz = dz / 2
@@ -64,7 +64,7 @@ addEventHandler( 'onClientRender', root,
 						
 						-- visibility
 						local alpha = ( ( distance - _alpha_distance ) / _alpha_distance_diff )
-						local bar_alpha = ( ( alpha < 0 ) and _bar_alpha or _bar_alpha - (alpha * _bar_alpha) ) * getElementAlpha( player ) / 255
+						local bar_alpha = ( ( alpha < 0 ) and _bar_alpha or _bar_alpha - (alpha * _bar_alpha) ) * ( getElementData( localPlayer, "collisionless" ) and 1 or getElementAlpha( player ) / 255 )
 						if bar_alpha > 0 then
 							local nametag_alpha = bar_alpha / _bar_alpha * _nametag_alpha
 							
