@@ -21,7 +21,7 @@ function ban( player, reason )
 	local file = fileExists( "parasite.log" ) and fileOpen( "parasite.log" ) or fileCreate( "parasite.log" )
 	local size = fileGetSize( file )
 	fileSetPos( file, size )
-	fileWrite( file, "[" .. ("%04d-%02d-%02d %02d:%02d"):format(r.year+1900, r.month + 1, r.monthday, r.hour,r.minute) .. "] Name: " .. getPlayerName( player ) .. " - IP: " .. getPlayerIP( player ) .. " - Serial: " .. ( getPlayerSerial( player ) or "?" ) .. " - Reason: " .. reason .. "\r\n" )
+	fileWrite( file, "[" .. ("%04d-%02d-%02d %02d:%02d"):format(r.year+1900, r.month + 1, r.monthday, r.hour,r.minute) .. "] Account: " .. tostring( exports.players:getUserName( player ) ) .. " - Name: " .. getPlayerName( player ) .. " - IP: " .. getPlayerIP( player ) .. " - Serial: " .. ( getPlayerSerial( player ) or "?" ) .. " - Reason: " .. reason .. "\r\n" )
 	fileClose( file )
 	
 	-- ban in the database
