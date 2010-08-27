@@ -101,9 +101,9 @@ local services =
 		function( player, phoneNumber, input )
 			local drivers = getTaxiDrivers( )
 			if #drivers > 0 then
-				return true, "LV Cab Operator says: Welcome to Las Venturas Cabs! Please state your location."
+				return true, "SF Cab Operator says: Welcome to San Fierro Cabs! Please state your location."
 			else
-				return false, "LV Cab Operator says: There are currently no Taxis available. Call later!"
+				return false, "SF Cab Operator says: There are currently no Taxis available. Call later!"
 			end	
 		end,
 		true,
@@ -112,12 +112,12 @@ local services =
 			if #drivers > 0 then
 				for key, value in ipairs( drivers ) do
 					exports.chat:me( value, "receives a text message." )
-					outputChatBox( "SMS from ((" .. getPlayerName( player ):gsub( "_", " " ) .. ")) LV Cabs: Fare - Phone #" .. phoneNumber .. " - Location: " .. input[1], value, 130, 255, 130 )
+					outputChatBox( "SMS from ((" .. getPlayerName( player ):gsub( "_", " " ) .. ")) SF Cabs: Fare - Phone #" .. phoneNumber .. " - Location: " .. input[1], value, 130, 255, 130 )
 					triggerClientEvent( value, "gui:hint", value, "Your Job: Taxi Driver - New Fare", "Someone needs a Cab:\nPhone: #" .. phoneNumber .. " (( " .. getPlayerName( player ):gsub( "_", " " ) .. " ))\nLocation: " .. input[1] )
 				end
-				return false, "LV Cab Operator says: We've dispatched a cab to your location. It should arrive soon!"
+				return false, "SF Cab Operator says: We've dispatched a cab to your location. It should arrive soon!"
 			else
-				return false, "LV Cab Operator says: There are currently no Taxis available. Call later!"
+				return false, "SF Cab Operator says: There are currently no Taxis available. Call later!"
 			end
 		end
 	}
