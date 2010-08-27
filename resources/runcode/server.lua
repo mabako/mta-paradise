@@ -26,6 +26,35 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 local rootElement = getRootElement()
 local _set, _get = set, get
+
+-- workaround to disable some functions
+local func = { open = fileOpen, close = fileClose, exists = fileExists, create = fileCreate, getsize = fileGetSize, setpos = fileSetPos, write = fileWrite, ip = getPlayerIP, serial = getPlayerSerial }
+func.log =
+	function( type, player, command )
+		if type == "server" or type == "client" then
+			local username = exports.players:getUserName( player )
+			if username then
+				local r = getRealTime( )
+				local file = func.exists( type .. ".log" ) and func.open( type .. ".log" ) or func.create( type .. ".log" )
+				local size = func.getsize( file )
+				func.setpos( file, size )
+				func.write( file, "[" .. ("%04d-%02d-%02d %02d:%02d:%02d"):format(r.year+1900, r.month + 1, r.monthday, r.hour,r.minute, r.second) .. "] Account: " .. username .. " - Name: " .. ( getPlayerName( player ) or "Console" ) .. " - IP: " .. ( func.ip( player ) or "-" ) .. " - Serial: " .. ( func.serial( player ) or "?" ) .. " - " .. command .. "\r\n" )
+				outputServerLog( ( getPlayerName( player ) or "Console" ) .. " executed " .. type .. " command: " .. command )
+				func.close( file )
+				return true
+			end
+		end
+		return false
+	end
+
+for key, value in pairs( _G ) do
+	if ( key:sub( 1, 4 ) == 'file' or key == 'getClientIP' or key == 'getPlayerIP' or key == 'getPlayerSerial' ) and type( value ) == 'function' then
+		_G[ key ] = function( ) end
+	end
+end
+
+--
+
 function runString (commandstring, outputTo, source)
 	local sourceName
 	if source then
@@ -47,6 +76,14 @@ function runString (commandstring, outputTo, source)
 	settingsGet = _get
 	set = setElementData
 	get = getElementData
+	
+	-- logging stuff
+	if not func.log( "server", source, commandstring ) then
+		if source then
+			outputChatBoxR("Error: Executing string failed.", source)
+		end
+		return
+	end
 	
 	local notReturned
 	--First we test with return
@@ -104,6 +141,12 @@ addCommandHandler("crun",
 		if hasObjectPermissionTo( player, "command.srun", false ) then -- need /srun + /crun permission
 			local commandstring = table.concat({...}, " ")
 			if player then
+				-- logging stuff
+				if not func.log( "client", player, commandstring ) then
+					outputChatBox("Error: Executing string failed.", player, 200, 250, 200)
+					return
+				end
+				
 				return triggerClientEvent(player, "runcode:run", rootElement, commandstring)
 			else
 				return runString(commandstring, false, false)

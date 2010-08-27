@@ -30,12 +30,18 @@
     </group>
     <group name="manageAccounts">
         <acl name="manageAccounts" />
+        <acl name="IPandSerial" />
         <object name="resource.players" />
     </group>
     <group name="kickban">
         <acl name="kickban" />
+        <acl name="IPandSerial" />
         <object name="resource.parasite" />
         <object name="resource.players" />
+    </group>
+    <group name="IPandSerial">
+        <acl name="IPandSerial" />
+        <object name="resource.runcode" />
     </group>
     <group name="Developer">
         <acl name="Developer" />
@@ -302,12 +308,13 @@
         <right name="function.addAccount" access="true" />
         <right name="function.setAccountPassword" access="true" />
         <right name="function.removeAccount" access="true" />
-        <right name="function.getClientIP" access="true" />
     </acl>
     <acl name="kickban">
         <right name="function.kickPlayer" access="true" />
         <right name="function.addBan" access="true" />
         <right name="function.banPlayer" access="true" />
+    </acl>
+    <acl name="IPandSerial">
         <right name="function.getClientIP" access="true" />
         <right name="function.getPlayerSerial" access="true" />
     </acl>

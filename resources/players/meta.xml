@@ -66,6 +66,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="getUserID"/>
 	
+	<!-- Returns true if the player is logged in.
+		parameters:
+			(player) the player to check.
+		returns:
+			(bool) true if he's logged in into any user, (bool) false otherwise.
+	-->
+	<export function="getUserName"/>
+	
 	<!-- -- -->
 	
 	<!-- sets the money value for a player.

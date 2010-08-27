@@ -15,5 +15,5 @@ resource-cache
 runcode.zip
 vehiclecolors.conf
 .gitmodules
-resources/parasite/parasite.log
+*.log
 resources/players/token.xml
