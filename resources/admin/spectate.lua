@@ -29,12 +29,15 @@ addCommandHandler( { "spectate", "spec", "recon" },
 			if isElementAttached( player ) then
 				if getElementType( getElementAttachedTo( player ) ) == "player" then
 					if other then
+						local interior, dimension = getElementInterior( player ), getElementDimension( player )
+						setElementDimension( player, getElementDimension( other ) )
+						setElementInterior( player, getElementInterior( other ) )
 						if attachElements( player, other, 0, 0, -5 ) then
-							setElementDimension( player, getElementDimension( other ) )
-							setElementInterior( player, getElementInterior( other ) )
 							outputChatBox( "You are now watching " .. name .. ".", player, 0, 255, 0 )
 						else
 							outputChatBox( "Couldn't attach you to the player.", player, 255, 0, 0 )
+							setElementInterior( player, interior )
+							setElementDimension( player, dimension )
 						end
 					elseif type( getElementData( player, "collisionless" ) ) == "table" then
 						local x, y, z, dimension, interior = unpack( getElementData( player, "collisionless" ) )
@@ -54,9 +57,12 @@ addCommandHandler( { "spectate", "spec", "recon" },
 				end
 			elseif other then
 				local x, y, z = getElementPosition( player )
+				local interior, dimension = getElementInterior( player ), getElementDimension( player )
+				setElementDimension( player, getElementDimension( other ) )
+				setElementInterior( player, getElementInterior( other ) )
 				if attachElements( player, other, 0, 0, -5 ) then
 					setElementData( player, "collisionless", true ) -- synced to have the player collisionless
-					setElementData( player, "collisionless", { x, y, z, getElementDimension( player ), getElementInterior( player ) }, false ) -- our data only
+					setElementData( player, "collisionless", { x, y, z, dimension, interior }, false ) -- our data only
 					setElementDimension( player, getElementDimension( other ) )
 					setElementInterior( player, getElementInterior( other ) )
 					setElementAlpha( player, 0 )
@@ -64,6 +70,8 @@ addCommandHandler( { "spectate", "spec", "recon" },
 					outputChatBox( "You are now watching " .. name .. ".", player, 0, 255, 0 )
 				else
 					outputChatBox( "Couldn't attach you to " .. name .. ".", player, 255, 0, 0 )
+					setElementInterior( player, interior )
+					setElementDimension( player, dimension )
 				end
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [player]", player, 255, 255, 255 )
