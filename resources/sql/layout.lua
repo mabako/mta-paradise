@@ -58,6 +58,10 @@ local function getColumnString( value )
 end
 
 function create_table( name, columns )
+	if sourceResource == getResourceFromName( "runcode" ) then
+		return false
+	end
+	
 	if not query_assoc_single( "SHOW TABLES LIKE '%s'", name ) then
 		-- try to create the missing table
 		local cols = { }

@@ -131,6 +131,10 @@ local function query( str, ... )
 end
 
 function query_free( str, ... )
+	if sourceResource == getResourceFromName( "runcode" ) then
+		return false
+	end
+	
 	checkConnection( )
 	
 	if ( ... ) then
@@ -157,6 +161,10 @@ function free_result( result )
 end
 
 function query_assoc( str, ... )
+	if sourceResource == getResourceFromName( "runcode" ) then
+		return false
+	end
+	
 	local t = { }
 	local result, error = query( str, ... )
 	if result then
@@ -176,6 +184,10 @@ function query_assoc( str, ... )
 end
 
 function query_assoc_single( str, ... )
+	if sourceResource == getResourceFromName( "runcode" ) then
+		return false
+	end
+	
 	local t = { }
 	local result, error = query( str, ... )
 	if result then
@@ -196,6 +208,10 @@ function query_assoc_single( str, ... )
 end
 
 function query_insertid( str, ... )
+	if sourceResource == getResourceFromName( "runcode" ) then
+		return false
+	end
+	
 	local result, error = query( str, ... )
 	if result then
 		local id = mysql_insert_id( connection )
@@ -206,6 +222,10 @@ function query_insertid( str, ... )
 end
 
 function query_affected_rows( str, ... )
+	if sourceResource == getResourceFromName( "runcode" ) then
+		return false
+	end
+	
 	local result, error = query( str, ... )
 	if result then
 		local rows = mysql_affected_rows( connection )
