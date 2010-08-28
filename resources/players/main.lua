@@ -35,11 +35,13 @@ local function updateNametagColor( player )
 	local nametagColor = { 127, 127, 127, priority = 0 }
 	if p[ player ] and isLoggedIn( player ) then
 		nametagColor = { 255, 255, 255, priority = 0 }
-		for key, value in ipairs( groups ) do
-			if isObjectInACLGroup( "user." .. p[ player ].username, aclGetGroup( value.aclGroup ) ) and value.nametagColor then
-				if value.priority > nametagColor.priority then
-					nametagColor = value.nametagColor
-					nametagColor.priority = value.priority
+		if getOption( player, "staffduty" ) then
+			for key, value in ipairs( groups ) do
+				if isObjectInACLGroup( "user." .. p[ player ].username, aclGetGroup( value.aclGroup ) ) and value.nametagColor then
+					if value.priority > nametagColor.priority then
+						nametagColor = value.nametagColor
+						nametagColor.priority = value.priority
+					end
 				end
 			end
 		end
@@ -305,6 +307,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'banUser', type = 'int(10) unsigned', null = true },
 				{ name = 'lastIP', type = 'varchar(15)', null = true },
 				{ name = 'lastSerial', type = 'varchar(32)', null = true },
+				{ name = 'userOptions', type = 'text', null = true },
 			} ) then cancelEvent( ) return end
 		
 		local success, didCreateTable = exports.sql:create_table( 'wcf1_group',
@@ -492,7 +495,7 @@ function performLogin( source, token, isPasswordAuth, ip )
 		triedTokenAuth[ source ] = true
 		if token then
 			if #token == 80 then
-				local info = exports.sql:query_assoc_single( "SELECT userID, username, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salts FROM wcf1_user WHERE CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) = '%s' LIMIT 1", getPlayerHash( source, ip ), getPlayerHash( source, ip ), token )
+				local info = exports.sql:query_assoc_single( "SELECT userID, username, banned, activationCode, SUBSTRING(LOWER(SHA1(CONCAT(userName,SHA1(CONCAT(password,salt))))),1,30) AS salts, userOptions FROM wcf1_user WHERE CONCAT(SHA1(CONCAT(username, '%s')),SHA1(CONCAT(salt, SHA1(CONCAT('%s',SHA1(CONCAT(salt, SHA1(CONCAT(username, SHA1(password)))))))))) = '%s' LIMIT 1", getPlayerHash( source, ip ), getPlayerHash( source, ip ), token )
 				p[ source ] = nil
 				if not info then
 					if isPasswordAuth then
@@ -516,7 +519,7 @@ function performLogin( source, token, isPasswordAuth, ip )
 						end
 						
 						local username = info.username
-						p[ source ] = { userID = info.userID, username = username, mtasalt = info.salts }
+						p[ source ] = { userID = info.userID, username = username, mtasalt = info.salts, options = info.userOptions and fromJSON( info.userOptions ) or { } }
 						
 						-- check for admin rights
 						aclUpdate( source, true )
@@ -864,6 +867,35 @@ function setJob( player, job )
 	if charID and exports.sql:query_free( "UPDATE characters SET job = '%s' WHERE characterID = " .. charID, job ) then
 		p[ player ].job = job
 		return true
+	end
+	return false
+end
+
+--
+
+function getOption( player, key )
+	return player and p[ player ] and p[ player ].options and key and p[ player ].options[ key ] or nil
+end
+
+function setOption( player, key, value )
+	if player and p[ player ] and p[ player ].options and type( key ) == 'string' then
+		-- update the option
+		local oldValue = p[ player ].options[ key ]
+		p[ player ].options[ key ] = value
+		
+		
+		local str = toJSON( p[ player ].options )
+		if str then
+			if str == toJSON( { } ) then
+				local success = exports.sql:query_free( "UPDATE wcf1_user SET userOptions = NULL WHERE userID = " .. getUserID( player ) )
+				return success
+			elseif exports.sql:query_free( "UPDATE wcf1_user SET userOptions = '%s' WHERE userID = " .. getUserID( player ), str ) then
+				return true
+			end
+		end
+		
+		-- if it failed, restore the old value
+		p[ player ].options[ key ] = oldValue
 	end
 	return false
 end

@@ -163,6 +163,25 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="setJob"/>
 	
+	<!-- Gets a user option (globally for that user - not per character).
+		parameters:
+			(player) player to get the option from.
+			(string) name of the option.
+		returns:
+			the option if successful, (nil) otherwise.
+	-->
+	<export function="getOption"/>
+	
+	<!-- Sets a user option (globally for that user - not per character).
+		parameters:
+			(player) player to set the option for.
+			(string) name of the option.
+			(string/number/bool/nil) value of the option.
+		returns:
+			(bool) true if successful, false otherwise.
+	-->
+	<export function="setOption"/>
+	
 	<script src="registration.lua"/>
 	
 	<script src="ids.lua"/>

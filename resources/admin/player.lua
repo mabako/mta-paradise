@@ -352,25 +352,27 @@ addEventHandler( "onUnban", root,
 
 --
 
-local function contains( t, s )
+local function containsRank( t, s )
 	for key, value in pairs( t ) do
 		if value.displayName == s then
-			return true
+			return s
 		end
 	end
 	return false
 end
 
-addCommandHandler( "admins",
+addCommandHandler( { "staff", "admins", "mods" },
 	function( player, commandName, ... )
 		if exports.players:isLoggedIn( player ) then
-			outputChatBox( "Admins: ", player, 255, 255, 91 )
+			outputChatBox( "Staff: ", player, 0, 255, 153 )
 			local count = 0
 			for key, value in ipairs( getElementsByType( "player" ) ) do
 				local groups = exports.players:getGroups( value )
 				if groups and #groups >= 1 then
-					if contains( groups, "Administrator" ) then
-						outputChatBox( "  Admin " .. getPlayerName( value ):gsub( "_", " " ), player, 255, 255, 91 )
+					local title = containsRank( groups, "Administrator" ) or containsRank( groups, "Moderator" )
+					if title then
+						local duty = exports.players:getOption( value, "staffduty" )
+						outputChatBox( "  [ID " .. exports.players:getID( value ) .. "] " .. title .. " " .. getPlayerName( value ):gsub( "_", " " ) .. ( duty and " - On Duty" or "" ), player, duty and 0 or 255, 255, duty and 153 or 255 )
 						count = count + 1
 					end
 				end
@@ -383,24 +385,25 @@ addCommandHandler( "admins",
 	end
 )
 
-addCommandHandler( "mods",
-	function( player, commandName, ... )
-		if exports.players:isLoggedIn( player ) then
-			outputChatBox( "Moderators: ", player, 255, 255, 191 )
-			local count = 0
-			for key, value in ipairs( getElementsByType( "player" ) ) do
-				local groups = exports.players:getGroups( value )
-				if groups and #groups >= 1 then
-					if contains( groups, "Moderator" ) then
-						outputChatBox( "  Moderator " .. getPlayerName( value ):gsub( "_", " " ), player, 255, 255, 191 )
-						count = count + 1
-					end
-				end
+--
+
+addCommandHandler( { "staffduty", "adminduty", "modduty" },
+	function( player, commandName )
+		local old = exports.players:getOption( player, "staffduty" )
+		if exports.players:setOption( player, "staffduty", old ~= true or nil ) then
+			exports.players:updateNametag( player )
+			local message = getPlayerName( player ):gsub( "_", " " ) .. " " .. ( old and "went off" or "came on" ) .. " duty."
+			local groups = exports.players:getGroups( player )
+			if groups and #groups >= 1 then
+				message = groups[1].displayName .. " " .. message
 			end
 			
-			if count == 0 then
-				outputChatBox( "  None.", player, 255, 255, 191 )
+			for key, value in ipairs( getElementsByType( "player" ) ) do
+				if hasObjectPermissionTo( value, "command.staffduty", false ) then
+					outputChatBox( message, value, old and 255 or 0, old and 191 or 255, 0 )
+				end
 			end
 		end
-	end
+	end,
+	true
 )
