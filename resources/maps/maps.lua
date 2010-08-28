@@ -29,7 +29,7 @@ local function addMap( name, id, dimension, protected )
 	end
 end
 
-local function addMapObject( mapName, objectID, object, interior, alpha )
+local function addMapObject( mapName, objectID, object, interior, alpha, doublesided )
 	mapName = mapName:lower( )
 	local map = maps[ mapName ]
 	if map then
@@ -39,6 +39,7 @@ local function addMapObject( mapName, objectID, object, interior, alpha )
 			setElementDimension( object, map.dimension )
 			setElementAlpha( object, alpha )
 			setElementParent( object, map.element )
+			setElementDoubleSided( object, doublesided == 1 )
 			
 			-- save a reference
 			map.objects[ object ] = { id = objectID }
@@ -105,6 +106,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'rz', type = 'float' },
 				{ name = 'interior', type = 'tinyint(3) unsigned' },
 				{ name = 'alpha', type = 'tinyint(3) unsigned', default = 255 },
+				{ name = 'doublesided', type = 'tinyint(3) unsigned', default = 0 },
 			} ) then cancelEvent( ) return end
 		
 		-- load all maps
@@ -122,7 +124,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 					local result2 = exports.sql:query_assoc( "SELECT * FROM map_objects WHERE mapID = " .. data.mapID .. " ORDER BY objectID ASC" )
 					if result2 then
 						for k, o in ipairs( result2 ) do
-							if addMapObjectFromPosition( data.mapName, o.objectID, o.model, o.x, o.y, o.z, o.rx, o.ry, o.rz, o.interior, o.alpha ) then
+							if addMapObjectFromPosition( data.mapName, o.objectID, o.model, o.x, o.y, o.z, o.rx, o.ry, o.rz, o.interior, o.alpha, o.doublesided ) then
 								objectCounter = objectCounter + 1
 								mapObjects = mapObjects + 1
 							end
@@ -165,7 +167,8 @@ addCommandHandler( "addmap",
 									rz = tonumber( xmlNodeGetAttribute( value, "rotZ" ) ) or 0,
 									model = tonumber( xmlNodeGetAttribute( value, "model" ) ),
 									interior = tonumber( xmlNodeGetAttribute( value, "interior" ) ) or 0,
-									alpha = tonumber( xmlNodeGetAttribute( value, "alpha" ) ) or 255
+									alpha = tonumber( xmlNodeGetAttribute( value, "alpha" ) ) or 255,
+									doublesided = xmlNodeGetAttribute( value, "doublesided" ) == "true" and 1 or 0,
 								}
 							)
 						else
@@ -184,9 +187,9 @@ addCommandHandler( "addmap",
 										local object = createObject( value.model, value.x, value.y, value.z, value.rx, value.ry, value.rz )
 										if object then
 											-- insert into db
-											local objectID = exports.sql:query_insertid( "INSERT INTO map_objects (mapID, model, x, y, z, rx, ry, rz, interior, alpha) VALUES(" .. table.concat( { mapID, value.model, value.x, value.y, value.z, value.rx, value.ry, value.rz, value.interior, value.alpha }, ", " ) .. ")" )
+											local objectID = exports.sql:query_insertid( "INSERT INTO map_objects (mapID, model, x, y, z, rx, ry, rz, interior, alpha, doublesided) VALUES(" .. table.concat( { mapID, value.model, value.x, value.y, value.z, value.rx, value.ry, value.rz, value.interior, value.alpha, value.doublesided }, ", " ) .. ")" )
 											if objectID then
-												addMapObject( mapName, objectID, object, value.interior, value.alpha )
+												addMapObject( mapName, objectID, object, value.interior, value.alpha, value.doublesided )
 												loaded = loaded + 1
 											end
 										end
