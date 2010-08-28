@@ -296,7 +296,7 @@ addCommandHandler( "setmapdimension",
 				outputChatBox( "Invalid dimension.", player, 255, 0, 0 )
 			end
 		else
-			outputChatBox( "Syntax: /" .. commandName .. " [dimension]", player, 255, 255, 255 )
+			outputChatBox( "Syntax: /" .. commandName .. " [map] [dimension]", player, 255, 255, 255 )
 		end
 	end,
 	true
