@@ -40,5 +40,5 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<script src="weather.lua"/>
 	
-	<script src="blur.lua" type="client"/>
+	<script src="blur.lua"/>
 </meta>

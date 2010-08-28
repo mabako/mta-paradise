@@ -15,35 +15,28 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-addEventHandler( "onClientResourceStart", resourceRoot,
+addEventHandler( "onResourceStart", resourceRoot,
 	function( )
-		local xml = xmlLoadFile( "blur.xml" )
-		if xml then
-			local blur = tonumber( xmlNodeGetValue( xml ) )
-			if blur and blur >= 0 and blur <= 255 then
-				setBlurLevel( blur )
-			else
-				-- default: blur is off
-				setBlurLevel( 0 )
+		for key, value in ipairs( getElementsByType( "player" ) ) do
+			if exports.players:isLoggedIn( value ) then
+				setPlayerBlurLevel( value, exports.players:getOption( value, "blur" ) and 38 or 0 )
 			end
-			xmlUnloadFile( xml )
-		else
-			-- default: blur is off
-			setBlurLevel( 0 )
 		end
 	end
 )
 
-addCommandHandler( "toggleblur",
+addEventHandler( "onCharacterLogin", root,
 	function( )
-		local blur = getBlurLevel( ) == 0 and 38 or 0
-		local xml = xmlCreateFile( "blur.xml", "blur" )
-		if xml then
-			xmlNodeSetValue( xml, tostring( blur ) )
-			xmlSaveFile( xml )
-			xmlUnloadFile( xml )
+		setPlayerBlurLevel( source, exports.players:getOption( source, "blur" ) and 38 or 0 )
+	end
+)
+
+addCommandHandler( "toggleblur",
+	function( player )
+		local blur = exports.players:getOption( player, "blur" ) ~= true and true or nil
+		if exports.players:setOption( player, "blur", blur ) then
+			outputChatBox( "Blur is " .. ( blur and "en" or "dis" ) .. "abled.", player, 0, 255, 0 )
+			setPlayerBlurLevel( player, blur and 38 or 0 )
 		end
-		outputChatBox( "Blur is " .. ( blur == 0 and "dis" or "en" ) .. "abled.", 0, 255, 0 )
-		setBlurLevel( blur )
 	end
 )
