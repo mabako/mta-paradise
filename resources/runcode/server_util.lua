@@ -27,7 +27,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 local rootElement = getRootElement()
 
 function outputConsoleR(message, toElement)
-	if toElement == false then
+	if toElement == false or getElementType(toElement) == "console" then
 		outputServerLog(message)
 	else
 		toElement = toElement or rootElement
@@ -39,7 +39,7 @@ function outputConsoleR(message, toElement)
 end
 
 function outputChatBoxR(message, toElement)
-	if toElement == false then
+	if toElement == false or getElementType(toElement) == "console" then
 		outputServerLog(message)
 	else
 		toElement = toElement or rootElement

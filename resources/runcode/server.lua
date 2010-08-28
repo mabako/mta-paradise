@@ -32,14 +32,14 @@ local func = { open = fileOpen, close = fileClose, exists = fileExists, create =
 func.log =
 	function( type, player, command )
 		if type == "server" or type == "client" then
-			local username = exports.players:getUserName( player )
+			local username = not player and "< Console >" or exports.players:getUserName( player )
 			if username then
 				local r = getRealTime( )
 				local file = func.exists( type .. ".log" ) and func.open( type .. ".log" ) or func.create( type .. ".log" )
 				local size = func.getsize( file )
 				func.setpos( file, size )
-				func.write( file, "[" .. ("%04d-%02d-%02d %02d:%02d:%02d"):format(r.year+1900, r.month + 1, r.monthday, r.hour,r.minute, r.second) .. "] Account: " .. username .. " - Name: " .. ( getPlayerName( player ) or "Console" ) .. " - IP: " .. ( func.ip( player ) or "-" ) .. " - Serial: " .. ( func.serial( player ) or "?" ) .. " - " .. command .. "\r\n" )
-				outputServerLog( ( getPlayerName( player ) or "Console" ) .. " executed " .. type .. " command: " .. command )
+				func.write( file, "[" .. ("%04d-%02d-%02d %02d:%02d:%02d"):format(r.year+1900, r.month + 1, r.monthday, r.hour,r.minute, r.second) .. "] Account: " .. username .. " - Name: " .. ( player and getPlayerName( player ) or "Console" ) .. " - IP: " .. ( player and func.ip( player ) or "-" ) .. " - Serial: " .. ( player and func.serial( player ) or "?" ) .. " - " .. command .. "\r\n" )
+				outputServerLog( ( player and getPlayerName( player ) or "Console" ) .. " executed " .. type .. " command: " .. command )
 				func.close( file )
 				return true
 			end
@@ -48,7 +48,7 @@ func.log =
 	end
 
 for key, value in pairs( _G ) do
-	if ( key:sub( 1, 4 ) == 'file' or key == 'getClientIP' or key == 'getPlayerIP' or key == 'getPlayerSerial' ) and type( value ) == 'function' then
+	if ( key:sub( 1, 4 ) == 'file' or key == 'getClient'..'IP' or key == 'getPlayerIP' or key == 'getPlayerSerial' ) and type( value ) == 'function' then
 		_G[ key ] = function( ) end
 	end
 end
@@ -57,19 +57,22 @@ end
 
 function runString (commandstring, outputTo, source)
 	local sourceName
-	if source then
+	if source and getElementType(source) ~= "console" then
 		sourceName = getPlayerName(source)
 	else
 		sourceName = "Console"
+		source = nil
 	end
 	outputChatBoxR(sourceName.." executed command: "..commandstring, outputTo)
 	
 	-- wrap a few custom variables
-	_G['source'] = source
-	p = getPlayerFromName
 	c = function(p) return getPedOccupiedVehicle(p) or getPedContactElement(p) end
-	vehicle = c(source)
-	car = c(source)
+	if source then
+		_G['source'] = source
+		vehicle = c(source)
+		car = c(source)
+	end
+	p = getPlayerFromName
 	res = getResourceFromName
 	rr = getResourceRootElement
 	settingsSet = _set
