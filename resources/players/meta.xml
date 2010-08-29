@@ -514,4 +514,47 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="tutorial_c.lua" type="client"/>
 	
 	<script src="pay.lua"/>
+	
+	<script src="language_g.lua"/>
+	<script src="language_g.lua" type="client"/>
+	<script src="language.lua"/>
+	
+	<!-- Returns whetever a flag is valid
+		parameters:
+			(string) flag
+		returns:
+			(bool) true if valid, false otherwise.
+	-->
+	<export function="isValidLanguage"/>
+	<export function="isValidLanguage" type="client"/>
+	
+	<!-- Returns the full name of a language
+		parameters:
+			(string) flag
+		returns:
+			(string) full name if valid, (bool) false otherwise.
+	-->
+	<export function="getLanguageName"/>
+	<export function="getLanguageName" type="client"/>
+	
+	<file src="images/flags/ar.png"/>
+	<file src="images/flags/cn.png"/>
+	<file src="images/flags/de.png"/>
+	<file src="images/flags/en.png"/>
+	<file src="images/flags/es.png"/>
+	<file src="images/flags/fi.png"/>
+	<file src="images/flags/fr.png"/>
+	<file src="images/flags/gr.png"/>
+	<file src="images/flags/in.png"/>
+	<file src="images/flags/il.png"/>
+	<file src="images/flags/it.png"/>
+	<file src="images/flags/jp.png"/>
+	<file src="images/flags/kr.png"/>
+	<file src="images/flags/ma.png"/>
+	<file src="images/flags/nl.png"/>
+	<file src="images/flags/pl.png"/>
+	<file src="images/flags/pt.png"/>
+	<file src="images/flags/ru.png"/>
+	<file src="images/flags/se.png"/>
+	<file src="images/flags/vn.png"/>
 </meta>

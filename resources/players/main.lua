@@ -22,7 +22,7 @@ addEvent( "onCharacterLogout", false )
 --
 
 local team = createTeam( "MTA: Paradise" ) -- this is used as a dummy team. We need this for faction chat to work.
-local p = { }
+p = { }
 
 -- Import Groups
 local groups = {
@@ -293,6 +293,7 @@ addEventHandler( "onResourceStart", resourceRoot,
 				{ name = 'lastLogin', type = 'timestamp', default = '0000-00-00 00:00:00' },
 				{ name = 'weapons', type = 'varchar(255)', null = true },
 				{ name = 'job', type = 'varchar(20)', null = true },
+				{ name = 'languages', type = 'text', null = true },
 			} ) then cancelEvent( ) return end
 		
 		if not exports.sql:create_table( 'wcf1_user',
@@ -706,8 +707,49 @@ addEventHandler( getResourceName( resource ) .. ":spawn", root,
 					
 					p[ source ].job = char.job
 					
+					-- restore the player's languages, remove invalid ones
+					p[ source ].languages = fromJSON( char.languages )
+					if not p[ source ].languages then
+						-- default is English with full skill
+						p[ source ].languages = { en = { skill = 1000, current = true } }
+						saveLanguages( source, p[ source ].languages )
+					else
+						local changed = false
+						local languages = 0
+						for key, value in pairs( p[ source ].languages ) do
+							if isValidLanguage( "en" ) then
+								changed = true
+								languages = languages + 1
+								if not isValidLanguage( key ) then
+									p[ source ].languages[ key ] = nil
+									languages = languages - 1
+								elseif type( value.skill ) ~= 'number' then
+									value.skill = 0
+								elseif value.skill < 0 then
+									value.skill = 0
+								elseif value.skill > 1000 then
+									value.skill = 1000
+								else
+									changed = false
+								end
+							else
+								languages = languages + 1
+							end
+						end
+						
+						if languages == 0 then
+							-- player has no language at all
+							p[ source ].languages = { en = { skill = 1000, current = true } }
+							changed = true
+						end
+						
+						if changed then
+							saveLanguages( source, p[ source ].languages )
+						end
+					end
+					
 					setPlayerTeam( source, team )
-					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source )
+					triggerClientEvent( source, getResourceName( resource ) .. ":onSpawn", source, p[ source ].languages )
 					triggerEvent( "onCharacterLogin", source )
 					
 					showCursor( source, false )
