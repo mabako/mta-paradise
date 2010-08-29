@@ -537,6 +537,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="getLanguageName"/>
 	<export function="getLanguageName" type="client"/>
 	
+	<!-- Returns the player's current language
+		parameters:
+			(player) the player to retrieve the language of
+		returns:
+			(string) language's flag if any, (nil) otherwise
+	-->
+	<export function="getCurrentLanguage"/>
+	
+	<!-- Returns the player's skill for a language
+		parameters:
+			(player) the player to retrieve the language skill of
+		returns:
+			(number) 0-1000 for any skill, (false) if he doesn't speak the language
+	-->
+	<export function="getLanguageSkill"/>
+	
 	<file src="images/flags/ar.png"/>
 	<file src="images/flags/cn.png"/>
 	<file src="images/flags/de.png"/>

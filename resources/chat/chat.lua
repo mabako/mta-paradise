@@ -86,6 +86,65 @@ local function localMessage( from, message, r, g, b, range, r2, g2, b2 )
 	end
 end
 
+local function localizedMessage( from, prefix, message, r, g, b, range, r2, g2, b2 )
+	range = range or 20
+	r2 = r2 or r
+	g2 = g2 or g
+	b2 = b2 or b
+	
+	local language = exports.players:getCurrentLanguage( from )
+	local skill = exports.players:getLanguageSkill( from, language )
+	if language and skill then
+		if #message >= 4 and message:sub( 1, 1 ) == "#" and exports.players:isValidLanguage( message:sub( 2, 3 ) ) and message:sub( 4, 4 ) == " " then
+			language = message:sub( 2, 3 )
+			skill = exports.players:getLanguageSkill( from, language )
+			if not skill then
+				outputChatBox( "(( You do not speak " .. exports.players:getLanguageName( language ) .. ". ))", from, 255, 0, 0 )
+				return
+			else
+				-- it's a language the player speaks!
+				message = message:sub( 5 )
+			end
+		end
+		prefix = " [" .. exports.players:getLanguageName( language ) .. "]" .. prefix
+		
+		for player, distance in pairs( getPlayersInRange( from, range ) ) do
+			local new = message
+			if from ~= player then
+				-- check how much the player should understand
+				local playerSkill = exports.players:getLanguageSkill( player, language )
+				if not playerSkill then
+					playerSkill = 0
+				else
+					playerSkill = math.floor( ( 2 * playerSkill + skill ) / 3 ) 
+				end
+				
+				-- make a part not understandable
+				local scramble = math.floor( #message * playerSkill / 1250 ) -- a bit tolerancy - max is 1000 actually, but we want people with pretty good languages to understand us fully
+				if scramble > 0 then
+					new = ""
+					for i = 1, scramble do
+						local char = message:sub( i, i )
+						if char >= "a" and char <= "z" then
+							new = new .. string.char( math.random( string.byte( "a" ), string.byte( "z" ) ) )
+						elseif char >= "A" and char <= "Z" then
+							new = new .. string.char( math.random( string.byte( "A" ), string.byte( "Z" ) ) )
+						else
+							new = new .. char
+						end
+					end
+					
+					new = new .. message:sub( scramble + 1 )
+				end
+			end
+			
+			outputChatBox( prefix .. new, player, r2 + ( r - r2 ) * 1 - ( distance / range ), g2 + ( g - g2 ) * 1 - ( distance / range ), b2 + ( b - b2 ) * 1 - ( distance / range ) )
+		end
+	else
+		outputChatBox( "(( Press 'L' to select a language. ))", from, 255, 0, 0 )
+	end
+end
+
 -- exported function to send fake-me's
 function me( source, message, prefix )
 	if isElement( source ) and getElementType( source ) == "player" and type( message ) == "string" then
@@ -112,7 +171,7 @@ addEventHandler( "onPlayerChat", getRootElement( ),
 		cancelEvent( )
 		if exports.players:isLoggedIn( source ) and not isPedDead( source ) then
 			if type == 0 then
-				localMessage( source, " " .. getPlayerName( source ) .. " says: " .. message, 230, 230, 230, false, 127, 127, 127 )
+				localizedMessage( source, " " .. getPlayerName( source ) .. " says: ", message, 230, 230, 230, false, 127, 127, 127 )
 				exports.server:message( "%C04[" .. exports.players:getID( source ) .. "]%C  " .. getPlayerName( source ) .. " says: " .. message )
 			elseif type == 1 then
 				me( source, message )
@@ -162,7 +221,7 @@ addCommandHandler( "c",
 		if exports.players:isLoggedIn( thePlayer ) and not isPedDead( thePlayer ) then
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
-				localMessage( thePlayer, " " .. getPlayerName( thePlayer ) .. " whispers: " .. message, 255, 255, 255, 3 )
+				localizedMessage( thePlayer, " " .. getPlayerName( thePlayer ) .. " whispers: ", message, 255, 255, 255, 3 )
 				exports.server:message( "%C04[" .. exports.players:getID( thePlayer ) .. "]%C15  " .. getPlayerName( thePlayer ) .. " whispers: " .. message .. "%C" )
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [local ic text]", thePlayer, 255, 255, 255 )
@@ -177,8 +236,7 @@ addCommandHandler( { "s", "shout" },
 		if exports.players:isLoggedIn( thePlayer ) and not isPedDead( thePlayer ) then
 			local message = table.concat( { ... }, " " )
 			if #message > 0 then
-				local message = " " .. getPlayerName( thePlayer ) .. " shouts: " .. message .. ( message:sub( #message ) ~= "." and message:sub( #message ) ~= "!" and message:sub( #message ) ~= "?" and "!" or "" )
-				localMessage( thePlayer, message, 255, 255, 255, 40 )
+				localizedMessage( thePlayer, " " .. getPlayerName( thePlayer ) .. " shouts: ", message .. ( message:sub( #message ) ~= "." and message:sub( #message ) ~= "!" and message:sub( #message ) ~= "?" and "!" or "" ), 255, 255, 255, 40 )
 				exports.server:message( "%C04[" .. exports.players:getID( thePlayer ) .. "]%C " .. message )
 			else
 				outputChatBox( "Syntax: /" .. commandName .. " [local ic text]", thePlayer, 255, 255, 255 )

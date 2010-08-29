@@ -35,6 +35,10 @@ function getCurrentLanguage( player )
 	end
 end
 
+function getLanguageSkill( player, language )
+	return isLoggedIn( player ) and p[ player ].languages and p[ player ].languages[ language ] and p[ player ].languages[ language ].skill or false
+end
+
 addEvent( "players:selectLanguage", true )
 addEventHandler( "players:selectLanguage", root,
 	function( flag )
