@@ -175,6 +175,7 @@
         <right name="command.getpos" access="true" />
         <right name="command.toggleooc" access="true" />
         <right name="command.staffduty" access="true" />
+        <right name="command.acceptreport" access="true" />
     </acl>
     <acl name="Admin">
         <right name="general.ModifyOtherObjects" access="true" />

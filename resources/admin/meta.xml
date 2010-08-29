@@ -23,4 +23,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="pos.lua"/>
 	<script src="spectate.lua"/>
 	<script src="advert.lua"/>
+	
+	<script src="report.lua"/>
 </meta>
