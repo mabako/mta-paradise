@@ -116,11 +116,19 @@ local function localizedMessage( from, prefix, message, r, g, b, range, r2, g2, 
 				if not playerSkill then
 					playerSkill = 0
 				else
+					if playerSkill < 1000 then
+						-- increase skill - long messages give more skill!
+						if math.random( math.max( 1, math.ceil( playerSkill * 30 / #message ) ) ) == 1 then
+							if exports.players:increaseLanguageSkill( player, language ) then
+								playerSkill = playerSkill + 1
+							end
+						end
+					end
 					playerSkill = math.floor( ( 2 * playerSkill + skill ) / 3 ) 
 				end
 				
 				-- make a part not understandable
-				local scramble = math.floor( #message * playerSkill / 1250 ) -- a bit tolerancy - max is 1000 actually, but we want people with pretty good languages to understand us fully
+				local scramble = #message - math.floor( #message * playerSkill / 875 ) -- a bit tolerancy - max is 1000 actually, but we want people with pretty good languages to understand us fully
 				if scramble > 0 then
 					new = ""
 					for i = 1, scramble do

@@ -39,6 +39,22 @@ function getLanguageSkill( player, language )
 	return isLoggedIn( player ) and p[ player ].languages and p[ player ].languages[ language ] and p[ player ].languages[ language ].skill or false
 end
 
+function increaseLanguageSkill( player, language )
+	local skill = getLanguageSkill( player, language )
+	if skill and skill < 1000 then
+		-- increase the skill
+		p[ player ].languages[ language ].skill = skill + 1
+		if saveLanguages( player, p[ player ].languages ) then
+			-- sync it
+			triggerClientEvent( player, getResourceName( resource ) .. ":languages", player, p[ player ].languages )
+			return true
+		else
+			p[ player ].languages[ language ].skill = skill - 1
+		end
+	end
+	return false
+end
+
 addEvent( "players:selectLanguage", true )
 addEventHandler( "players:selectLanguage", root,
 	function( flag )

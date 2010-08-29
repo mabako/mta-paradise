@@ -519,18 +519,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="language_g.lua" type="client"/>
 	<script src="language.lua"/>
 	
-	<!-- Returns whetever a flag is valid
+	<!-- Returns whetever a flag is valid.
 		parameters:
-			(string) flag
+			(string) flag.
 		returns:
 			(bool) true if valid, false otherwise.
 	-->
 	<export function="isValidLanguage"/>
 	<export function="isValidLanguage" type="client"/>
 	
-	<!-- Returns the full name of a language
+	<!-- Returns the full name of a language.
 		parameters:
-			(string) flag
+			(string) flag.
 		returns:
 			(string) full name if valid, (bool) false otherwise.
 	-->
@@ -539,19 +539,29 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	<!-- Returns the player's current language
 		parameters:
-			(player) the player to retrieve the language of
+			(player) the player to retrieve the language of.
 		returns:
-			(string) language's flag if any, (nil) otherwise
+			(string) language's flag if any, (nil) otherwise.
 	-->
 	<export function="getCurrentLanguage"/>
 	
 	<!-- Returns the player's skill for a language
 		parameters:
-			(player) the player to retrieve the language skill of
+			(player) the player to retrieve the language skill from.
+			(string) language to get the skill from.
 		returns:
-			(number) 0-1000 for any skill, (false) if he doesn't speak the language
+			(number) 0-1000 for any skill, (false) if he doesn't speak the language.
 	-->
 	<export function="getLanguageSkill"/>
+	
+	<!-- Increases a player's language skill
+		parameters:
+			(player) the player to  increase the language skill for.
+			(string) language to increase the skill for.
+		returns:
+			(bool) true if successful, false otherwise.
+	-->
+	<export function="increaseLanguageSkill"/>
 	
 	<file src="images/flags/ar.png"/>
 	<file src="images/flags/cn.png"/>
