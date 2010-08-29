@@ -34,6 +34,11 @@ addCommandHandler( { "spectate", "spec", "recon" },
 						setElementInterior( player, getElementInterior( other ) )
 						if attachElements( player, other, 0, 0, -5 ) then
 							outputChatBox( "You are now watching " .. name .. ".", player, 0, 255, 0 )
+							for key, value in ipairs( getElementsByType( "player" ) ) do
+								if hasObjectPermissionTo( value, "command.spectate", false ) then
+									outputChatBox( getPlayerName( player ):gsub( "_", " " ) .. " is now watching " .. name .. ".", value, 0, 255, 153 )
+								end
+							end
 						else
 							outputChatBox( "Couldn't attach you to the player.", player, 255, 0, 0 )
 							setElementInterior( player, interior )
@@ -68,6 +73,11 @@ addCommandHandler( { "spectate", "spec", "recon" },
 					setElementAlpha( player, 0 )
 					setCameraTarget( player, other )
 					outputChatBox( "You are now watching " .. name .. ".", player, 0, 255, 0 )
+					for key, value in ipairs( getElementsByType( "player" ) ) do
+						if hasObjectPermissionTo( value, "command.spectate", false ) then
+							outputChatBox( getPlayerName( player ):gsub( "_", " " ) .. " is now watching " .. name .. ".", value, 0, 255, 153 )
+						end
+					end
 				else
 					outputChatBox( "Couldn't attach you to " .. name .. ".", player, 255, 0, 0 )
 					setElementInterior( player, interior )
