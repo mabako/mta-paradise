@@ -33,7 +33,7 @@ function updateCharacters( characters )
 				title = title,
 				text = text,
 				onHover = function( cursor, pos )
-						color = { 0, 255, 0, 31 }
+						color = { 0, 255, 0, 63 }
 						if characterID == -1 then
 							color[1] = 255
 						elseif characterID == -2 then
