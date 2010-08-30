@@ -514,4 +514,94 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="tutorial_c.lua" type="client"/>
 	
 	<script src="pay.lua"/>
+	
+	<script src="language_g.lua"/>
+	<script src="language_g.lua" type="client"/>
+	<script src="language.lua"/>
+	
+	<!-- Returns a { language name, shortcut } table for all languages
+		returns:
+			(table) with all languages
+	-->
+	<export function="getLanguages"/>
+	<export function="getLanguages" type="client"/>
+	
+	<!-- Returns whetever a flag is valid.
+		parameters:
+			(string) flag.
+		returns:
+			(bool) true if valid, false otherwise.
+	-->
+	<export function="isValidLanguage"/>
+	<export function="isValidLanguage" type="client"/>
+	
+	<!-- Returns the full name of a language.
+		parameters:
+			(string) flag.
+		returns:
+			(string) full name if valid, (bool) false otherwise.
+	-->
+	<export function="getLanguageName"/>
+	<export function="getLanguageName" type="client"/>
+	
+	<!-- Returns the player's current language.
+		parameters:
+			(player) the player to retrieve the language of.
+		returns:
+			(string) language's flag if any, (nil) otherwise.
+	-->
+	<export function="getCurrentLanguage"/>
+	
+	<!-- Returns the player's skill for a language.
+		parameters:
+			(player) the player to retrieve the language skill from.
+			(string) language to get the skill from.
+		returns:
+			(number) 0-1000 for any skill, (false) if he doesn't speak the language.
+	-->
+	<export function="getLanguageSkill"/>
+	
+	<!-- Increases a player's language skill.
+		parameters:
+			(player) the player to increase the language skill for.
+			(string) language to increase the skill for.
+		returns:
+			(bool) true if successful, false otherwise.
+	-->
+	<export function="increaseLanguageSkill"/>
+	
+	<!-- Learn a player a language.
+		parameters:
+			(player) the player to learn the language.
+			(string) language to learn.
+		returns:
+			(bool) true if successful, false otherwise.
+			(number) error code if failed.
+				1 - Invalid Language.
+				2 - Player does speak the language already.
+				3 - Player exceeded maximum amount of languages.
+				4 - MySQL-Error.
+	-->
+	<export function="learnLanguage"/>
+	
+	<file src="images/flags/ar.png"/>
+	<file src="images/flags/cn.png"/>
+	<file src="images/flags/de.png"/>
+	<file src="images/flags/en.png"/>
+	<file src="images/flags/es.png"/>
+	<file src="images/flags/fi.png"/>
+	<file src="images/flags/fr.png"/>
+	<file src="images/flags/gr.png"/>
+	<file src="images/flags/in.png"/>
+	<file src="images/flags/il.png"/>
+	<file src="images/flags/it.png"/>
+	<file src="images/flags/jp.png"/>
+	<file src="images/flags/kr.png"/>
+	<file src="images/flags/ma.png"/>
+	<file src="images/flags/nl.png"/>
+	<file src="images/flags/pl.png"/>
+	<file src="images/flags/pt.png"/>
+	<file src="images/flags/ru.png"/>
+	<file src="images/flags/se.png"/>
+	<file src="images/flags/vn.png"/>
 </meta>

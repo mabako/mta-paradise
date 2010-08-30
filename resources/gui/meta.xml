@@ -80,6 +80,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="updateFaction" type="client"/>
 	
+	<script src="windows/languages.lua" type="client"/>
+	<!-- Updates the characters' languages showing in the language selection.
+		parameters:
+			(table) all of a char's languages that'll be shown in the language selection.
+	-->
+	<export function="updateLanguages" type="client"/>
+	
 	<script src="gui_c.lua" type="client"/>
 	
 	<!-- Shows a GUI window.

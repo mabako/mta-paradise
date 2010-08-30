@@ -322,6 +322,24 @@ addEventHandler( "items:use", root,
 						end
 					elseif id == 7 then
 						outputChatBox( "This phone has the number #" .. tostring( value ) .. ".", source, 255, 255, 255 )
+					elseif id == 8 then
+						if exports.players:isValidLanguage( value ) then
+							local learned, error = exports.players:learnLanguage( source, value )
+							if learned then
+								take( source, slot )
+								outputChatBox( "You learned the basics of " .. exports.players:getLanguageName( value ) .. ".", source, 0, 255, 0 )
+							elseif error == 1 then
+								outputChatBox( "Invalid Language code - " .. value .. ".", source, 255, 0, 0 )
+							elseif error == 2 then
+								outputChatBox( "You do already speak " .. exports.players:getLanguageName( value ) .. ".", source, 255, 0, 0 )
+							elseif error == 3 then
+								outputChatBox( "You can't learn more languages.", source, 255, 0, 0 )
+							else
+								outputChatBox( "MySQL-Error.", source, 255, 0, 0 )
+							end
+						else
+							outputChatBox( "Invalid Language code - " .. value .. ".", source, 255, 0, 0 )
+						end
 					else
 						-- the original idea was to have the items run ("The wild Vehicle key ran away.") away yet I could convince myself players would like it that much
 						exports.chat:me( source, "looks at the " .. name .. ". Nothing happens..." )

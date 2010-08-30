@@ -391,7 +391,7 @@ local function draw( window, y )
 	return y
 end
 
-local changeableWindows = { 'scoreboard', 'characters', 'inventory' }
+local changeableWindows = { 'scoreboard', 'characters', 'inventory', 'languages' }
 local function isChangeableWindow( windowName )
 	for key, value in ipairs( changeableWindows ) do
 		if value == windowName then
@@ -484,6 +484,18 @@ bindKey( 'i', 'down',
 				hide( )
 			else
 				show( 'inventory', false, true, true )
+			end
+		end
+	end
+)
+
+bindKey( 'l', 'down',
+	function( )
+		if not forcedWindow then
+			if window == windows.languages then
+				hide( )
+			else
+				show( 'languages' )
 			end
 		end
 	end

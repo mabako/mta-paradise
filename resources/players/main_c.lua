@@ -19,6 +19,7 @@ local localPlayer = getLocalPlayer( )
 local loggedIn = false
 local screenX, screenY = guiGetScreenSize( )
 local characters = false
+local languages = false
 local localIP = nil
 local serverToken = nil
 
@@ -155,6 +156,10 @@ addEventHandler( "onClientResourceStart", root,
 					else
 						exports.gui:show( 'login', true )
 					end
+					
+					if languages then
+						exports.gui:updateLanguages( languages )
+					end
 				end,
 				50,
 				1
@@ -171,13 +176,16 @@ addEventHandler( "onClientResourceStop", root,
 
 addEvent( getResourceName( resource ) .. ":onSpawn", true )
 addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
-	function( )
+	function( langs )
 		exports.gui:hide( )
 		
 		showChat( true )
 		showPlayerHudComponent( "radar", true )
 		loggedIn = true
 		exports.gui:updateCharacters( characters )
+		
+		languages = langs
+		exports.gui:updateLanguages( languages )
 		
 		outputChatBox( " " )
 		outputChatBox( "You are now playing as " .. getPlayerName( localPlayer ):gsub( "_", " " ) .. ".", 0, 255, 0 )
@@ -190,6 +198,14 @@ addEventHandler( getResourceName( resource ) .. ":onSpawn", localPlayer,
 			tutorial( )
 		end
 		xmlUnloadFile( xml )
+	end
+)
+
+addEvent( getResourceName( resource ) .. ":languages", true )
+addEventHandler( getResourceName( resource ) .. ":languages", localPlayer,
+	function( langs )
+		languages = langs
+		exports.gui:updateLanguages( languages )
 	end
 )
 
