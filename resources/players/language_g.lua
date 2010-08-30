@@ -36,7 +36,7 @@ local languages =
 	{ "Russian", "ru" },
 	{ "Spanish", "es" },
 	{ "Swedish", "se" },
-	{ "Vietnamnese", "vt" },
+	{ "Vietnamnese", "vn" },
 }
 
 function getLanguageName( tag )
@@ -50,4 +50,8 @@ end
 
 function isValidLanguage( tag )
 	return getLanguageName( tag ) ~= false
+end
+
+function getLanguages( )
+	return languages
 end

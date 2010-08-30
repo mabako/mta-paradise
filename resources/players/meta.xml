@@ -519,6 +519,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<script src="language_g.lua" type="client"/>
 	<script src="language.lua"/>
 	
+	<!-- Returns a { language name, shortcut } table for all languages
+		returns:
+			(table) with all languages
+	-->
+	<export function="getLanguages"/>
+	<export function="getLanguages" type="client"/>
+	
 	<!-- Returns whetever a flag is valid.
 		parameters:
 			(string) flag.
