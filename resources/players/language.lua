@@ -55,6 +55,38 @@ function increaseLanguageSkill( player, language )
 	return false
 end
 
+local function count( table )
+	local counter = 0
+	for key, value in pairs( table ) do
+		counter = counter + 1
+	end
+	return counter
+end
+
+function learnLanguage( player, language )
+	if isValidLanguage( language ) then
+		local skill = getLanguageSkill( player, language )
+		if not skill then
+			if count( p[ player ].languages ) <= 4 then
+				p[ player ].languages[ language ] = { skill = 0 }
+				if saveLanguages( player, p[ player ].languages ) then
+					-- sync it
+					triggerClientEvent( player, getResourceName( resource ) .. ":languages", player, p[ player ].languages )
+					return true
+				else
+					p[ player ].languages[ language ] = nil
+					return false, 4
+				end
+			else
+				return false, 3
+			end
+		else
+			return false, 2
+		end
+	end
+	return false, 1
+end
+
 addEvent( "players:selectLanguage", true )
 addEventHandler( "players:selectLanguage", root,
 	function( flag )

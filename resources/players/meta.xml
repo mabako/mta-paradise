@@ -544,7 +544,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<export function="getLanguageName"/>
 	<export function="getLanguageName" type="client"/>
 	
-	<!-- Returns the player's current language
+	<!-- Returns the player's current language.
 		parameters:
 			(player) the player to retrieve the language of.
 		returns:
@@ -552,7 +552,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="getCurrentLanguage"/>
 	
-	<!-- Returns the player's skill for a language
+	<!-- Returns the player's skill for a language.
 		parameters:
 			(player) the player to retrieve the language skill from.
 			(string) language to get the skill from.
@@ -561,14 +561,28 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 	<export function="getLanguageSkill"/>
 	
-	<!-- Increases a player's language skill
+	<!-- Increases a player's language skill.
 		parameters:
-			(player) the player to  increase the language skill for.
+			(player) the player to increase the language skill for.
 			(string) language to increase the skill for.
 		returns:
 			(bool) true if successful, false otherwise.
 	-->
 	<export function="increaseLanguageSkill"/>
+	
+	<!-- Learn a player a language.
+		parameters:
+			(player) the player to learn the language.
+			(string) language to learn.
+		returns:
+			(bool) true if successful, false otherwise.
+			(number) error code if failed.
+				1 - Invalid Language.
+				2 - Player does speak the language already.
+				3 - Player exceeded maximum amount of languages.
+				4 - MySQL-Error.
+	-->
+	<export function="learnLanguage"/>
 	
 	<file src="images/flags/ar.png"/>
 	<file src="images/flags/cn.png"/>
