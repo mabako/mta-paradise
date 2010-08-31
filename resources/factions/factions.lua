@@ -288,7 +288,7 @@ addEventHandler( "faction:leave", root,
 					
 					-- remove him from the tables
 					p[ source ].types = { }
-					for i = #p[ source ].factions, 1 do
+					for i = #p[ source ].factions, 1, -1 do
 						if p[ source ].factions[ i ] == faction then
 							table.remove( p[ source ].factions, i )
 						else
@@ -427,7 +427,7 @@ addEventHandler( "faction:kick", root,
 					if player then
 						-- remove him from the tables
 						p[ player ].types = { }
-						for i = #p[ player ].factions, 1 do
+						for i = #p[ player ].factions, 1, -1 do
 							if p[ player ].factions[ i ] == faction then
 								table.remove( p[ player ].factions, i )
 							else
