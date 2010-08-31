@@ -87,10 +87,16 @@ local function localMessage( from, message, r, g, b, range, r2, g2, b2 )
 end
 
 local function localizedMessage( from, prefix, message, r, g, b, range, r2, g2, b2 )
-	range = range or 20
-	r2 = r2 or r
-	g2 = g2 or g
-	b2 = b2 or b
+	if type( range ) == 'table' then
+		r2 = r
+		g2 = g
+		b2 = b
+	else
+		range = range or 20
+		r2 = r2 or r
+		g2 = g2 or g
+		b2 = b2 or b
+	end
 	
 	local language = exports.players:getCurrentLanguage( from )
 	local skill = exports.players:getLanguageSkill( from, language )
@@ -108,7 +114,11 @@ local function localizedMessage( from, prefix, message, r, g, b, range, r2, g2, 
 		end
 		prefix = " [" .. exports.players:getLanguageName( language ) .. "]" .. prefix
 		
-		for player, distance in pairs( getPlayersInRange( from, range ) ) do
+		for player, distance in pairs( type( range ) == "table" and range or getPlayersInRange( from, range ) ) do
+			if type( range ) == "table" then
+				player = distance
+				distance = 0
+			end
 			local new = message
 			if from ~= player then
 				-- check how much the player should understand
@@ -146,7 +156,7 @@ local function localizedMessage( from, prefix, message, r, g, b, range, r2, g2, 
 				end
 			end
 			
-			outputChatBox( prefix .. new, player, r2 + ( r - r2 ) * 1 - ( distance / range ), g2 + ( g - g2 ) * 1 - ( distance / range ), b2 + ( b - b2 ) * 1 - ( distance / range ) )
+			outputChatBox( prefix .. new, player, r2 + ( r - r2 ) * 1 - ( distance / ( type( range ) == "table" and 1 or range ) ), g2 + ( g - g2 ) * 1 - ( distance / ( type( range ) == "table" and 1 or range ) ), b2 + ( b - b2 ) * 1 - ( distance / ( type( range ) == "table" and 1 or range ) ) )
 		end
 	else
 		outputChatBox( "(( Press 'L' to select a language. ))", from, 255, 0, 0 )
@@ -443,7 +453,7 @@ addCommandHandler( { "news", "n", "sr", "san" },
 			if inNews and factionTag then
 				local message = table.concat( { ... }, " " )
 				if #message > 0 then
-					outputChatBox( "[" .. tostring( factionTag ) .. "] " .. getPlayerName( thePlayer ) ..  " says: " .. message, root, 62, 184, 255 )
+					localizedMessage( thePlayer, " [" .. tostring( factionTag ) .. "] " .. getPlayerName( thePlayer ) ..  " says: ", message, 62, 184, 255, getElementsByType( "player" ) )
 				else
 					outputChatBox( "Syntax: /" .. commandName .. " [radio message]", thePlayer, 255, 255, 255 )
 				end
