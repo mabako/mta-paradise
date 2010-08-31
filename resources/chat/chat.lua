@@ -53,7 +53,7 @@ local function getPlayersInRange( from, range )
 		if getElementDimension( value ) == dimension and getElementInterior( value ) == interior then
 			local distance = getDistanceBetweenPoints3D( x, y, z, getElementPosition( value ) )
 			if distance < range then
-				t[ value ] = range
+				t[ value ] = distance
 			end
 		end
 	end
@@ -74,6 +74,18 @@ local function getPlayersInRange( from, range )
 	return t
 end
 
+-- calculate chat colors based on distance
+local function calculateColor( color, color2, distance, range )
+	return color - math.floor( ( color - color2 ) * ( distance / range ) )
+end
+
+local function calculateColors( r, r2, g, g2, b, b2, distance, range )
+	if range <= 0 then
+		range = 0.01
+	end
+	return calculateColor( r, r2, distance, range ), calculateColor( g, g2, distance, range ), calculateColor( b, b2, distance, range )
+end
+
 -- sends a ranged message
 local function localMessage( from, message, r, g, b, range, r2, g2, b2 )
 	range = range or 20
@@ -82,7 +94,7 @@ local function localMessage( from, message, r, g, b, range, r2, g2, b2 )
 	b2 = b2 or b
 	
 	for player, distance in pairs( getPlayersInRange( from, range ) ) do
-		outputChatBox( message, player, r2 + ( r - r2 ) * 1 - ( distance / range ), g2 + ( g - g2 ) * 1 - ( distance / range ), b2 + ( b - b2 ) * 1 - ( distance / range ) )
+		outputChatBox( message, player, calculateColors( r, r2, g, g2, b, b2, distance, range ) )
 	end
 end
 
@@ -156,7 +168,7 @@ local function localizedMessage( from, prefix, message, r, g, b, range, r2, g2, 
 				end
 			end
 			
-			outputChatBox( prefix .. new, player, r2 + ( r - r2 ) * 1 - ( distance / ( type( range ) == "table" and 1 or range ) ), g2 + ( g - g2 ) * 1 - ( distance / ( type( range ) == "table" and 1 or range ) ), b2 + ( b - b2 ) * 1 - ( distance / ( type( range ) == "table" and 1 or range ) ) )
+			outputChatBox( prefix .. new, player, calculateColors( r, r2, g, g2, b, b2, distance, type( range ) == "table" and 1 or range ) )
 		end
 	else
 		outputChatBox( "(( Press 'L' to select a language. ))", from, 255, 0, 0 )
