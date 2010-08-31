@@ -464,6 +464,38 @@ addCommandHandler( { "news", "n", "sr", "san" },
 	end
 )
 
+-- /d for department radio
+addCommandHandler( { "department", "d", "dept" },
+	function( thePlayer, commandName, ... )
+		if exports.players:isLoggedIn( thePlayer ) then
+			-- check if he's in PD
+			local canUseDepartmentRadio, _, _, tag = exports.factions:isPlayerInFactionType( thePlayer, 1 )
+			if not canUseDepartmentRadio then
+				-- check if he's in ES
+				canUseDepartmentRadio, _, _, tag = exports.factions:isPlayerInFactionType( thePlayer, 2 )
+				if not canUseDepartmentRadio then
+					outputChatBox( "(( You are not in a government faction. ))", thePlayer, 255, 0, 0 )
+					return
+				end
+			end
+			
+			local message = table.concat( { ... }, " " )
+			if #message > 0 then
+				local players = { }
+				for key, value in ipairs( getElementsByType( "player" ) ) do
+					-- show messages to PD, ES, SAN
+					if exports.factions:isPlayerInFactionType( value, 1 ) or exports.factions:isPlayerInFactionType( value, 2 ) or exports.factions:isPlayerInFactionType( value, 3 ) then
+						table.insert( players, value )
+					end
+				end
+				localizedMessage( thePlayer, " [DEPARTMENT] " .. getPlayerName( thePlayer ) ..  " says: ", message, 0, 0, 255, players )
+			else
+				outputChatBox( "Syntax: /" .. commandName .. " [radio message]", thePlayer, 255, 255, 255 )
+			end
+		end
+	end
+)
+
 -- /pm to message other players
 local function pm( player, target, message )
 	outputChatBox( "PM to [" .. exports.players:getID( target ) .. "] " .. getPlayerName( target ) .. ": " .. message, player, 255, 255, 0 )
