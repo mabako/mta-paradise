@@ -37,7 +37,7 @@ addCommandHandler( "pay",
 				end
 			end
 		else
-			outputChatBox( "Syntax: /" .. commandName .. " [player] [health]", player, 255, 255, 255 )
+			outputChatBox( "Syntax: /" .. commandName .. " [player] [amount]", player, 255, 255, 255 )
 		end
 	end
 )
